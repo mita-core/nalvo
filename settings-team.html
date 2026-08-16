@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="settings-team">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Team</div>
+            <div class="page-subtitle" data-filter-count="{n} people shown · 14 seats used of 20">14 members · 2 pending invites · 20 seats</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-primary btn-auto" onclick="openModal('m-invite')">Invite people</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <a class="tab" href="settings.html">General</a>
+          <a class="tab active" href="settings-team.html">Team</a>
+          <a class="tab" href="settings-billing.html">Billing</a>
+          <a class="tab" href="settings-api.html">API keys</a>
+        </div>
+
+        <div class="filter-bar" data-target=".data-table tbody tr">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="admin">Admins</button>
+          <button class="filter-tab" data-value="operator">Operators</button>
+          <button class="filter-tab" data-value="viewer">Viewers</button>
+          <button class="filter-tab" data-value="pending">Pending</button>
+          <input class="filter-search" placeholder="Search people…" aria-label="Search people">
+        </div>
+
+        <table class="data-table">
+          <thead><tr><th>Member</th><th>Role</th><th>Groups</th><th>Two-factor</th><th>Last active</th><th class="th-right">Actions</th></tr></thead>
+          <tbody>
+            <tr data-status="admin"><td><div class="agent-name">Jordan Diaz</div><div class="agent-meta">jordan@acme.io · you</div></td><td><span class="badge badge-accent">Admin</span></td><td>finance-ops, platform</td><td><span class="badge badge-success">On</span></td><td class="tnum">now</td><td class="td-right"><span class="text-link" data-toast="You cannot change your own role">Manage</span></td></tr>
+            <tr data-status="admin"><td><div class="agent-name">Sam Mercer</div><div class="agent-meta">sam@acme.io</div></td><td><span class="badge badge-accent">Admin</span></td><td>platform, legal</td><td><span class="badge badge-success">On</span></td><td class="tnum">12m ago</td><td class="td-right"><span class="text-link" data-toast="Role editor opened for Sam Mercer">Manage</span></td></tr>
+            <tr data-status="operator"><td><div class="agent-name">Maya Okonkwo</div><div class="agent-meta">maya@acme.io</div></td><td><span class="badge">Operator</span></td><td>finance-ops</td><td><span class="badge badge-success">On</span></td><td class="tnum">1h ago</td><td class="td-right"><span class="text-link" data-toast="Role editor opened for Maya Okonkwo">Manage</span></td></tr>
+            <tr data-status="operator"><td><div class="agent-name">Rob Neal</div><div class="agent-meta">rob@acme.io</div></td><td><span class="badge">Operator</span></td><td>support</td><td><span class="badge badge-danger">Off</span></td><td class="tnum">3h ago</td><td class="td-right"><span class="text-link" data-toast="Reminder sent to enrol two-factor">Manage</span></td></tr>
+            <tr data-status="operator"><td><div class="agent-name">Ines Cardoso</div><div class="agent-meta">ines@acme.io</div></td><td><span class="badge">Operator</span></td><td>revenue</td><td><span class="badge badge-success">On</span></td><td class="tnum">Yesterday</td><td class="td-right"><span class="text-link" data-toast="Role editor opened for Ines Cardoso">Manage</span></td></tr>
+            <tr data-status="viewer"><td><div class="agent-name">Theo Lang</div><div class="agent-meta">theo@acme.io</div></td><td><span class="badge">Viewer</span></td><td>legal</td><td><span class="badge badge-success">On</span></td><td class="tnum">Yesterday</td><td class="td-right"><span class="text-link" data-toast="Role editor opened for Theo Lang">Manage</span></td></tr>
+            <tr data-status="viewer"><td><div class="agent-name">Priya Raman</div><div class="agent-meta">priya@acme.io</div></td><td><span class="badge">Viewer</span></td><td>finance-ops</td><td><span class="badge badge-success">On</span></td><td class="tnum">2 days ago</td><td class="td-right"><span class="text-link" data-toast="Role editor opened for Priya Raman">Manage</span></td></tr>
+            <tr data-status="pending"><td><div class="agent-name">daniel@acme.io</div><div class="agent-meta">invited Aug 1 by jordan@acme.io</div></td><td><span class="badge">Operator</span></td><td>—</td><td><span class="badge">—</span></td><td class="tnum">never</td><td class="td-right"><span class="text-link" data-toast="Invite re-sent to daniel@acme.io">Resend</span></td></tr>
+            <tr data-status="pending"><td><div class="agent-name">lea@acme.io</div><div class="agent-meta">invited Jul 30 by sam@acme.io</div></td><td><span class="badge">Viewer</span></td><td>—</td><td><span class="badge">—</span></td><td class="tnum">never</td><td class="td-right"><span class="text-link" data-toast="Invite re-sent to lea@acme.io">Resend</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="users" aria-hidden="true"></i></div>
+          <div class="empty-title">Nobody here</div>
+          <div class="empty-desc">No members match this filter. Invite someone or switch tabs.</div>
+        </div>
+
+        <div class="section-title mt-8">Roles</div>
+        <div class="grid-3">
+          <div class="card"><div class="card-title">Admin</div><div class="card-subtitle">Full control: deploy workers, change settings, manage billing and members.</div><div class="chip-list mt-6"><span class="chip">2 people</span></div></div>
+          <div class="card"><div class="card-title">Operator</div><div class="card-subtitle">Start, pause and decide executions. Cannot change billing or invite members.</div><div class="chip-list mt-6"><span class="chip">3 people</span></div></div>
+          <div class="card"><div class="card-title">Viewer</div><div class="card-subtitle">Read-only access to executions, events and insights. No decisions, no changes.</div><div class="chip-list mt-6"><span class="chip">2 people</span></div></div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Seats</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:8px;"><span class="mini-label">Used</span><span class="mini-value">14 / 20</span></div>
+          <div class="progress"><div class="progress-fill" style="width:70%;"></div></div>
+          <div class="hint">6 seats left on the Scale plan · $28 per extra seat</div>
+          <a class="btn btn-secondary btn-block mt-6" href="settings-billing.html" style="display:flex; align-items:center; justify-content:center; text-decoration:none;">Manage plan</a>
+        </div>
+
+        <div class="panel-title">Groups</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:10px;"><div><div class="list-title">finance-ops</div><div class="list-meta">approves payments &amp; contracts</div></div><span class="badge">12</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><div><div class="list-title">platform</div><div class="list-meta">deploys and pauses workers</div></div><span class="badge">5</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><div><div class="list-title">legal</div><div class="list-meta">contract checkpoints</div></div><span class="badge">4</span></div>
+          <div class="row-between"><div><div class="list-title">support</div><div class="list-meta">inbox and ticket workers</div></div><span class="badge">7</span></div>
+          <button class="btn btn-secondary btn-block mt-6" data-toast="Group created">New group</button>
+        </div>
+
+        <div class="panel-title">Security posture</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">Two-factor coverage</span><span class="badge badge-warning">13 / 14</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">SSO enforced</span><span class="badge badge-success">On</span></div>
+          <div class="row-between"><span class="mini-label">Dormant accounts</span><span class="badge">0</span></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-invite" role="dialog" aria-modal="true" aria-labelledby="m-invite-t">
+  <div class="modal">
+    <div class="modal-title" id="m-invite-t">Invite people</div>
+    <div class="modal-desc">They will get an email with a sign-in link. SSO members skip the password step entirely.</div>
+    <div class="field">
+      <label class="field-label" for="inv-emails">Email addresses</label>
+      <textarea class="textarea" id="inv-emails" placeholder="daniel@acme.io, lea@acme.io"></textarea>
+      <div class="hint">Comma separated. Only @acme.io addresses are allowed by the SSO policy.</div>
+    </div>
+    <div class="field">
+      <label class="field-label" for="inv-role">Role</label>
+      <select class="select" id="inv-role"><option>Viewer</option><option>Operator</option><option>Admin</option></select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="sendInvites()">Send invites</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-invite')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function sendInvites() {
+    var raw = document.getElementById('inv-emails').value.trim();
+    var role = document.getElementById('inv-role').value;
+    var emails = raw.split(',').map(function (e) { return e.trim(); }).filter(Boolean);
+    if (!emails.length) { showToast('Add at least one email address'); return; }
+    var tbody = document.querySelector('.data-table tbody');
+    emails.forEach(function (email) {
+      var tr = document.createElement('tr');
+      tr.dataset.status = 'pending';
+      tr.innerHTML = '<td><div class="agent-name">' + email + '</div><div class="agent-meta">invited just now by jordan@acme.io</div></td>' +
+        '<td><span class="badge">' + role + '</span></td><td>—</td><td><span class="badge">—</span></td><td class="tnum">never</td>' +
+        '<td class="td-right"><span class="text-link">Resend</span></td>';
+      tbody.appendChild(tr);
+    });
+    closeModal('m-invite');
+    showToast(emails.length + ' invite' + (emails.length > 1 ? 's' : '') + ' sent');
+  }
+</script>
+</body>
+</html>

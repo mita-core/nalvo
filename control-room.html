@@ -1,0 +1,2742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NALVO — Autonomous Evidence Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ════════════════════════════════════════════════════════════════
+     LINEAR DARK THEME — EXACT TOKENS
+     ════════════════════════════════════════════════════════════════ */
+  :root {
+    /* Backgrounds — Financia reference */
+    --bg:              #0F100F;
+    --bg-secondary:    #131413;
+    --surface:         #191919;
+    --surface-hover:   #222322;
+    --surface-raised:  #1E1F1E;
+
+    /* Borders */
+    --border:          #262726;
+    --border-light:    #2F2F2F;
+    --border-hover:    #3E3F3D;
+
+    /* Text — brighter */
+    --text-primary:    #FFFFFF;
+    --text-secondary:  #A3A3A3;
+    --text-tertiary:   #A3A3A3;
+    --text-disabled:   #A3A3A3;
+
+    /* Accent — Financia lime */
+    --accent:          #D4F93F;
+    --accent-hover:    #E6FC5B;
+    --accent-muted:    rgba(212,249,63,0.14);
+    --accent-text:     #DFFF67;
+    --on-accent:       #141414;
+
+    /* Semantic — reference tones */
+    --danger:          #F26D6D;
+    --danger-muted:    rgba(242,109,109,0.12);
+    --success:         #7ED491;
+    --success-muted:   rgba(126,212,145,0.12);
+    --warning:         #E8C04A;
+    --info:            #7DA2E8;
+
+    /* Font */
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Spacing */
+    --s-1: 4px;  --s-2: 8px;  --s-3: 12px;  --s-4: 16px;
+    --s-5: 20px; --s-6: 24px; --s-8: 32px;  --s-10: 40px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  svg.lucide {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    stroke-width: 2;
+  }
+
+  /* No scrollbar gutters — they ate the space on the right and threw the
+     left/right rhythm off. Scrolling itself is untouched. */
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+  /* ═══════════════════════ APP ═══════════════════════ */
+  .app {
+    --sidebar-w: 200px;
+    --panel-w: 380px;
+    --gutter: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* ═══════════ FLOATING PANELS — resize, collapse, restore ═══════════ */
+  /* The resizer IS the gutter between two floating cards: full-width grab
+     area, with a Figma-style grip pill centred in it. */
+  .resizer {
+    flex: 0 0 var(--gutter);
+    width: var(--gutter);
+    position: relative;
+    z-index: 20;
+    cursor: col-resize;
+  }
+
+  .resizer::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3px;
+    height: 36px;
+    border-radius: 2px;
+    background: transparent;
+    transition: background 0.15s ease;
+    pointer-events: none;
+  }
+
+  .resizer:hover::after { background: var(--border-hover); }
+  .resizer.dragging::after { background: var(--accent); }
+
+  .sidebar, .main-sidebar {
+    transition: width 0.28s cubic-bezier(0.32, 0.72, 0, 1),
+                opacity 0.18s ease,
+                transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Live drag must not fight the collapse animation */
+  .app.resizing .sidebar,
+  .app.resizing .main-sidebar { transition: none; }
+
+  .app.sidebar-collapsed .sidebar {
+    width: 0;
+    opacity: 0;
+    transform: translateX(-12px);
+    border-width: 0;
+    overflow: hidden;
+  }
+
+  .app.panel-collapsed .main-sidebar {
+    width: 0;
+    opacity: 0;
+    transform: translateX(12px);
+    border-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+
+  .app.sidebar-collapsed .resizer[data-target="sidebar"],
+  .app.panel-collapsed .resizer[data-target="panel"] { display: none; }
+
+  /* ── Toggle button — lives inside the panel it controls ── */
+  .panel-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .panel-toggle:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+
+  /* The toggle sits 13px below the top border of whatever holds it —
+     sidebar, context panel or floating bar — so it never shifts. */
+  .sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--s-3) var(--s-2) var(--s-4);
+  }
+
+  .sidebar-head .nav-label { padding: 0; }
+
+  .panel-head {
+    display: flex;
+    justify-content: flex-end;
+    margin: -12px -6px var(--s-3) 0;
+  }
+
+  /* ── Floating bar — takes over for a panel while it is collapsed ── */
+  .float-bar {
+    position: absolute;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-light);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px) scale(0.96);
+    transition: opacity 0.2s ease, transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Flush with the panel cards' own edges — one perimeter for the page */
+  .float-bar.left  { left: 0; }
+  .float-bar.right { right: 0; }
+
+  .app.sidebar-collapsed .float-bar.left,
+  .app.panel-collapsed .float-bar.right {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .float-bar .bar-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .float-bar .bar-item:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+
+  .float-bar .bar-item.active {
+    background: var(--accent-muted);
+    color: var(--accent-text);
+  }
+
+  .float-bar .bar-sep {
+    width: 1px;
+    height: 18px;
+    margin: 0 4px;
+    background: var(--border-light);
+  }
+
+  /* Content clears the floating bar only while one is on screen.
+     Bar is 36px tall; 48 leaves the same 12px breathing room as the gutter. */
+  .app.sidebar-collapsed .main-content,
+  .app.panel-collapsed .main-content { padding-top: 48px; }
+
+  /* ═══════════════════════ TOPBAR ═══════════════════════ */
+  .topbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Same inset as the panel cards below, so the whole page shares one
+       perimeter: wordmark, sidebar card and floating bar all start here. */
+    padding: 0 var(--gutter);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .topbar-left, .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+
+  .product-mark {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    letter-spacing: -0.01em;
+  }
+
+  .product-mark-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: var(--accent);
+    color: var(--on-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .env-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 3px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .env-dot {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--success);
+  }
+
+  .topbar-search {
+    width: 280px; height: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 var(--s-3);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .topbar-search:focus { border-color: var(--accent); }
+  .topbar-search::placeholder { color: var(--text-tertiary); }
+
+  .topbar-link {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .topbar-link:hover { color: var(--text-secondary); }
+
+  .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    color: var(--on-accent);
+    cursor: pointer;
+  }
+
+  /* ═══════════════════════ BODY ═══════════════════════ */
+  .body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--gutter);
+    background: var(--bg);
+  }
+
+  /* ═══════════════════════ SIDEBAR ═══════════════════════ */
+  .sidebar {
+    width: var(--sidebar-w);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: var(--s-3) 0;
+  }
+
+  .nav-section { margin-bottom: var(--s-2); }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    padding: var(--s-2) var(--s-4) var(--s-1);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 6px var(--s-4);
+    margin: 0 var(--s-2);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.1s ease;
+  }
+
+  .nav-item:hover {
+    background: var(--surface);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    background: var(--surface);
+    color: var(--text-primary);
+  }
+
+  .nav-item .icon {
+    width: 20px; height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .nav-item.active .icon { color: var(--accent); }
+
+  .nav-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    background: var(--accent-muted);
+    color: var(--accent-text);
+    border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Sidebar footer */
+  .sidebar-footer {
+    margin-top: auto;
+    padding: var(--s-3) var(--s-4);
+    border-top: 1px solid var(--border);
+  }
+
+  .health-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 11px;
+  }
+
+  .health-label { color: var(--text-tertiary); }
+  .health-value { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+  .health-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-top: 3px;
+    overflow: hidden;
+  }
+
+  .health-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+  }
+
+  /* ═══════════════════════ MAIN ═══════════════════════ */
+  .main {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    background: transparent;
+    position: relative;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 46px var(--s-6) var(--s-6);
+    overflow-y: auto;
+    min-width: 0;
+  }
+
+  .main-sidebar {
+    width: var(--panel-w);
+    padding: var(--s-6);
+    overflow-y: auto;
+    flex-shrink: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  /* ═══════════════════════ PAGES ═══════════════════════ */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: var(--s-5);
+  }
+
+  .main-content .page > :first-child {
+    margin-top: var(--s-6);
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ═══════════════════════ METRICS ═══════════════════════ */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-4);
+    margin-bottom: var(--s-6);
+  }
+
+  .metric {
+    padding: var(--s-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .metric-value {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: var(--s-2);
+  }
+
+  .metric-sparkline {
+    height: 48px;
+    margin-bottom: var(--s-3);
+  }
+
+  .metric-sparkline svg {
+    width: 100%; height: 100%;
+  }
+
+  .metric-sparkline polyline {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .metric-delta {
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .metric-delta.up { color: var(--success); }
+  .metric-delta.down { color: var(--danger); }
+
+  /* ═══════════════════════ FILTER BAR ═══════════════════════ */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-5);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-tab {
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.1s ease;
+  }
+
+  .filter-tab:hover { color: var(--text-secondary); }
+
+  .filter-tab.active {
+    color: var(--text-primary);
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  .filter-search {
+    width: 220px; height: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 var(--s-3);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    outline: none;
+    margin-left: auto;
+  }
+
+  .filter-search:focus { border-color: var(--accent); }
+  .filter-search::placeholder { color: var(--text-tertiary); }
+
+  /* ═══════════════════════ TABLE ═══════════════════════ */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+
+  .data-table thead th {
+    text-align: left;
+    padding: 12px var(--s-4);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    border-bottom: none;
+    box-shadow: inset 0 -1px 0 var(--border);
+    background: var(--bg);
+    background-clip: padding-box;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .data-table tbody tr {
+    cursor: pointer;
+    transition: background 0.1s ease;
+  }
+
+  .data-table tbody tr:hover {
+    background: var(--surface-hover);
+  }
+
+  .data-table tbody tr.expanded {
+    background: var(--surface);
+  }
+
+  .data-table tbody tr.expanded td {
+    border-bottom: none;
+  }
+
+  .data-table td {
+    padding: 15px var(--s-4);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .agent-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: normal;
+  }
+
+  .agent-meta, .step-meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .step-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-variant-numeric: normal;
+  }
+
+  /* ═══════════════════════ STATUS ═══════════════════════ */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .status .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+
+  .status-running { color: var(--accent-text); }
+  .status-running .dot { background: var(--accent); }
+
+  .status-waiting { color: var(--accent-text); }
+  .status-waiting .dot { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+
+  .status-failed { color: var(--danger); }
+  .status-failed .dot { background: var(--danger); }
+
+  .status-done { color: var(--success); }
+  .status-done .dot { background: var(--success); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ═══════════════════════ STEP TRACE ═══════════════════════ */
+  .step-trace {
+    padding: 0 var(--s-4) var(--s-4);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .step-trace-header {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    padding: var(--s-2) 0 var(--s-3);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .step-list { position: relative; }
+
+  .step-list::before {
+    content: '';
+    position: absolute;
+    left: 5px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: var(--border-light);
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 0;
+    position: relative;
+  }
+
+  .step-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid var(--border-light);
+    background: var(--surface);
+    flex-shrink: 0;
+    margin-top: 1px;
+    position: relative; z-index: 1;
+  }
+
+  .step-item.completed .step-dot { border-color: var(--accent); background: var(--accent); }
+  .step-item.active .step-dot { border-color: var(--accent); background: var(--bg); box-shadow: inset 0 0 0 2px var(--accent); }
+  .step-item.pending .step-dot { border-color: var(--border-light); background: var(--surface); }
+
+  .step-content { flex: 1; min-width: 0; }
+
+  .step-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .step-duration {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ═══════════════════════ RIGHT PANEL ═══════════════════════ */
+  .panel-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-3);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+
+  .panel-title .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .panel-title .dot.pulse { animation: pulse 2s ease-in-out infinite; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--s-5);
+    margin-bottom: var(--s-5);
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--s-4);
+  }
+
+  .card-meta {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-text);
+    margin-bottom: var(--s-2);
+  }
+
+  .diff-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: var(--s-4);
+  }
+
+  .diff-header {
+    display: flex; align-items: center;
+    padding: var(--s-2) var(--s-3);
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+  }
+
+  .diff-filename { margin-left: auto; color: var(--text-tertiary); }
+
+  .diff-content {
+    padding: var(--s-2) 0;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-height: 160px;
+    overflow-y: auto;
+  }
+
+  .diff-line {
+    display: flex; gap: 10px;
+    padding: 2px var(--s-3);
+    font-family: var(--font);
+  }
+
+  .diff-line-num {
+    color: var(--text-tertiary);
+    min-width: 22px; text-align: right;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+  }
+
+  .diff-text { flex: 1; }
+  .diff-plus  { color: var(--success); }
+  .diff-minus { color: var(--danger); }
+  .diff-ctx   { color: var(--text-tertiary); }
+
+  .btn-row {
+    display: flex; gap: var(--s-2);
+    margin-bottom: var(--s-3);
+  }
+
+  .btn {
+    flex: 1; height: 32px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.1s ease;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); }
+
+  .btn-secondary {
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+    border-color: var(--border);
+  }
+
+  .btn-secondary:hover {
+    color: var(--text-primary);
+    border-color: var(--border-light);
+  }
+
+  .text-link {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .text-link:hover { color: var(--text-secondary); }
+
+  /* ═══════════════════════ MINI LIST ═══════════════════════ */
+  .mini-list { display: flex; flex-direction: column; }
+
+  .mini-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mini-row:last-child { border-bottom: none; }
+
+  .mini-label { color: var(--text-secondary); }
+  .mini-value { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 500; }
+
+  /* ═══════════════════════ QUEUE ═══════════════════════ */
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .queue-item:last-child { border-bottom: none; }
+
+  .queue-num {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .queue-info { flex: 1; min-width: 0; }
+  .queue-name { color: var(--text-primary); font-weight: 500; }
+  .queue-meta { color: var(--text-tertiary); font-size: 11px; }
+
+  /* ═══════════════════════ EVENTS ═══════════════════════ */
+  .event-list { display: flex; flex-direction: column; }
+
+  .event-item {
+    display: flex;
+    gap: var(--s-3);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .event-item:last-child { border-bottom: none; }
+
+  .event-time {
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    min-width: 40px;
+    padding-top: 1px;
+  }
+
+  .event-content { flex: 1; }
+  .event-title { color: var(--text-secondary); line-height: 1.45; }
+  .event-title strong { color: var(--text-primary); font-weight: 500; }
+
+  .event-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+
+  .event-tag.info { background: rgba(125,162,232,0.12); color: var(--info); }
+  .event-tag.warn { background: rgba(232,192,74,0.12); color: var(--warning); }
+  .event-tag.error { background: rgba(242,109,109,0.12); color: var(--danger); }
+  .event-tag.success { background: rgba(126,212,145,0.12); color: var(--success); }
+
+  /* ═══════════════════════ LOG STREAM ═══════════════════════ */
+  .log-stream {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: var(--s-2) var(--s-4);
+    font-size: 12px;
+    line-height: 1.7;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 12px;
+    font-family: var(--font);
+    padding: 8px 6px;
+    margin: 0 -6px;
+    border-bottom: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s ease;
+  }
+
+  .log-entry:hover { background: var(--surface); }
+
+  .log-entry:last-child { border-bottom: none; }
+
+  .log-ts { color: var(--text-secondary); min-width: 68px; font-variant-numeric: tabular-nums; }
+
+  .log-level { min-width: 40px; font-weight: 600; font-size: 11px; }
+  .log-level.info { color: var(--info); }
+  .log-level.warn { color: var(--warning); }
+  .log-level.error { color: var(--danger); }
+  .log-level.debug { color: var(--text-secondary); }
+
+  .log-msg { color: var(--text-primary); flex: 1; }
+  .log-agent { color: var(--text-secondary); margin-left: 8px; font-size: 12px; font-weight: 500; }
+
+  /* ═══════════════════════ TOOL CARDS ═══════════════════════ */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-4);
+  }
+
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--s-5);
+    cursor: pointer;
+    transition: border-color 0.1s ease, transform 0.1s ease;
+  }
+
+  .tool-card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+  }
+
+  .tool-card.selected {
+    border-color: var(--accent);
+  }
+
+  .tool-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--s-2);
+  }
+
+  .tool-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .tool-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .tool-badge.active { background: var(--success-muted); color: var(--success); }
+  .tool-badge.beta { background: var(--accent-muted); color: var(--accent-text); }
+
+  .tool-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--s-3);
+  }
+
+  .tool-meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ═══════════════════════ PAGINATION ═══════════════════════ */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    padding-top: var(--s-4);
+    font-size: 12px;
+  }
+
+  .page-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 12px;
+    transition: all 0.1s ease;
+  }
+
+  .page-btn:hover { color: var(--text-secondary); border-color: var(--border); }
+  .page-btn.active { color: var(--text-primary); background: var(--surface); border-color: var(--border); }
+
+  .page-info { color: var(--text-tertiary); margin-right: var(--s-2); font-size: 11px; }
+
+  /* ═══════════════════════ APPROVAL LIST ═══════════════════════ */
+  .approval-list { display: flex; flex-direction: column; gap: var(--s-3); }
+
+  .approval-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--s-4) var(--s-5);
+    cursor: pointer;
+    transition: border-color 0.1s ease;
+  }
+
+  .approval-item:hover { border-color: var(--border-light); }
+  .approval-item.selected { border-color: var(--accent); }
+
+  .approval-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+
+  .approval-agent {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .approval-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .approval-desc {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  /* ═══════════════════════ SECTION TITLE ═══════════════════════ */
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-2);
+  }
+
+  /* ═══════════════════════ RUNS: FULL TABLE ═══════════════════════ */
+  #page-runs .data-table tbody tr { cursor: pointer; transition: background 0.1s ease; }
+  #page-runs .data-table tbody tr:hover td { background: var(--surface); }
+  #page-runs .data-table tbody tr.selected td { background: var(--surface); border-bottom-color: var(--accent); }
+
+  .runs-loaded {
+    padding-top: var(--s-4);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  /* ═══════════════════════ SETTINGS ═══════════════════════ */
+  .settings-list { display: flex; flex-direction: column; gap: var(--s-3); max-width: 560px; }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--s-4) var(--s-5);
+  }
+
+  .setting-name { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .setting-desc { font-size: 12px; color: var(--text-tertiary); }
+
+  .toggle {
+    width: 36px; height: 20px;
+    border-radius: 10px;
+    background: var(--border);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .toggle.on { background: var(--accent); }
+  .toggle.on::after { transform: translateX(16px); background: var(--on-accent); }
+
+  /* ═══════════════════════ TOAST ═══════════════════════ */
+  #toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface-raised);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 12px;
+    color: var(--text-primary);
+    z-index: 1000;
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ═══════════════════════ UTILITIES ═══════════════════════ */
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
+  @media (max-width: 1200px) {
+    .main-sidebar { display: none; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .metrics { grid-template-columns: 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════════════════ TOPBAR ═══════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="#fleet" class="product-mark">
+        <span class="product-mark-icon">N</span><span>NALVO</span>
+      </a>
+      <div class="env-badge">
+        <span class="env-dot"></span>
+        <span>Production</span>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center; flex:1;">
+      <input class="topbar-search" type="text" placeholder="Search workers, executions, connections…">
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-link">Docs</span>
+      <span class="topbar-link">Support</span>
+      <div class="avatar">JD</div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ BODY ═══════════════════════ -->
+  <div class="body">
+
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+      <div class="sidebar-head">
+        <div class="nav-label">Platform</div>
+        <div class="panel-toggle" id="toggle-sidebar" role="button" tabindex="0" aria-label="Collapse navigation panel" title="Collapse panel">
+          <i data-lucide="panel-left" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="nav-section">
+        <a href="#fleet" class="nav-item active" data-page="fleet">
+          <span class="icon"><i data-lucide="activity" aria-hidden="true"></i></span> Live map
+        </a>
+        <a href="#runs" class="nav-item" data-page="runs">
+          <span class="icon"><i data-lucide="route" aria-hidden="true"></i></span> Executions
+          <span class="nav-badge">12</span>
+        </a>
+        <a href="#approvals" class="nav-item" data-page="approvals">
+          <span class="icon"><i data-lucide="circle-check" aria-hidden="true"></i></span> Checkpoints
+          <span class="nav-badge">3</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Operations</div>
+        <a href="#tools" class="nav-item" data-page="tools">
+          <span class="icon"><i data-lucide="blocks" aria-hidden="true"></i></span> Connections
+        </a>
+        <a href="#logs" class="nav-item" data-page="logs">
+          <span class="icon"><i data-lucide="scroll-text" aria-hidden="true"></i></span> Events
+        </a>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div class="nav-section">
+        <div class="nav-label">System</div>
+        <a href="#settings" class="nav-item" data-page="settings">
+          <span class="icon"><i data-lucide="settings" aria-hidden="true"></i></span> Settings
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="nav-label">System Health</div>
+        <div class="health-row">
+          <span class="health-label">CPU</span>
+          <span class="health-value">34%</span>
+        </div>
+        <div class="health-bar"><div class="health-bar-fill" style="width:34%; background:var(--success);"></div></div>
+        <div class="health-row">
+          <span class="health-label">Memory</span>
+          <span class="health-value">62%</span>
+        </div>
+        <div class="health-bar"><div class="health-bar-fill" style="width:62%; background:var(--accent);"></div></div>
+        <div class="health-row">
+          <span class="health-label">API/min</span>
+          <span class="health-value">1,247</span>
+        </div>
+        <div class="health-bar"><div class="health-bar-fill" style="width:45%; background:var(--info);"></div></div>
+      </div>
+    </nav>
+
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <!-- ═══════════════════════ MAIN ═══════════════════════ -->
+    <main class="main">
+
+      <!-- ━━ Floating bars — stand in for a panel while it is collapsed ━━ -->
+      <div class="float-bar left" role="toolbar" aria-label="Navigation">
+        <a href="#fleet"     class="bar-item active" data-page="fleet"     title="Live map"><i data-lucide="activity" aria-hidden="true"></i></a>
+        <a href="#runs"      class="bar-item"        data-page="runs"      title="Executions"><i data-lucide="route" aria-hidden="true"></i></a>
+        <a href="#approvals" class="bar-item"        data-page="approvals" title="Checkpoints"><i data-lucide="circle-check" aria-hidden="true"></i></a>
+        <a href="#tools"     class="bar-item"        data-page="tools"     title="Connections"><i data-lucide="blocks" aria-hidden="true"></i></a>
+        <a href="#logs"      class="bar-item"        data-page="logs"      title="Events"><i data-lucide="scroll-text" aria-hidden="true"></i></a>
+        <span class="bar-sep"></span>
+        <div class="bar-item" id="restore-sidebar" role="button" tabindex="0" aria-label="Show navigation panel" title="Expand panel">
+          <i data-lucide="panel-left" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <div class="float-bar right" role="toolbar" aria-label="Context panel">
+        <div class="bar-item" id="restore-panel" role="button" tabindex="0" aria-label="Show context panel" title="Expand panel">
+          <i data-lucide="panel-right" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <!-- ━━ Content ━━ -->
+      <div class="main-content">
+
+        <!-- ═══════ PAGE: FLEET ═══════ -->
+        <div id="page-fleet" class="page active">
+
+          <!-- Metrics -->
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-label">Live executions</div>
+              <div class="metric-value">47</div>
+              <div class="metric-sparkline">
+                <svg viewBox="0 0 200 48" preserveAspectRatio="none">
+                  <polyline data-trend="up" points=""/>
+                </svg>
+              </div>
+              <div class="metric-delta up">+12% vs last hour</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Success Rate</div>
+              <div class="metric-value">94.2%</div>
+              <div class="metric-sparkline">
+                <svg viewBox="0 0 200 48" preserveAspectRatio="none">
+                  <polyline data-trend="flat-high" points=""/>
+                </svg>
+              </div>
+              <div class="metric-delta up">+2.1% vs last week</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Avg Cost / Run</div>
+              <div class="metric-value">$0.42</div>
+              <div class="metric-sparkline">
+                <svg viewBox="0 0 200 48" preserveAspectRatio="none">
+                  <polyline data-trend="down" points=""/>
+                </svg>
+              </div>
+              <div class="metric-delta down">-8% vs yesterday</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Queue Depth</div>
+              <div class="metric-value">12</div>
+              <div class="metric-sparkline">
+                <svg viewBox="0 0 200 48" preserveAspectRatio="none">
+                  <polyline data-trend="spiky-down" points=""/>
+                </svg>
+              </div>
+              <div class="metric-delta down">-3 vs last hour</div>
+            </div>
+          </div>
+
+          <!-- Filter -->
+          <div class="filter-bar">
+            <button class="filter-tab active">All</button>
+            <button class="filter-tab">Running</button>
+            <button class="filter-tab">Waiting</button>
+            <button class="filter-tab">Failed</button>
+            <button class="filter-tab">Done</button>
+            <input class="filter-search" placeholder="Filter by agent name…">
+          </div>
+
+          <!-- Table -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Trigger</th>
+                <th>Current Step</th>
+                <th>Elapsed</th>
+                <th>Cost</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">contract-renewal-bot</div>
+                  <div class="agent-meta">Execution #8291 · v2.4.1</div>
+                </td>
+                <td>webhook</td>
+                <td>
+                  <div class="step-name">awaiting_checkpoint</div>
+                  <div class="step-meta">decision_boundary</div>
+                </td>
+                <td class="tnum">04:32:18</td>
+                <td class="tnum">$1.24</td>
+                <td><span class="status status-waiting"><span class="dot"></span>Waiting</span></td>
+              </tr>
+
+              <!-- Expandable row -->
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">invoice-parser-v2</div>
+                  <div class="agent-meta">Execution #8290 · v1.8.3</div>
+                </td>
+                <td>schedule 09:00 UTC</td>
+                <td>
+                  <div class="step-name">generate_report</div>
+                  <div class="step-meta">pdf_exporter</div>
+                </td>
+                <td class="tnum">00:14:07</td>
+                <td class="tnum">$0.31</td>
+                <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+              </tr>
+              <tr class="trace-row" style="display:none;">
+                <td colspan="6" style="padding:0;">
+                  <div class="step-trace">
+                    <div class="step-trace-header">
+                      <span>Step Trace</span>
+                      <span class="tnum" style="color:var(--text-tertiary);">3 steps · 00:14:07 total</span>
+                    </div>
+                    <div class="step-list">
+                      <div class="step-item completed">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                          <div class="step-title">extract_entities</div>
+                          <div class="step-duration">2.4s · 847 tokens</div>
+                        </div>
+                      </div>
+                      <div class="step-item completed">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                          <div class="step-title">validate_schema</div>
+                          <div class="step-duration">0.8s · 124 tokens</div>
+                        </div>
+                      </div>
+                      <div class="step-item active">
+                        <div class="step-dot"></div>
+                        <div class="step-content">
+                          <div class="step-title">generate_report</div>
+                          <div class="step-duration">6.7s · 4,320 tokens</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">onboarding-agent</div>
+                  <div class="agent-meta">Execution #8289 · v3.1.0</div>
+                </td>
+                <td>api call</td>
+                <td>
+                  <div class="step-name">create_user_record</div>
+                  <div class="step-meta">salesforce_api</div>
+                </td>
+                <td class="tnum">00:02:14</td>
+                <td class="tnum">$0.08</td>
+                <td><span class="status status-failed"><span class="dot"></span>Failed</span></td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">compliance-checker</div>
+                  <div class="agent-meta">Execution #8288 · v2.0.4</div>
+                </td>
+                <td>file upload</td>
+                <td>
+                  <div class="step-name">archive_results</div>
+                  <div class="step-meta">s3_upload</div>
+                </td>
+                <td class="tnum">00:08:55</td>
+                <td class="tnum">$0.67</td>
+                <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">data-sync-pipeline</div>
+                  <div class="agent-meta">Execution #8287 · v4.2.1</div>
+                </td>
+                <td>event</td>
+                <td>
+                  <div class="step-name">transform_records</div>
+                  <div class="step-meta">etl_processor</div>
+                </td>
+                <td class="tnum">00:31:42</td>
+                <td class="tnum">$2.18</td>
+                <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">security-audit-bot</div>
+                  <div class="agent-meta">Execution #8286 · v1.5.2</div>
+                </td>
+                <td>schedule 02:00 UTC</td>
+                <td>
+                  <div class="step-name">cleanup_temp</div>
+                  <div class="step-meta">system_cleanup</div>
+                </td>
+                <td class="tnum">00:45:03</td>
+                <td class="tnum">$0.94</td>
+                <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">pricing-optimizer</div>
+                  <div class="agent-meta">Execution #8285 · v2.7.0</div>
+                </td>
+                <td>webhook</td>
+                <td>
+                  <div class="step-name">fetch_competitor_data</div>
+                  <div class="step-meta">http_client</div>
+                </td>
+                <td class="tnum">00:03:41</td>
+                <td class="tnum">$0.15</td>
+                <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+              </tr>
+
+              <tr onclick="toggleRow(this)">
+                <td>
+                  <div class="agent-name">email-classifier</div>
+                  <div class="agent-meta">Execution #8284 · v1.2.3</div>
+                </td>
+                <td>schedule 08:00 UTC</td>
+                <td>
+                  <div class="step-name">summarize_thread</div>
+                  <div class="step-meta">llm_summarize</div>
+                </td>
+                <td class="tnum">00:01:08</td>
+                <td class="tnum">$0.04</td>
+                <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Events -->
+          <div style="margin-top: 32px;">
+            <div class="section-title">Recent Events</div>
+            <div class="event-list">
+              <div class="event-item">
+                <span class="event-time">09:42</span>
+                <div class="event-content">
+                  <div class="event-title"><strong>compliance-checker</strong> completed run #8288 and archived 47 files</div>
+                  <span class="event-tag success">Completed</span>
+                </div>
+              </div>
+              <div class="event-item">
+                <span class="event-time">09:38</span>
+                <div class="event-content">
+                  <div class="event-title"><strong>onboarding-agent</strong> failed on step <strong>create_user_record</strong> — Salesforce timeout</div>
+                  <span class="event-tag error">Failed</span>
+                </div>
+              </div>
+              <div class="event-item">
+                <span class="event-time">09:31</span>
+                <div class="event-content">
+                  <div class="event-title"><strong>contract-renewal-bot</strong> submitted approval for Acme Corp</div>
+                  <span class="event-tag warn">Approval</span>
+                </div>
+              </div>
+              <div class="event-item">
+                <span class="event-time">09:15</span>
+                <div class="event-content">
+                  <div class="event-title">Auto-scaling triggered — 2 workers added</div>
+                  <span class="event-tag info">System</span>
+                </div>
+              </div>
+              <div class="event-item">
+                <span class="event-time">09:00</span>
+                <div class="event-content">
+                  <div class="event-title"><strong>invoice-parser-v2</strong> started scheduled run #8290</div>
+                  <span class="event-tag info">Started</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ PAGE: RUNS ═══════ -->
+        <div id="page-runs" class="page">
+          <div class="page-header">
+            <div class="page-title">Execution history</div>
+            <div class="page-subtitle">2,847 total runs · Last 30 days · fully loaded, no pagination</div>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-tab active">All</button>
+            <button class="filter-tab">Today</button>
+            <button class="filter-tab">Yesterday</button>
+            <button class="filter-tab">Last 7d</button>
+            <input class="filter-search" placeholder="Search runs…">
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Run ID</th>
+                <th>Agent</th>
+                <th>Trigger</th>
+                <th>Started</th>
+                <th>Duration</th>
+                <th>Tokens</th>
+                <th>Cost</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="runs-tbody">
+              <tr data-day="0"><td class="tnum">#8291</td><td><div class="agent-name">contract-renewal-bot</div></td><td>webhook</td><td class="tnum">Aug 3, 09:31</td><td class="tnum">04:32:18</td><td class="tnum">12,847</td><td class="tnum">$1.24</td><td><span class="status status-waiting"><span class="dot"></span>Waiting</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8290</td><td><div class="agent-name">invoice-parser-v2</div></td><td>schedule</td><td class="tnum">Aug 3, 09:00</td><td class="tnum">00:14:07</td><td class="tnum">5,291</td><td class="tnum">$0.31</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8289</td><td><div class="agent-name">onboarding-agent</div></td><td>api call</td><td class="tnum">Aug 3, 08:45</td><td class="tnum">00:02:14</td><td class="tnum">312</td><td class="tnum">$0.08</td><td><span class="status status-failed"><span class="dot"></span>Failed</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8288</td><td><div class="agent-name">compliance-checker</div></td><td>file upload</td><td class="tnum">Aug 3, 08:30</td><td class="tnum">00:08:55</td><td class="tnum">8,104</td><td class="tnum">$0.67</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8287</td><td><div class="agent-name">data-sync-pipeline</div></td><td>event</td><td class="tnum">Aug 3, 08:15</td><td class="tnum">00:31:42</td><td class="tnum">24,180</td><td class="tnum">$2.18</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8286</td><td><div class="agent-name">security-audit-bot</div></td><td>schedule</td><td class="tnum">Aug 3, 02:00</td><td class="tnum">00:45:03</td><td class="tnum">10,442</td><td class="tnum">$0.94</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8285</td><td><div class="agent-name">pricing-optimizer</div></td><td>webhook</td><td class="tnum">Aug 3, 01:45</td><td class="tnum">00:03:41</td><td class="tnum">1,204</td><td class="tnum">$0.15</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+              <tr data-day="0"><td class="tnum">#8284</td><td><div class="agent-name">email-classifier</div></td><td>schedule</td><td class="tnum">Aug 3, 01:00</td><td class="tnum">00:01:08</td><td class="tnum">384</td><td class="tnum">$0.04</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr data-day="1"><td class="tnum">#8283</td><td><div class="agent-name">report-generator</div></td><td>manual</td><td class="tnum">Aug 2, 23:15</td><td class="tnum">00:22:17</td><td class="tnum">15,600</td><td class="tnum">$1.42</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr data-day="1"><td class="tnum">#8282</td><td><div class="agent-name">data-sync-pipeline</div></td><td>event</td><td class="tnum">Aug 2, 22:30</td><td class="tnum">00:28:55</td><td class="tnum">21,040</td><td class="tnum">$1.89</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+            </tbody>
+          </table>
+
+          <div class="runs-loaded" id="runs-loaded">Loading full history…</div>
+        </div>
+
+        <!-- ═══════ PAGE: SETTINGS ═══════ -->
+        <div id="page-settings" class="page">
+          <div class="page-header">
+            <div class="page-title">Settings</div>
+            <div class="page-subtitle">Workspace preferences · saved locally</div>
+          </div>
+
+          <div class="settings-list">
+            <div class="setting-row">
+              <div><div class="setting-name">Email notifications</div><div class="setting-desc">Send digest of failed runs every morning</div></div>
+              <button class="toggle on" onclick="toggleSetting(this, 'Email notifications')"></button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-name">Auto-retry failed steps</div><div class="setting-desc">Retry up to 3 times with exponential backoff</div></div>
+              <button class="toggle on" onclick="toggleSetting(this, 'Auto-retry')"></button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-name">Slack alerts</div><div class="setting-desc">Post critical errors to #alerts channel</div></div>
+              <button class="toggle" onclick="toggleSetting(this, 'Slack alerts')"></button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-name">Cost limit guard</div><div class="setting-desc">Pause runs when daily spend exceeds $50</div></div>
+              <button class="toggle on" onclick="toggleSetting(this, 'Cost limit guard')"></button>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-name">Debug logging</div><div class="setting-desc">Verbose step traces for all agents</div></div>
+              <button class="toggle" onclick="toggleSetting(this, 'Debug logging')"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ PAGE: APPROVALS ═══════ -->
+        <div id="page-approvals" class="page">
+          <div class="page-header">
+            <div class="page-title">Decision checkpoints</div>
+            <div class="page-subtitle">3 pending · 47 approved · 12 rejected this week</div>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-tab active">Pending</button>
+            <button class="filter-tab">Approved</button>
+            <button class="filter-tab">Rejected</button>
+            <button class="filter-tab">All</button>
+            <input class="filter-search" placeholder="Search approvals…">
+          </div>
+
+          <div class="approval-list">
+            <div class="approval-item selected" data-run="8291">
+              <div class="approval-top">
+                <span class="approval-agent">contract-renewal-bot · Execution #8291</span>
+                <span class="approval-time">32 min ago</span>
+              </div>
+              <div class="approval-desc">Review contract amendment for Acme Corp — extends MSA through Q1 2025</div>
+            </div>
+            <div class="approval-item" data-run="8279">
+              <div class="approval-top">
+                <span class="approval-agent">pricing-optimizer · Execution #8279</span>
+                <span class="approval-time">1h 14m ago</span>
+              </div>
+              <div class="approval-desc">Apply dynamic price adjustment to 1,240 SKUs — estimated +$18K/mo</div>
+            </div>
+            <div class="approval-item" data-run="8275">
+              <div class="approval-top">
+                <span class="approval-agent">data-sync-pipeline · Execution #8275</span>
+                <span class="approval-time">2h 48m ago</span>
+              </div>
+              <div class="approval-desc">Execute schema migration v14 → v15 — 4 tables, 2hr window</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ PAGE: TOOLS ═══════ -->
+        <div id="page-tools" class="page">
+          <div class="page-header">
+            <div class="page-title">Tool Catalog</div>
+            <div class="page-subtitle">24 tools registered · 18 active · 6 in beta</div>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-tab active">All</button>
+            <button class="filter-tab">Active</button>
+            <button class="filter-tab">Beta</button>
+            <button class="filter-tab">Deprecated</button>
+            <input class="filter-search" placeholder="Search tools…">
+          </div>
+
+          <div class="tool-grid">
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">pdf_exporter</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Generate PDF reports from structured data with configurable templates.</div>
+              <div class="tool-meta">Last used: 14m ago · 1,204 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">salesforce_api</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Read/write Salesforce CRM — leads, contacts, opportunities.</div>
+              <div class="tool-meta">Last used: 2m ago · 847 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">etl_processor</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Transform and load records between warehouses with validation.</div>
+              <div class="tool-meta">Last used: 31m ago · 412 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">decision_boundary</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Submit ops for human approval with diff preview and audit trail.</div>
+              <div class="tool-meta">Last used: 32m ago · 56 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">llm_summarize</span>
+                <span class="tool-badge beta">Beta</span>
+              </div>
+              <div class="tool-desc">Summarize text using LLM with token budget controls.</div>
+              <div class="tool-meta">Last used: 1h ago · 203 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">http_client</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">HTTP client with retry, rate limiting, and response caching.</div>
+              <div class="tool-meta">Last used: 3m ago · 2,104 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">s3_upload</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Upload to S3 with auto content-type and presigned URLs.</div>
+              <div class="tool-meta">Last used: 8m ago · 312 calls today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">system_cleanup</span>
+                <span class="tool-badge active">Active</span>
+              </div>
+              <div class="tool-desc">Remove temp files and prune old artifacts by retention policy.</div>
+              <div class="tool-meta">Last used: 7h ago · 1 call today</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-header">
+                <span class="tool-name">slack_notify</span>
+                <span class="tool-badge beta">Beta</span>
+              </div>
+              <div class="tool-desc">Send formatted notifications to Slack with thread support.</div>
+              <div class="tool-meta">Last used: 45m ago · 89 calls today</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ PAGE: LOGS ═══════ -->
+        <div id="page-logs" class="page">
+          <div class="page-header">
+            <div class="page-title">Events</div>
+            <div class="page-subtitle">Live stream · 1,247 entries in last hour</div>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-tab active">All</button>
+            <button class="filter-tab">Info</button>
+            <button class="filter-tab">Warn</button>
+            <button class="filter-tab">Error</button>
+            <button class="filter-tab">Debug</button>
+            <input class="filter-search" placeholder="Filter logs…">
+          </div>
+
+          <div class="log-stream">
+            <div class="log-entry"><span class="log-ts">09:42:18</span><span class="log-level info">INFO</span><span class="log-msg">Execution #8288 completed — archived 47 files</span><span class="log-agent">compliance-checker</span></div>
+            <div class="log-entry"><span class="log-ts">09:41:55</span><span class="log-level debug">DEBUG</span><span class="log-msg">S3 upload batch complete — 12.4 MB</span><span class="log-agent">s3_upload</span></div>
+            <div class="log-entry"><span class="log-ts">09:41:03</span><span class="log-level info">INFO</span><span class="log-msg">Schema validation passed — 12/12 fields</span><span class="log-agent">invoice-parser-v2</span></div>
+            <div class="log-entry"><span class="log-ts">09:40:44</span><span class="log-level warn">WARN</span><span class="log-msg">Rate limit approaching — 892/1000 req/min</span><span class="log-agent">http_client</span></div>
+            <div class="log-entry"><span class="log-ts">09:38:12</span><span class="log-level error">ERROR</span><span class="log-msg">Salesforce API timeout after 30s</span><span class="log-agent">onboarding-agent</span></div>
+            <div class="log-entry"><span class="log-ts">09:38:09</span><span class="log-level debug">DEBUG</span><span class="log-msg">Creating user record — payload: 2.4 KB</span><span class="log-agent">onboarding-agent</span></div>
+            <div class="log-entry"><span class="log-ts">09:35:22</span><span class="log-level info">INFO</span><span class="log-msg">Auto-scaling triggered — 6 → 8 workers</span><span class="log-agent">system</span></div>
+            <div class="log-entry"><span class="log-ts">09:34:01</span><span class="log-level info">INFO</span><span class="log-msg">Checkpoint opened — ID: chk_8291_001</span><span class="log-agent">decision_boundary</span></div>
+            <div class="log-entry"><span class="log-ts">09:31:47</span><span class="log-level warn">WARN</span><span class="log-msg">Queue depth exceeded threshold — 14 items</span><span class="log-agent">system</span></div>
+            <div class="log-entry"><span class="log-ts">09:31:15</span><span class="log-level info">INFO</span><span class="log-msg">Contract diff generated — 3 additions, 1 deletion</span><span class="log-agent">contract-renewal-bot</span></div>
+            <div class="log-entry"><span class="log-ts">09:30:00</span><span class="log-level info">INFO</span><span class="log-msg">Scheduled run started — cron: 0 9 * * *</span><span class="log-agent">invoice-parser-v2</span></div>
+            <div class="log-entry"><span class="log-ts">09:29:48</span><span class="log-level debug">DEBUG</span><span class="log-msg">Connected to Redis pool — 8 connections</span><span class="log-agent">system</span></div>
+            <div class="log-entry"><span class="log-ts">09:28:33</span><span class="log-level info">INFO</span><span class="log-msg">Database backup completed — 4.2 GB</span><span class="log-agent">system</span></div>
+            <div class="log-entry"><span class="log-ts">09:27:11</span><span class="log-level warn">WARN</span><span class="log-msg">Token usage spike — 4,320 tokens in single call</span><span class="log-agent">invoice-parser-v2</span></div>
+            <div class="log-entry"><span class="log-ts">09:25:00</span><span class="log-level info">INFO</span><span class="log-msg">Security audit completed — 0 critical findings</span><span class="log-agent">security-audit-bot</span></div>
+            <div class="log-entry"><span class="log-ts">09:24:38</span><span class="log-level error">ERROR</span><span class="log-msg">ETL failed — FK constraint on line 14,203</span><span class="log-agent">data-sync-pipeline</span></div>
+            <div class="log-entry"><span class="log-ts">09:22:15</span><span class="log-level info">INFO</span><span class="log-msg">Competitor data fetched — 6 sources, 1,240 SKUs</span><span class="log-agent">pricing-optimizer</span></div>
+            <div class="log-entry"><span class="log-ts">09:20:00</span><span class="log-level info">INFO</span><span class="log-msg">Email batch complete — 847 threads</span><span class="log-agent">email-classifier</span></div>
+            <div class="log-entry"><span class="log-ts">09:18:42</span><span class="log-level debug">DEBUG</span><span class="log-msg">Cache hit ratio: 94.2%</span><span class="log-agent">system</span></div>
+            <div class="log-entry"><span class="log-ts">09:15:33</span><span class="log-level info">INFO</span><span class="log-msg">New worker registered — worker-09</span><span class="log-agent">system</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <!-- ━━ Right Panel ━━ -->
+      <div class="main-sidebar">
+
+        <div class="panel-head">
+          <div class="panel-toggle" id="toggle-panel" role="button" tabindex="0" aria-label="Collapse context panel" title="Collapse panel">
+            <i data-lucide="panel-right" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <!-- RIGHT: FLEET -->
+        <div id="right-fleet" class="page active">
+          <div class="panel-title"><span class="dot pulse"></span>Pending Approval</div>
+          <div class="card">
+            <div class="card-meta">contract-renewal-bot · Execution #8291</div>
+            <div class="card-title">Review contract amendment</div>
+            <div class="card-subtitle">MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.</div>
+            <div class="diff-block">
+              <div class="diff-header">Diff <span class="diff-filename">MSA-2023-4402-A1.md</span></div>
+              <div class="diff-content">
+                <div class="diff-line"><span class="diff-line-num">14</span><span class="diff-text diff-ctx">## Term</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-minus">15</span><span class="diff-text diff-minus">- Effective through Sep 30, 2024</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-plus">15</span><span class="diff-text diff-plus">+ Effective through Mar 31, 2025</span></div>
+                <div class="diff-line"><span class="diff-line-num">28</span><span class="diff-text diff-ctx">## Service Level Penalties</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-minus">29</span><span class="diff-text diff-minus">- Monthly uptime below 99.9%: 2% credit</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-plus">29</span><span class="diff-text diff-plus">+ Monthly uptime below 99.9%: 1.5% credit</span></div>
+              </div>
+            </div>
+            <div class="btn-row" id="fleet-appr-buttons">
+              <button class="btn btn-primary" onclick="resolveFleetApproval('approved')">Approve</button>
+              <button class="btn btn-secondary" onclick="resolveFleetApproval('rejected')">Reject</button>
+            </div>
+          <div id="fleet-appr-result" style="display:none; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:var(--s-3);"></div>
+            <div class="text-link">Rollback last run</div>
+          </div>
+
+          <div class="panel-title">Queue</div>
+          <div class="card" style="padding:var(--s-3) var(--s-4);">
+            <div class="mini-list">
+              <div class="mini-row"><span class="mini-label">Pending</span><span class="mini-value">12</span></div>
+              <div class="mini-row"><span class="mini-label">Avg wait</span><span class="mini-value">4m 18s</span></div>
+              <div class="mini-row"><span class="mini-label">Throughput</span><span class="mini-value">8.4 / min</span></div>
+              <div class="mini-row"><span class="mini-label">Workers</span><span class="mini-value">8 / 12</span></div>
+            </div>
+          </div>
+
+          <div class="panel-title">Waiting</div>
+          <div style="display:flex; flex-direction:column;">
+            <div class="queue-item">
+              <div class="queue-num">1</div>
+              <div class="queue-info"><div class="queue-name">contract-renewal-bot</div><div class="queue-meta">Execution #8291 · 32m</div></div>
+              <span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span>
+            </div>
+            <div class="queue-item">
+              <div class="queue-num">2</div>
+              <div class="queue-info"><div class="queue-name">pricing-optimizer</div><div class="queue-meta">Execution #8279 · 1h 14m</div></div>
+              <span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span>
+            </div>
+            <div class="queue-item">
+              <div class="queue-num">3</div>
+              <div class="queue-info"><div class="queue-name">data-sync-pipeline</div><div class="queue-meta">Execution #8275 · 2h 48m</div></div>
+              <span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: RUNS -->
+        <div id="right-runs" class="page">
+          <div class="panel-title">Run Detail</div>
+          <div class="card">
+            <div class="card-meta" id="rund-meta">invoice-parser-v2 · Execution #8290</div>
+            <div class="card-title" id="rund-title">Scheduled invoice processing</div>
+            <div class="card-subtitle" id="rund-sub">Daily batch job processing vendor invoices and generating payment reports.</div>
+            <div class="mini-list" style="margin-top:8px;">
+              <div class="mini-row"><span class="mini-label">Status</span><span class="mini-value" id="rund-status" style="color:var(--accent-text);">Running</span></div>
+              <div class="mini-row"><span class="mini-label">Trigger</span><span class="mini-value" id="rund-trigger">schedule</span></div>
+              <div class="mini-row"><span class="mini-label">Started</span><span class="mini-value" id="rund-started">Aug 3, 09:00 UTC</span></div>
+              <div class="mini-row"><span class="mini-label">Duration</span><span class="mini-value" id="rund-duration">00:14:07</span></div>
+              <div class="mini-row"><span class="mini-label">Tokens</span><span class="mini-value" id="rund-tokens">5,291</span></div>
+              <div class="mini-row"><span class="mini-label">Cost</span><span class="mini-value" id="rund-cost">$0.31</span></div>
+              <div class="mini-row"><span class="mini-label">Version</span><span class="mini-value" id="rund-version">v1.8.3</span></div>
+            </div>
+          </div>
+
+          <div class="panel-title">Step Trace</div>
+          <div class="card" style="padding:var(--s-4) var(--s-4);">
+            <div class="step-list" style="position:relative;" id="rund-steps">
+              <div style="position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--border-light);"></div>
+              <div class="step-item completed">
+                <div class="step-dot"></div>
+                <div class="step-content">
+                  <div class="step-title">extract_entities</div>
+                  <div class="step-duration">2.4s · 847 tokens</div>
+                </div>
+              </div>
+              <div class="step-item completed">
+                <div class="step-dot"></div>
+                <div class="step-content">
+                  <div class="step-title">validate_schema</div>
+                  <div class="step-duration">0.8s · 124 tokens</div>
+                </div>
+              </div>
+              <div class="step-item active">
+                <div class="step-dot"></div>
+                <div class="step-content">
+                  <div class="step-title">generate_report</div>
+                  <div class="step-duration">6.7s · 4,320 tokens</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: APPROVALS -->
+        <div id="right-approvals" class="page">
+          <div class="panel-title"><span class="dot pulse"></span>Approval Detail</div>
+          <div class="card">
+            <div class="card-meta" id="appr-meta">contract-renewal-bot · Execution #8291</div>
+            <div class="card-title" id="appr-title">Review contract amendment</div>
+            <div class="card-subtitle" id="appr-subtitle">MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.</div>
+            <div class="diff-block" id="appr-diffblock">
+              <div class="diff-header">Diff <span class="diff-filename" id="appr-diffname">MSA-2023-4402-A1.md</span></div>
+              <div class="diff-content" id="appr-diff">
+                <div class="diff-line"><span class="diff-line-num">14</span><span class="diff-text diff-ctx">## Term</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-minus">15</span><span class="diff-text diff-minus">- Effective through Sep 30, 2024</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-plus">15</span><span class="diff-text diff-plus">+ Effective through Mar 31, 2025</span></div>
+                <div class="diff-line"><span class="diff-line-num">28</span><span class="diff-text diff-ctx">## Service Level Penalties</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-minus">29</span><span class="diff-text diff-minus">- Monthly uptime below 99.9%: 2% credit</span></div>
+                <div class="diff-line"><span class="diff-line-num diff-plus">29</span><span class="diff-text diff-plus">+ Monthly uptime below 99.9%: 1.5% credit</span></div>
+              </div>
+            </div>
+            <div class="btn-row" id="appr-buttons">
+              <button class="btn btn-primary" onclick="resolveApproval('approved')">Approve</button>
+              <button class="btn btn-secondary" onclick="resolveApproval('rejected')">Reject</button>
+            </div>
+          <div id="appr-result" style="display:none; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:var(--s-3);"></div>
+            <div class="text-link">Rollback last run</div>
+          </div>
+
+          <div class="panel-title">History</div>
+          <div class="card" style="padding:var(--s-4) var(--s-4);">
+            <div class="mini-list">
+              <div class="mini-row"><span class="mini-label">Requested</span><span class="mini-value" id="appr-requested">32 min ago</span></div>
+              <div class="mini-row"><span class="mini-label">By</span><span class="mini-value" id="appr-by">contract-renewal-bot</span></div>
+              <div class="mini-row"><span class="mini-label">Type</span><span class="mini-value" id="appr-type">Contract Amendment</span></div>
+              <div class="mini-row"><span class="mini-label">Risk</span><span class="mini-value" id="appr-risk" style="color:var(--success);">Low</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: TOOLS -->
+        <div id="right-tools" class="page">
+          <div class="panel-title">Tool Config</div>
+          <div class="card">
+            <div class="card-title" id="toolcfg-name">pdf_exporter</div>
+            <div class="card-subtitle" id="toolcfg-desc">Generate PDF reports from structured data with configurable templates.</div>
+            <div class="mini-list" style="margin-top:12px;">
+              <div class="mini-row"><span class="mini-label">Status</span><span class="mini-value" id="toolcfg-status" style="color:var(--success);">Active</span></div>
+              <div class="mini-row"><span class="mini-label">Version</span><span class="mini-value" id="toolcfg-version">v2.1.4</span></div>
+              <div class="mini-row"><span class="mini-label">Calls today</span><span class="mini-value" id="toolcfg-calls">1,204</span></div>
+              <div class="mini-row"><span class="mini-label">Avg latency</span><span class="mini-value" id="toolcfg-latency">1.2s</span></div>
+              <div class="mini-row"><span class="mini-label">Error rate</span><span class="mini-value" id="toolcfg-errors">0.04%</span></div>
+            </div>
+          </div>
+
+          <div class="panel-title">Parameters</div>
+          <div class="card" id="toolcfg-params" style="padding:var(--s-4) var(--s-4); font-size:12px; line-height:1.7; color:var(--text-secondary);">
+            <div style="margin-bottom:12px;">
+              <strong style="color:var(--text-primary);">template</strong> <span style="color:var(--text-tertiary); font-size:11px;">string</span>
+              <div style="margin-top:2px;">Report template name — must exist in /templates</div>
+            </div>
+            <div style="margin-bottom:12px;">
+              <strong style="color:var(--text-primary);">orientation</strong> <span style="color:var(--text-tertiary); font-size:11px;">enum</span>
+              <div style="margin-top:2px;">portrait, landscape — default: portrait</div>
+            </div>
+            <div>
+              <strong style="color:var(--text-primary);">header_image</strong> <span style="color:var(--text-tertiary); font-size:11px;">url</span>
+              <div style="margin-top:2px;">URL to header logo image (PNG/SVG)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: LOGS -->
+        <div id="right-logs" class="page">
+          <div class="panel-title">Log Detail</div>
+          <div class="card">
+            <div class="card-meta" id="logd-meta">Aug 3, 09:38:12 · onboarding-agent</div>
+            <div class="card-title" id="logd-title" style="color:var(--danger);">Salesforce API timeout</div>
+            <div class="card-subtitle" id="logd-subtitle">Request to create user record timed out after 30 seconds. Retry 1 of 3 scheduled.</div>
+            <div class="mini-list" style="margin-top:12px;">
+              <div class="mini-row"><span class="mini-label">Level</span><span class="mini-value" id="logd-level" style="color:var(--danger);">Error</span></div>
+              <div class="mini-row"><span class="mini-label">Run</span><span class="mini-value" id="logd-run">#8289</span></div>
+              <div class="mini-row"><span class="mini-label">Step</span><span class="mini-value" id="logd-step">create_user_record</span></div>
+              <div class="mini-row"><span class="mini-label">Tool</span><span class="mini-value" id="logd-tool">salesforce_api</span></div>
+            </div>
+          </div>
+
+          <div class="panel-title">Stack Trace</div>
+          <div class="card" style="padding:var(--s-3) var(--s-4); font-size:11px; line-height:1.7; color:var(--text-secondary);">
+            <div>TimeoutError: Request exceeded 30000ms</div>
+            <div style="color:var(--text-tertiary);">  at SalesforceClient.createUser (/tools/salesforce_api.js:142)</div>
+            <div style="color:var(--text-tertiary);">  at runStep (/engine/runner.js:89)</div>
+            <div style="color:var(--text-tertiary);">  at processTicksAndRejections (internal/process/task_queues.js:97)</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: SETTINGS -->
+        <div id="right-settings" class="page">
+          <div class="panel-title">Account</div>
+          <div class="card">
+            <div class="card-title">John Doe</div>
+            <div class="card-subtitle">Workspace admin · Acme Corp</div>
+            <div class="mini-list" style="margin-top:8px;">
+              <div class="mini-row"><span class="mini-label">Plan</span><span class="mini-value">Team</span></div>
+              <div class="mini-row"><span class="mini-label">Seats</span><span class="mini-value">8 / 10</span></div>
+              <div class="mini-row"><span class="mini-label">Region</span><span class="mini-value">us-east-1</span></div>
+            </div>
+          </div>
+
+          <div class="panel-title">Danger Zone</div>
+          <div class="card">
+            <div class="card-subtitle" style="margin-bottom:var(--s-3);">Export or purge workspace data. These actions cannot be undone.</div>
+            <div class="btn-row" style="margin-bottom:0;">
+              <button class="btn btn-secondary" onclick="showToast('Export started — archive will be emailed')">Export data</button>
+              <button class="btn btn-secondary" style="color:var(--danger);" onclick="showToast('Purge requires email confirmation')">Purge</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script>
+  function refreshIcons(root) {
+    if (window.lucide) window.lucide.createIcons({ root: root || document });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // ROUTER
+  // ════════════════════════════════════════════════════════════════
+  function route() {
+    const hash = window.location.hash.slice(1) || 'fleet';
+
+    // Nav highlight — sidebar and the collapsed-state floating bar
+    document.querySelectorAll('.nav-item, .float-bar .bar-item[data-page]').forEach(el => {
+      el.classList.toggle('active', el.dataset.page === hash);
+    });
+
+    // Content pages
+    document.querySelectorAll('.main-content .page').forEach(el => {
+      el.classList.toggle('active', el.id === 'page-' + hash);
+    });
+
+    // Right panels
+    document.querySelectorAll('.main-sidebar .page').forEach(el => {
+      el.classList.toggle('active', el.id === 'right-' + hash);
+    });
+  }
+
+  window.addEventListener('hashchange', route);
+  window.addEventListener('DOMContentLoaded', route);
+
+  // ════════════════════════════════════════════════════════════════
+  // EXPANDABLE ROWS
+  // ════════════════════════════════════════════════════════════════
+  function toggleRow(row) {
+    // Find the next sibling trace row
+    let next = row.nextElementSibling;
+    while (next && !next.classList.contains('trace-row')) {
+      next = next.nextElementSibling;
+    }
+    if (next && next.classList.contains('trace-row')) {
+      const isHidden = next.style.display === 'none';
+      next.style.display = isHidden ? 'table-row' : 'none';
+      row.classList.toggle('expanded', isHidden);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // TOOL CARDS → TOOL CONFIG PANEL
+  // ════════════════════════════════════════════════════════════════
+  const TOOLS = {
+    'pdf_exporter':      { desc: 'Generate PDF reports from structured data with configurable templates.', status: 'Active', version: 'v2.1.4', calls: '1,204', latency: '1.2s', errors: '0.04%',
+                           params: [['template','string','Report template name — must exist in /templates'],['orientation','enum','portrait, landscape — default: portrait'],['header_image','url','URL to header logo image (PNG/SVG)']] },
+    'salesforce_api':    { desc: 'Read/write Salesforce CRM — leads, contacts, opportunities.', status: 'Active', version: 'v3.0.1', calls: '847', latency: '640ms', errors: '0.31%',
+                           params: [['object','enum','lead, contact, opportunity, account'],['operation','enum','read, create, update, upsert'],['batch_size','int','Records per call — max 200']] },
+    'etl_processor':     { desc: 'Transform and load records between warehouses with validation.', status: 'Active', version: 'v1.9.2', calls: '412', latency: '3.8s', errors: '0.12%',
+                           params: [['source','string','Source warehouse connection string'],['mapping','json','Field mapping config'],['validate','bool','Run schema validation before load']] },
+    'decision_boundary':  { desc: 'Open human checkpoints with diff preview and evidence capture.', status: 'Active', version: 'v1.4.0', calls: '56', latency: '120ms', errors: '0.00%',
+                           params: [['diff','object','Change payload to review'],['assignee','string','Approver user or group'],['ttl','int','Seconds before auto-escalation']] },
+    'llm_summarize':     { desc: 'Summarize text using LLM with token budget controls.', status: 'Beta', version: 'v0.8.3', calls: '203', latency: '4.1s', errors: '1.02%',
+                           params: [['max_tokens','int','Output token budget — default 512'],['style','enum','brief, bullets, executive'],['model','string','Model identifier']] },
+    'http_client':       { desc: 'HTTP client with retry, rate limiting, and response caching.', status: 'Active', version: 'v4.2.0', calls: '2,104', latency: '310ms', errors: '0.08%',
+                           params: [['url','url','Request endpoint'],['retries','int','Max retry attempts — default 3'],['cache_ttl','int','Response cache seconds — 0 disables']] },
+    's3_upload':         { desc: 'Upload to S3 with auto content-type and presigned URLs.', status: 'Active', version: 'v2.6.1', calls: '312', latency: '890ms', errors: '0.02%',
+                           params: [['bucket','string','Target S3 bucket'],['path','string','Object key prefix'],['presign','bool','Return presigned URL']] },
+    'system_cleanup':    { desc: 'Remove temp files and prune old artifacts by retention policy.', status: 'Active', version: 'v1.1.0', calls: '1', latency: '12.4s', errors: '0.00%',
+                           params: [['retention_days','int','Keep artifacts newer than N days'],['dry_run','bool','Report without deleting']] },
+    'slack_notify':      { desc: 'Send formatted notifications to Slack with thread support.', status: 'Beta', version: 'v0.9.5', calls: '89', latency: '420ms', errors: '0.44%',
+                           params: [['channel','string','Target channel — #ops, #alerts'],['thread_ts','string','Parent message for threading'],['blocks','json','Block Kit payload override']] }
+  };
+
+  function selectTool(card) {
+    const name = card.querySelector('.tool-name').textContent.trim();
+    const t = TOOLS[name];
+    if (!t) return;
+
+    document.querySelectorAll('.tool-card').forEach(c => c.classList.toggle('selected', c === card));
+
+    document.getElementById('toolcfg-name').textContent = name;
+    document.getElementById('toolcfg-desc').textContent = t.desc;
+    const st = document.getElementById('toolcfg-status');
+    st.textContent = t.status;
+    st.style.color = t.status === 'Beta' ? 'var(--accent-text)' : 'var(--success)';
+    document.getElementById('toolcfg-version').textContent = t.version;
+    document.getElementById('toolcfg-calls').textContent = t.calls;
+    document.getElementById('toolcfg-latency').textContent = t.latency;
+    document.getElementById('toolcfg-errors').textContent = t.errors;
+
+    document.getElementById('toolcfg-params').innerHTML = t.params.map((p, i) => `
+      <div style="${i < t.params.length - 1 ? 'margin-bottom:12px;' : ''}">
+        <strong style="color:var(--text-primary);">${p[0]}</strong> <span style="color:var(--text-tertiary); font-size:11px;">${p[1]}</span>
+        <div style="margin-top:2px;">${p[2]}</div>
+      </div>`).join('');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // APPROVAL ITEMS → APPROVAL DETAIL PANEL
+  // ════════════════════════════════════════════════════════════════
+  const APPROVALS = {
+    '8291': { agent: 'contract-renewal-bot', title: 'Review contract amendment',
+              subtitle: 'MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.',
+              requested: '32 min ago', type: 'Contract Amendment', risk: 'Low', riskColor: 'var(--success)',
+              diffName: 'MSA-2023-4402-A1.md',
+              diff: [['14','ctx','## Term'],['15','minus','- Effective through Sep 30, 2024'],['15','plus','+ Effective through Mar 31, 2025'],['28','ctx','## Service Level Penalties'],['29','minus','- Monthly uptime below 99.9%: 2% credit'],['29','plus','+ Monthly uptime below 99.9%: 1.5% credit']] },
+    '8279': { agent: 'pricing-optimizer', title: 'Apply dynamic price adjustment',
+              subtitle: 'Reprice 1,240 SKUs based on competitor index. Estimated revenue impact +$18K/mo.',
+              requested: '1h 14m ago', type: 'Pricing Change', risk: 'Medium', riskColor: 'var(--warning)',
+              diffName: 'price-adjustment-8279.csv',
+              diff: [['3','ctx','sku,old_price,new_price'],['4','minus','- A-1021,14.90,14.90'],['4','plus','+ A-1021,14.90,13.40'],['5','minus','- A-1022,9.99,9.99'],['5','plus','+ A-1022,9.99,9.49']] },
+    '8275': { agent: 'data-sync-pipeline', title: 'Execute schema migration v14 → v15',
+              subtitle: 'Alters 4 tables in analytics warehouse. Requires 2hr maintenance window.',
+              requested: '2h 48m ago', type: 'Schema Migration', risk: 'High', riskColor: 'var(--danger)',
+              diffName: 'migration-v15.sql',
+              diff: [['1','ctx','-- migration v15'],['2','plus','+ ALTER TABLE orders ADD COLUMN source_channel TEXT;'],['3','plus','+ ALTER TABLE events ADD COLUMN session_id UUID;'],['4','minus','- DROP TABLE legacy_sessions;']] }
+  };
+
+  let currentApproval = '8291';
+
+  function selectApproval(item) {
+    const run = item.dataset.run;
+    const a = APPROVALS[run];
+    if (!a) return;
+    currentApproval = run;
+
+    document.querySelectorAll('.approval-item').forEach(c => c.classList.toggle('selected', c === item));
+
+    document.getElementById('appr-meta').textContent = a.agent + ' · Run #' + run;
+    document.getElementById('appr-title').textContent = a.title;
+    document.getElementById('appr-subtitle').textContent = a.subtitle;
+    document.getElementById('appr-diffname').textContent = a.diffName;
+    document.getElementById('appr-diff').innerHTML = a.diff.map(l =>
+      `<div class="diff-line"><span class="diff-line-num ${l[1] !== 'ctx' ? 'diff-' + l[1] : ''}">${l[0]}</span><span class="diff-text diff-${l[1]}">${l[2]}</span></div>`).join('');
+
+    document.getElementById('appr-requested').textContent = a.requested;
+    document.getElementById('appr-by').textContent = a.agent;
+    document.getElementById('appr-type').textContent = a.type;
+    const risk = document.getElementById('appr-risk');
+    risk.textContent = a.risk;
+    risk.style.color = a.riskColor;
+
+    // Reset decision UI for the newly selected approval
+    document.getElementById('appr-buttons').style.display = '';
+    document.getElementById('appr-result').style.display = 'none';
+  }
+
+  function resolveApproval(decision) {
+    const buttons = document.getElementById('appr-buttons');
+    const result = document.getElementById('appr-result');
+    buttons.style.display = 'none';
+    const approved = decision === 'approved';
+    result.style.display = 'flex';
+    result.innerHTML = `<i data-lucide="${approved ? 'circle-check' : 'circle-x'}" aria-hidden="true"></i><span>${approved ? 'Accepted — Execution #' + currentApproval + ' resumed' : 'Declined — Execution #' + currentApproval + ' cancelled'}</span>`;
+    result.style.color = approved ? 'var(--success)' : 'var(--danger)';
+    refreshIcons(result);
+    // Update the list item to reflect the decision
+    const item = document.querySelector('.approval-item[data-run="' + currentApproval + '"]');
+    if (item) {
+      item.style.opacity = '0.55';
+      item.dataset.resolved = decision;
+      const desc = item.querySelector('.approval-desc');
+      if (desc && !desc.dataset.marked) {
+        desc.dataset.marked = '1';
+        desc.innerHTML += ' <strong style="color:' + (decision === 'approved' ? 'var(--success)' : 'var(--danger)') + ';">— ' + decision + '</strong>';
+      }
+    }
+  }
+
+  // Same decision flow for the Pending Approval card on the Fleet page
+  function resolveFleetApproval(decision) {
+    const buttons = document.getElementById('fleet-appr-buttons');
+    const result = document.getElementById('fleet-appr-result');
+    buttons.style.display = 'none';
+    const approved = decision === 'approved';
+    result.style.display = 'flex';
+    result.innerHTML = `<i data-lucide="${approved ? 'circle-check' : 'circle-x'}" aria-hidden="true"></i><span>${approved ? 'Accepted — Execution #8291 resumed' : 'Declined — Execution #8291 cancelled'}</span>`;
+    result.style.color = approved ? 'var(--success)' : 'var(--danger)';
+    refreshIcons(result);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // TOAST + SETTINGS
+  // ════════════════════════════════════════════════════════════════
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function toggleSetting(btn, name) {
+    btn.classList.toggle('on');
+    showToast(name + (btn.classList.contains('on') ? ' enabled' : ' disabled'));
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // FULL RUN HISTORY — no pagination, everything loaded at once
+  // ════════════════════════════════════════════════════════════════
+  let _seed = 42;
+  function rnd() { _seed = (_seed * 1103515245 + 12345) & 0x7fffffff; return _seed / 0x7fffffff; }
+  function pick(arr) { return arr[Math.floor(rnd() * arr.length)]; }
+
+  const RUN_AGENTS = ['invoice-parser-v2','onboarding-agent','compliance-checker','data-sync-pipeline','security-audit-bot','pricing-optimizer','email-classifier','report-generator','contract-renewal-bot'];
+  const RUN_TRIGGERS = ['schedule','webhook','api call','event','manual'];
+
+  function fmtDur(sec) {
+    const h = String(Math.floor(sec / 3600)).padStart(2,'0');
+    const m = String(Math.floor(sec % 3600 / 60)).padStart(2,'0');
+    const s = String(Math.floor(sec % 60)).padStart(2,'0');
+    return h + ':' + m + ':' + s;
+  }
+
+  function generateRuns() {
+    const tbody = document.getElementById('runs-tbody');
+    if (!tbody) return;
+    const frag = document.createDocumentFragment();
+    const TOTAL = 2847;
+    const existing = tbody.querySelectorAll('tr').length; // 10 hardcoded
+
+    for (let i = 0; i < TOTAL - existing; i++) {
+      const num = 8281 - i;
+      const day = Math.floor(Math.pow(rnd(), 1.4) * 30); // biased to recent
+      const d = 3 - day;
+      const dateStr = d >= 1 ? 'Aug ' + d : 'Jul ' + (31 + d);
+      const time = String(Math.floor(rnd()*24)).padStart(2,'0') + ':' + String(Math.floor(rnd()*60)).padStart(2,'0');
+      const agent = pick(RUN_AGENTS);
+      const trigger = pick(RUN_TRIGGERS);
+      const tokens = Math.floor(rnd() * 26000) + 100;
+      const cost = '$' + (tokens * 0.00009).toFixed(2);
+      const dur = fmtDur(rnd() * 2700 + 20);
+
+      let status, scls;
+      const r = rnd();
+      if (day === 0 && r < 0.12)      { status = 'Running'; scls = 'running'; }
+      else if (day === 0 && r < 0.16) { status = 'Waiting'; scls = 'waiting'; }
+      else if (r < 0.09)              { status = 'Failed';  scls = 'failed'; }
+      else                            { status = 'Done';    scls = 'done'; }
+
+      const tr = document.createElement('tr');
+      tr.dataset.day = day;
+      tr.innerHTML = '<td class="tnum">#' + num + '</td>' +
+        '<td><div class="agent-name">' + agent + '</div></td>' +
+        '<td>' + trigger + '</td>' +
+        '<td class="tnum">' + dateStr + ', ' + time + '</td>' +
+        '<td class="tnum">' + dur + '</td>' +
+        '<td class="tnum">' + tokens.toLocaleString('en-US') + '</td>' +
+        '<td class="tnum">' + cost + '</td>' +
+        '<td><span class="status status-' + scls + '"><span class="dot"></span>' + status + '</span></td>';
+      frag.appendChild(tr);
+    }
+    tbody.appendChild(frag);
+    document.getElementById('runs-loaded').textContent = 'All ' + TOTAL.toLocaleString('en-US') + ' runs loaded — scroll freely';
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // RUN ROWS → RUN DETAIL PANEL
+  // ════════════════════════════════════════════════════════════════
+  const STEP_POOL = ['fetch_data','extract_entities','validate_schema','transform_records','call_tool','llm_summarize','write_output','notify_channel','archive_results','generate_report'];
+
+  function selectRun(row) {
+    const cells = row.querySelectorAll('td');
+    const num = cells[0].textContent.trim();
+    const agent = cells[1].textContent.trim();
+    const trigger = cells[2].textContent.trim();
+    const started = cells[3].textContent.trim();
+    const duration = cells[4].textContent.trim();
+    const tokens = cells[5].textContent.trim();
+    const cost = cells[6].textContent.trim();
+    const statusEl = cells[7].querySelector('.status');
+    const status = statusEl.textContent.trim();
+
+    document.querySelectorAll('#page-runs .data-table tbody tr').forEach(r => r.classList.toggle('selected', r === row));
+
+    document.getElementById('rund-meta').textContent = agent + ' · Run ' + num;
+    document.getElementById('rund-title').textContent = ({schedule:'Scheduled batch processing', webhook:'Webhook-triggered run', 'api call':'API-triggered run', event:'Event-driven run', manual:'Manually started run'})[trigger] || 'Agent run';
+    document.getElementById('rund-sub').textContent = 'Run ' + num + ' by ' + agent + ', started ' + started + ' via ' + trigger + '.';
+    const st = document.getElementById('rund-status');
+    st.textContent = status;
+    st.style.color = status === 'Failed' ? 'var(--danger)' : status === 'Done' ? 'var(--success)' : 'var(--accent-text)';
+    document.getElementById('rund-trigger').textContent = trigger;
+    document.getElementById('rund-started').textContent = started + ' UTC';
+    document.getElementById('rund-duration').textContent = duration;
+    document.getElementById('rund-tokens').textContent = tokens;
+    document.getElementById('rund-cost').textContent = cost;
+    document.getElementById('rund-version').textContent = 'v' + (1 + Math.floor(rnd()*3)) + '.' + Math.floor(rnd()*9) + '.' + Math.floor(rnd()*9);
+
+    // Synthetic step trace for this run
+    const nSteps = 3 + Math.floor(rnd() * 3);
+    let html = '<div style="position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--border-light);"></div>';
+    for (let i = 0; i < nSteps; i++) {
+      const isLast = i === nSteps - 1;
+      const cls = status === 'Done' ? 'completed' : (isLast ? 'active' : 'completed');
+      html += '<div class="step-item ' + cls + '"><div class="step-dot"></div><div class="step-content">' +
+        '<div class="step-title">' + pick(STEP_POOL) + '</div>' +
+        '<div class="step-duration">' + (rnd()*8).toFixed(1) + 's · ' + (Math.floor(rnd()*4000)+50).toLocaleString('en-US') + ' tokens</div></div></div>';
+    }
+    document.getElementById('rund-steps').innerHTML = html;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // FILTER TABS + LIVE SEARCH — every page
+  // ════════════════════════════════════════════════════════════════
+  function applyPageFilter(page) {
+    const bar = page.querySelector('.filter-bar');
+    const tab = bar ? bar.querySelector('.filter-tab.active') : null;
+    const want = tab ? tab.textContent.trim().toLowerCase() : 'all';
+    const q = (bar && bar.querySelector('.filter-search') ? bar.querySelector('.filter-search').value : '').trim().toLowerCase();
+
+    if (page.id === 'page-fleet') {
+      page.querySelectorAll('.data-table tbody tr').forEach(tr => {
+        if (tr.classList.contains('trace-row')) { tr.style.display = 'none'; return; }
+        const s = (tr.querySelector('.status') || {}).textContent || '';
+        const agent = (tr.querySelector('.agent-name') || {}).textContent || '';
+        const okTab = want === 'all' || s.trim().toLowerCase() === want;
+        const okQ = !q || agent.toLowerCase().includes(q);
+        tr.style.display = okTab && okQ ? '' : 'none';
+        if (!okTab || !okQ) tr.classList.remove('expanded');
+      });
+    }
+
+    if (page.id === 'page-runs') {
+      page.querySelectorAll('#runs-tbody tr').forEach(tr => {
+        const day = parseInt(tr.dataset.day || '99', 10);
+        const okTab = want === 'all' || (want === 'today' && day === 0) ||
+                      (want === 'yesterday' && day === 1) || (want === 'last 7d' && day <= 6);
+        const txt = tr.textContent.toLowerCase();
+        tr.style.display = okTab && (!q || txt.includes(q)) ? '' : 'none';
+      });
+    }
+
+    if (page.id === 'page-tools') {
+      page.querySelectorAll('.tool-card').forEach(c => {
+        const badge = c.querySelector('.tool-badge').textContent.trim().toLowerCase();
+        const okTab = want === 'all' || badge === want;
+        const txt = c.textContent.toLowerCase();
+        c.style.display = okTab && (!q || txt.includes(q)) ? '' : 'none';
+      });
+    }
+
+    if (page.id === 'page-approvals') {
+      page.querySelectorAll('.approval-item').forEach(c => {
+        const res = c.dataset.resolved;
+        const okTab = want === 'all' || (want === 'pending' && !res) || (want === res);
+        const txt = c.textContent.toLowerCase();
+        c.style.display = okTab && (!q || txt.includes(q)) ? '' : 'none';
+      });
+    }
+
+    if (page.id === 'page-logs') {
+      page.querySelectorAll('.log-entry').forEach(e => {
+        const lvl = e.querySelector('.log-level').textContent.trim().toLowerCase();
+        const okTab = want === 'all' || lvl === want;
+        const txt = e.textContent.toLowerCase();
+        e.style.display = okTab && (!q || txt.includes(q)) ? '' : 'none';
+      });
+    }
+  }
+
+  function wireFilters() {
+    document.querySelectorAll('.page .filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const bar = tab.closest('.filter-bar');
+        bar.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t === tab));
+        applyPageFilter(tab.closest('.page'));
+      });
+    });
+    document.querySelectorAll('.page .filter-search').forEach(inp => {
+      inp.addEventListener('input', () => applyPageFilter(inp.closest('.page')));
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // LOG ROWS → LOG DETAIL PANEL
+  // ════════════════════════════════════════════════════════════════
+  function selectLog(entry) {
+    const ts = entry.querySelector('.log-ts').textContent.trim();
+    const levelEl = entry.querySelector('.log-level');
+    const level = levelEl.textContent.trim();
+    const msg = entry.querySelector('.log-msg').textContent.trim();
+    const agent = entry.querySelector('.log-agent').textContent.trim();
+
+    const colors = { info: 'var(--info)', warn: 'var(--warning)', error: 'var(--danger)', debug: 'var(--text-tertiary)' };
+    const cls = ['info','warn','error','debug'].find(c => levelEl.classList.contains(c)) || 'debug';
+    const color = colors[cls];
+
+    document.getElementById('logd-meta').textContent = 'Aug 3, ' + ts + ' · ' + agent;
+    const title = document.getElementById('logd-title');
+    title.textContent = msg.split('—')[0].trim();
+    title.style.color = color;
+    document.getElementById('logd-subtitle').textContent = msg;
+    const lvl = document.getElementById('logd-level');
+    lvl.textContent = level.charAt(0) + level.slice(1).toLowerCase();
+    lvl.style.color = color;
+    document.getElementById('logd-run').textContent = '—';
+    document.getElementById('logd-step').textContent = '—';
+    document.getElementById('logd-tool').textContent = agent;
+  }
+
+  document.querySelectorAll('.log-entry').forEach(e => e.addEventListener('click', () => selectLog(e)));
+
+  document.querySelectorAll('.tool-card').forEach(c => c.addEventListener('click', () => selectTool(c)));
+  document.querySelectorAll('.approval-item').forEach(c => c.addEventListener('click', () => selectApproval(c)));
+
+  // ════════════════════════════════════════════════════════════════
+  // TOPBAR + MISC LINKS
+  // ════════════════════════════════════════════════════════════════
+  document.querySelector('.topbar-search').addEventListener('input', function() {
+    if (window.location.hash !== '#fleet') window.location.hash = 'fleet';
+    const inp = document.querySelector('#page-fleet .filter-search');
+    inp.value = this.value;
+    applyPageFilter(document.getElementById('page-fleet'));
+  });
+
+  document.querySelectorAll('.topbar-link').forEach(l =>
+    l.addEventListener('click', () => showToast(l.textContent.trim() + ' — opens in docs.acme.io (demo)')));
+
+  document.querySelectorAll('.text-link').forEach(l =>
+    l.addEventListener('click', () => showToast('Rollback triggered — restoring previous run state')));
+
+  // ════════════════════════════════════════════════════════════════
+  // BOOT
+  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  // RESIZABLE / COLLAPSIBLE PANELS
+  // ════════════════════════════════════════════════════════════════
+  const PANELS = {
+    sidebar: { cssVar: '--sidebar-w', collapsedClass: 'sidebar-collapsed', dir: 1,  min: 168, max: 420, def: 200 },
+    panel:   { cssVar: '--panel-w',   collapsedClass: 'panel-collapsed',   dir: -1, min: 280, max: 620, def: 380 }
+  };
+
+  const appEl = document.querySelector('.app');
+
+  function panelWidth(key) {
+    return parseFloat(getComputedStyle(appEl).getPropertyValue(PANELS[key].cssVar)) || PANELS[key].def;
+  }
+
+  function setPanelWidth(key, px) {
+    const p = PANELS[key];
+    appEl.style.setProperty(p.cssVar, Math.min(p.max, Math.max(p.min, px)) + 'px');
+  }
+
+  function togglePanel(key) {
+    appEl.classList.toggle(PANELS[key].collapsedClass);
+  }
+
+  document.querySelectorAll('.resizer').forEach(handle => {
+    const key = handle.dataset.target;
+
+    handle.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startW = panelWidth(key);
+
+      appEl.classList.add('resizing');
+      handle.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+
+      const onMove = ev => setPanelWidth(key, startW + PANELS[key].dir * (ev.clientX - startX));
+      const onUp = () => {
+        appEl.classList.remove('resizing');
+        handle.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+      };
+
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+    });
+
+    // Double-click snaps back to the default width, the way Figma does
+    handle.addEventListener('dblclick', () => setPanelWidth(key, PANELS[key].def));
+  });
+
+  // In-panel button collapses it; the floating button brings it back
+  [['toggle-sidebar', 'sidebar'], ['toggle-panel', 'panel'],
+   ['restore-sidebar', 'sidebar'], ['restore-panel', 'panel']].forEach(([id, key]) => {
+    const btn = document.getElementById(id);
+    btn.addEventListener('click', () => togglePanel(key));
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel(key); }
+    });
+  });
+
+  // Sparklines — layered value noise over a trend, auto-scaled to the card.
+  // Each metric gets its own texture: churn, dips, plateaus, bursts.
+  function buildSpark(poly, kind) {
+    const W = 200, H = 48, N = 60;
+
+    // Per-metric PRNG — random-looking but stable across reloads
+    let s = 2166136261;
+    for (let i = 0; i < kind.length; i++) s = ((s ^ kind.charCodeAt(i)) * 16777619) & 0x7fffffff;
+    const rand = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+
+    // Smooth value noise: random knots every `len` samples, smoothstep between them
+    const noise = (len, amp) => {
+      const k = [];
+      for (let i = 0, n = Math.ceil(N / len) + 2; i < n; i++) k.push(rand() * 2 - 1);
+      return i => {
+        const p = i / len, a = Math.floor(p), f = p - a, sm = f * f * (3 - 2 * f);
+        return (k[a] * (1 - sm) + k[a + 1] * sm) * amp;
+      };
+    };
+
+    let sample, band;
+
+    if (kind === 'up') {
+      // Active Runs +12% — climbing, but agents start and finish constantly
+      const slow = noise(15, 0.34), mid = noise(6, 0.18), fast = noise(2, 0.08);
+      sample = i => { const t = i / (N - 1); return t + slow(i) + mid(i) + fast(i); };
+      band = [0.10, 0.92];
+
+    } else if (kind === 'flat-high') {
+      // Success Rate 94.2% — high plateau punctured by failure batches
+      const slow = noise(11, 0.22), fast = noise(3, 0.10);
+      const dips = [[0.13, 0.024, 0.30], [0.37, 0.032, 0.78], [0.55, 0.020, 0.22], [0.80, 0.038, 0.52]];
+      sample = i => {
+        const t = i / (N - 1);
+        let v = t * 0.30 + slow(i) + fast(i);
+        for (const d of dips) v -= d[2] * Math.exp(-((t - d[0]) * (t - d[0])) / (2 * d[1] * d[1]));
+        return v;
+      };
+      band = [0.34, 0.92];
+
+    } else if (kind === 'down') {
+      // Avg Cost / Run -8% — decays in plateaus as cheaper routes take over
+      const slow = noise(17, 0.40), mid = noise(6, 0.16), fast = noise(2, 0.06);
+      sample = i => { const t = i / (N - 1); return -t + slow(i) + mid(i) + fast(i); };
+      band = [0.12, 0.90];
+
+    } else {
+      // Queue Depth -3 — traffic bursts fill it, workers drain it, net downward
+      const fast = noise(3, 0.11);
+      const bursts = [[0.09, 0.60], [0.27, 0.92], [0.45, 0.50], [0.62, 0.74], [0.81, 0.38], [0.94, 0.24]];
+      sample = i => {
+        const t = i / (N - 1);
+        let v = -t * 0.60 + fast(i);
+        for (const b of bursts) {
+          const d = t - b[0];
+          if (d >= -0.03 && d <= 0.11) v += b[1] * (d < 0 ? (d + 0.03) / 0.03 : 1 - d / 0.11);
+        }
+        return v;
+      };
+      band = [0.08, 0.94];
+    }
+
+    // Auto-scale to the card's band, the way a real sparkline fits its y-range
+    const raw = [];
+    for (let i = 0; i < N; i++) raw.push(sample(i));
+    const lo = Math.min.apply(null, raw), span = (Math.max.apply(null, raw) - lo) || 1;
+
+    const pts = raw.map((v, i) => {
+      const y = band[0] + ((v - lo) / span) * (band[1] - band[0]);
+      return [(i / (N - 1) * W).toFixed(1), ((H - 2) - y * (H - 4)).toFixed(1)];
+    });
+
+    poly.setAttribute('points', pts.map(p => p[0] + ',' + p[1]).join(' '));
+
+    const negative = kind === 'down' || kind === 'spiky-down';
+    poly.style.stroke = negative ? 'var(--danger)' : 'var(--accent)';
+  }
+  document.querySelectorAll('.metric-sparkline polyline[data-trend]').forEach(p => buildSpark(p, p.dataset.trend));
+
+  generateRuns();
+  document.querySelectorAll('#runs-tbody tr').forEach(r => r.addEventListener('click', () => selectRun(r)));
+
+  wireFilters();
+
+  // Pre-select pdf_exporter card to match the default Tool Config panel
+  const firstTool = document.querySelector('.tool-card');
+  if (firstTool) firstTool.classList.add('selected');
+  refreshIcons();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REST API — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-api">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Reference</span>
+        <h1>REST API</h1>
+        <p class="docs-lede">Base URL <code class="inline">https://api.nalvo.dev/v1</code>. JSON in, JSON out, bearer auth. Every workspace action is available through these endpoints.</p>
+
+        <h2 id="auth">Authentication</h2>
+        <p>Send the API key as a bearer token. Keys are workspace-scoped and carry one of four scopes: <code class="inline">read</code>, <code class="inline">write</code>, <code class="inline">deploy</code>, <code class="inline">sandbox</code>.</p>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>curl https://api.nalvo.dev/v1/executions \
+  -H <span class="s">"Authorization: Bearer $NALVO_KEY"</span></pre>
+        </div>
+
+        <h2 id="executions">Executions</h2>
+
+        <div class="endpoint"><span class="method post">POST</span> /v1/executions</div>
+        <p>Create and queue an execution.</p>
+        <div class="code">
+          <div class="code-head"><span>request</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>{
+  <span class="k">"worker"</span>: <span class="s">"invoice-parser-v2"</span>,
+  <span class="k">"trigger"</span>: <span class="s">"api call"</span>,
+  <span class="k">"input"</span>: { <span class="k">"batch"</span>: <span class="s">"2024-08-03"</span> },
+  <span class="k">"idempotency_key"</span>: <span class="s">"inv-20240803"</span>
+}</pre>
+        </div>
+        <div class="code">
+          <div class="code-head"><span>201 response</span></div>
+<pre>{
+  <span class="k">"id"</span>: <span class="n">8290</span>,
+  <span class="k">"status"</span>: <span class="s">"queued"</span>,
+  <span class="k">"worker"</span>: <span class="s">"invoice-parser-v2"</span>,
+  <span class="k">"version"</span>: <span class="s">"1.8.3"</span>,
+  <span class="k">"created_at"</span>: <span class="s">"2024-08-03T09:00:00Z"</span>,
+  <span class="k">"url"</span>: <span class="s">"https://app.nalvo.dev/acme-ops/executions/8290"</span>
+}</pre>
+        </div>
+
+        <div class="endpoint"><span class="method get">GET</span> /v1/executions</div>
+        <p>List executions, newest first. Cursor paginated.</p>
+        <table class="doc-table">
+          <thead><tr><th>Query param</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>worker</td><td>string</td><td>Filter by registry name</td></tr>
+            <tr><td>status</td><td>enum</td><td>queued, running, waiting, done, failed, cancelled</td></tr>
+            <tr><td>since</td><td>ISO 8601</td><td>Created at or after</td></tr>
+            <tr><td>limit</td><td>int</td><td>1–200, default 50</td></tr>
+            <tr><td>cursor</td><td>string</td><td>From <code class="inline">next_cursor</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="endpoint"><span class="method get">GET</span> /v1/executions/:id</div>
+        <p>One execution with its stages, cost breakdown and checkpoint history.</p>
+
+        <div class="endpoint"><span class="method post">POST</span> /v1/executions/:id/cancel</div>
+        <p>Abort the current stage and mark the execution cancelled. Partial artifacts are kept.</p>
+
+        <h2 id="stages">Stages</h2>
+        <div class="endpoint"><span class="method post">POST</span> /v1/executions/:id/stages</div>
+        <p>Record a stage. Send it when work starts and patch it when it ends, or send it once on completion.</p>
+        <div class="code">
+          <div class="code-head"><span>request</span></div>
+<pre>{
+  <span class="k">"name"</span>: <span class="s">"extract_entities"</span>,
+  <span class="k">"connection"</span>: <span class="s">"pdf_parser"</span>,
+  <span class="k">"status"</span>: <span class="s">"done"</span>,
+  <span class="k">"duration_ms"</span>: <span class="n">2400</span>,
+  <span class="k">"tokens"</span>: <span class="n">847</span>
+}</pre>
+        </div>
+
+        <h2 id="checkpoints">Decision checkpoints</h2>
+        <div class="endpoint"><span class="method post">POST</span> /v1/executions/:id/checkpoints</div>
+        <p>Raise a decision request. The call returns with <code class="inline">status: "pending"</code> — poll, subscribe to the webhook, or use the SDK helper that waits for a response.</p>
+
+        <div class="endpoint"><span class="method get">GET</span> /v1/checkpoints</div>
+        <p>List checkpoints across the workspace. Filter with <code class="inline">status=pending</code> to build your own queue.</p>
+
+        <div class="endpoint"><span class="method post">POST</span> /v1/checkpoints/:id/decide</div>
+        <div class="code">
+          <div class="code-head"><span>request</span></div>
+<pre>{ <span class="k">"decision"</span>: <span class="s">"accepted"</span>, <span class="k">"note"</span>: <span class="s">"Legal reviewed the SLA change."</span> }</pre>
+        </div>
+
+        <h2 id="workers">Workers</h2>
+        <div class="endpoint"><span class="method get">GET</span> /v1/workers</div>
+        <div class="endpoint"><span class="method post">POST</span> /v1/workers</div>
+        <div class="endpoint"><span class="method post">POST</span> /v1/workers/:name/deploy</div>
+        <div class="endpoint"><span class="method post">POST</span> /v1/workers/:name/pause</div>
+        <p>Deploying requires a key with the <code class="inline">deploy</code> scope. The body is the worker definition — the same YAML the CLI sends, as JSON.</p>
+
+        <h2 id="errors">Errors</h2>
+        <p>Errors are JSON with a stable <code class="inline">code</code>. Never match on the message.</p>
+        <div class="code">
+          <div class="code-head"><span>422 response</span></div>
+<pre>{
+  <span class="k">"error"</span>: {
+    <span class="k">"code"</span>: <span class="s">"worker_not_deployed"</span>,
+    <span class="k">"message"</span>: <span class="s">"invoice-parser-v3 has no deployed version"</span>,
+    <span class="k">"request_id"</span>: <span class="s">"req_9c21f0a4"</span>
+  }
+}</pre>
+        </div>
+        <table class="doc-table">
+          <thead><tr><th>Status</th><th>Code</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>401</td><td>invalid_key</td><td>Missing, malformed or revoked key</td></tr>
+            <tr><td>403</td><td>insufficient_scope</td><td>Key lacks the required scope</td></tr>
+            <tr><td>404</td><td>not_found</td><td>Object does not exist in this workspace</td></tr>
+            <tr><td>409</td><td>duplicate_idempotency_key</td><td>An execution with that key already exists</td></tr>
+            <tr><td>422</td><td>worker_not_deployed</td><td>No deployed version to execute</td></tr>
+            <tr><td>429</td><td>rate_limited</td><td>Back off using <code class="inline">Retry-After</code></td></tr>
+            <tr><td>503</td><td>spend_cap_reached</td><td>Workspace paused at its cap</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="limits">Rate limits</h2>
+        <ul>
+          <li>600 requests per minute per key on Scale, 60 on Starter</li>
+          <li>Burst of 1,200 over 10 seconds</li>
+          <li>Request bodies up to 2 MB</li>
+          <li>Every response carries <code class="inline">X-RateLimit-Remaining</code> and <code class="inline">X-Request-Id</code></li>
+        </ul>
+
+        <h2 id="versioning">Versioning</h2>
+        <p>The version is in the path. Breaking changes ship as <code class="inline">/v2</code> with at least six months of overlap; additive fields can appear in <code class="inline">/v1</code> at any time, so parse defensively.</p>
+
+        <div class="doc-nextprev">
+          <a href="docs-webhooks.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Webhooks</strong></a>
+          <a class="next" href="docs-cli.html"><span>Next</span><strong>CLI <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#auth">Authentication</a>
+        <a href="#executions">Executions</a>
+        <a href="#stages">Stages</a>
+        <a href="#checkpoints">Checkpoints</a>
+        <a href="#workers">Workers</a>
+        <a href="#errors">Errors</a>
+        <a href="#limits">Rate limits</a>
+        <a href="#versioning">Versioning</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

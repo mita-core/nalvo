@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workers — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=18">
+</head>
+<body data-page="agents">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Workers</div>
+            <div class="page-subtitle" data-filter-count="{n} workers shown · 9 deployed · 2 drafts">11 workers · 9 deployed · 2 drafts</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-secondary btn-auto" data-toast="Registry synced with git — 0 drift">Sync registry</button>
+            <button class="btn btn-primary btn-auto" onclick="openModal('m-agent')">New worker</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".tool-card">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="active">Active</button>
+          <button class="filter-tab" data-value="paused">Paused</button>
+          <button class="filter-tab" data-value="draft">Draft</button>
+          <input class="filter-search" placeholder="Search workers…" aria-label="Search workers">
+        </div>
+
+        <div class="tool-grid">
+          <a href="agent.html?name=invoice-parser-v2" class="tool-card selected" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">invoice-parser-v2</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Parses vendor invoices from S3 and emits a normalised payment report every morning.</div>
+            <div class="tool-meta">v1.8.3 · 412 executions · 96.1% success · $0.31 avg</div>
+          </a>
+          <a href="agent.html?name=onboarding-agent" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">onboarding-agent</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Creates CRM records, provisions accounts and posts a welcome thread for each new customer.</div>
+            <div class="tool-meta">v3.1.0 · 1,204 executions · 91.4% success · $0.08 avg</div>
+          </a>
+          <a href="agent.html?name=compliance-checker" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">compliance-checker</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Scans uploaded documents against policy rules and archives the evidence trail.</div>
+            <div class="tool-meta">v2.0.4 · 318 executions · 99.0% success · $0.67 avg</div>
+          </a>
+          <a href="agent.html?name=data-sync-pipeline" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">data-sync-pipeline</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Moves records between the app database and the analytics warehouse with validation.</div>
+            <div class="tool-meta">v4.2.1 · 806 executions · 88.7% success · $2.18 avg</div>
+          </a>
+          <a href="agent.html?name=security-audit-bot" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">security-audit-bot</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Nightly sweep for stale credentials, open ports and unusual IAM changes.</div>
+            <div class="tool-meta">v1.5.2 · 92 executions · 100% success · $0.94 avg</div>
+          </a>
+          <a href="agent.html?name=pricing-optimizer" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">pricing-optimizer</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Watches the competitor index and routes price moves through a human checkpoint.</div>
+            <div class="tool-meta">v2.7.0 · 240 executions · 94.2% success · $0.15 avg</div>
+          </a>
+          <a href="agent.html?name=email-classifier" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">email-classifier</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Routes the shared inbox into queues and summarises long threads.</div>
+            <div class="tool-meta">v1.2.3 · 2,140 executions · 97.8% success · $0.04 avg</div>
+          </a>
+          <a href="agent.html?name=contract-renewal-bot" class="tool-card" data-status="paused" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">contract-renewal-bot</span><span class="tool-badge" style="background:rgba(232,192,74,0.12); color:var(--warning);">Paused</span></div>
+            <div class="tool-desc">Drafts renewal amendments, compares clauses and opens a legal checkpoint.</div>
+            <div class="tool-meta">v2.4.1 · 64 executions · 92.1% success · $1.24 avg</div>
+          </a>
+          <a href="agent.html?name=report-generator" class="tool-card" data-status="active" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">report-generator</span><span class="tool-badge active">Active</span></div>
+            <div class="tool-desc">Builds recurring finance and ops reports from warehouse queries.</div>
+            <div class="tool-meta">v1.0.9 · 148 executions · 98.6% success · $1.42 avg</div>
+          </a>
+          <a href="agent.html?name=churn-predictor" class="tool-card" data-status="draft" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">churn-predictor</span><span class="tool-badge beta">Draft</span></div>
+            <div class="tool-desc">Scores accounts weekly and opens a play in the CRM for the ones at risk.</div>
+            <div class="tool-meta">v0.3.0 · 12 test executions · not deployed</div>
+          </a>
+          <a href="agent.html?name=ticket-triage" class="tool-card" data-status="draft" style="text-decoration:none;">
+            <div class="tool-header"><span class="tool-name">ticket-triage</span><span class="tool-badge beta">Draft</span></div>
+            <div class="tool-desc">Labels support tickets, links duplicates and drafts the first reply.</div>
+            <div class="tool-meta">v0.1.4 · 5 test executions · not deployed</div>
+          </a>
+        </div>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="bot" aria-hidden="true"></i></div>
+          <div class="empty-title">No workers here yet</div>
+          <div class="empty-desc">Nothing matches this filter. Create a worker or switch the status tab.</div>
+          <button class="btn btn-primary btn-auto" onclick="openModal('m-agent')">New worker</button>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Runtime summary</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Deployed</span><span class="mini-value">9</span></div>
+            <div class="mini-row"><span class="mini-label">Drafts</span><span class="mini-value">2</span></div>
+            <div class="mini-row"><span class="mini-label">Executions today</span><span class="mini-value">312</span></div>
+            <div class="mini-row"><span class="mini-label">Worker success</span><span class="mini-value" style="color:var(--success);">94.2%</span></div>
+            <div class="mini-row"><span class="mini-label">Spend today</span><span class="mini-value">$131.04</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Executions per worker · 24h</div>
+        <div class="card" style="padding:var(--s-3);">
+          <div class="chart-body" style="height:150px;">
+            <svg data-chart="bar" data-chart-compact="true" data-series="412,1204,318,806,92,240,2140,64,148" data-labels="inv,onb,cmp,sync,sec,prc,mail,con,rep"></svg>
+          </div>
+        </div>
+
+        <div class="panel-title">Needs attention</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:12px;">
+            <div><div class="list-title">data-sync-pipeline</div><div class="list-meta">88.7% success — below 90% SLO</div></div>
+            <span class="badge badge-warning">SLO</span>
+          </div>
+          <div class="row-between">
+            <div><div class="list-title">contract-renewal-bot</div><div class="list-meta">paused 2 days — 3 executions queued</div></div>
+            <span class="badge badge-danger">Paused</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-agent" role="dialog" aria-modal="true" aria-labelledby="m-agent-t">
+  <div class="modal">
+    <div class="modal-title" id="m-agent-t">Create a worker</div>
+    <div class="modal-desc">Workers are versioned. The first deploy creates <code class="inline">v0.1.0</code> in the draft channel.</div>
+    <div class="field">
+      <label class="field-label" for="na-name">Name</label>
+      <input class="input" id="na-name" placeholder="invoice-parser-v3">
+      <div class="hint">Lowercase, dashes only — this becomes the registry key.</div>
+    </div>
+    <div class="field">
+      <label class="field-label" for="na-template">Start from</label>
+      <select class="select" id="na-template">
+        <option>Blank worker</option>
+        <option>Document pipeline</option>
+        <option>CRM automation</option>
+        <option>Scheduled report</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="createAgent()">Create draft</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-agent')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function createAgent() {
+    var name = (document.getElementById('na-name').value || 'untitled-agent').trim();
+    var card = document.createElement('a');
+    card.href = 'agent.html?name=' + encodeURIComponent(name);
+    card.className = 'tool-card';
+    card.dataset.status = 'draft';
+    card.style.textDecoration = 'none';
+    card.innerHTML = '<div class="tool-header"><span class="tool-name">' + name + '</span><span class="tool-badge beta">Draft</span></div>' +
+      '<div class="tool-desc">' + document.getElementById('na-template').value + ' — no steps configured yet.</div>' +
+      '<div class="tool-meta">v0.1.0 · 0 executions · not deployed</div>';
+    document.querySelector('.tool-grid').prepend(card);
+    closeModal('m-agent');
+    showToast('Draft worker “' + name + '” created');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Execution #8290 — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="run">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="fleet.html">Live map</a><span class="sep">/</span>
+          <a href="runs.html">Executions</a><span class="sep">/</span>
+          <span id="crumb-run">#8290</span>
+        </nav>
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Execution <span id="run-id">#8290</span> · <span style="color:var(--text-secondary); font-weight:500;">invoice-parser-v2</span></div>
+            <div class="page-subtitle">
+              <span class="status status-running"><span class="dot"></span>Running</span>
+              &nbsp;·&nbsp; started Aug 3, 09:00 UTC &nbsp;·&nbsp; trigger <code class="inline">schedule</code>
+            </div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost btn-auto" data-toast="Live tail attached — streaming stage output">Live tail</button>
+            <button class="btn btn-secondary btn-auto" data-toast="Execution re-queued as #8292">Run again</button>
+            <button class="btn btn-danger btn-auto" onclick="openModal('m-cancel')">Cancel run</button>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" data-tab="overview">Overview</button>
+          <button class="tab" role="tab" data-tab="steps">Steps</button>
+          <button class="tab" role="tab" data-tab="io">Input / Output</button>
+          <button class="tab" role="tab" data-tab="logs">Events</button>
+          <button class="tab" role="tab" data-tab="cost">Cost</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section data-panel="overview">
+          <div class="metrics" style="grid-template-columns:repeat(4,1fr);">
+            <div class="metric"><div class="metric-label">Elapsed</div><div class="metric-value">14:07</div><div class="metric-delta up">on track</div></div>
+            <div class="metric"><div class="metric-label">Stages done</div><div class="metric-value">2 / 3</div><div class="metric-delta up">67%</div></div>
+            <div class="metric"><div class="metric-label">Tokens</div><div class="metric-value">5,291</div><div class="metric-delta up">+4,320 this step</div></div>
+            <div class="metric"><div class="metric-label">Cost</div><div class="metric-value">$0.31</div><div class="metric-delta down">-12% vs avg</div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Token burn</span><span class="chart-note">per stage</span></div>
+              <div class="chart-body"><svg data-chart="bar" data-series="847,124,4320" data-labels="extract,validate,report"></svg></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Stage latency</span><span class="chart-note">seconds</span></div>
+              <div class="chart-body"><svg data-chart="area" data-series="2.4,0.8,6.7" data-labels="extract,validate,report"></svg></div>
+            </div>
+          </div>
+
+          <div class="section-title mt-8">Execution timeline</div>
+          <div class="timeline">
+            <div class="tl-item accent"><div class="tl-time">09:00:00</div><div class="tl-title">Run queued by scheduler</div><div class="tl-desc">cron <code class="inline">0 9 * * *</code> · worker-04 picked it up in 1.2s</div></div>
+            <div class="tl-item accent"><div class="tl-time">09:00:02</div><div class="tl-title">extract_entities completed</div><div class="tl-desc">Parsed 128 invoices · 847 tokens · 2.4s</div></div>
+            <div class="tl-item accent"><div class="tl-time">09:00:05</div><div class="tl-title">validate_schema completed</div><div class="tl-desc">12/12 fields valid · 124 tokens · 0.8s</div></div>
+            <div class="tl-item"><div class="tl-time">09:14:07</div><div class="tl-title">generate_report running</div><div class="tl-desc">pdf_exporter · 4,320 tokens so far</div></div>
+          </div>
+        </section>
+
+        <!-- STEPS -->
+        <section data-panel="steps" hidden>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Stage</th><th>Connection</th><th>Duration</th><th>Tokens</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="toggleRow(this)"><td class="tnum">1</td><td><div class="step-name">extract_entities</div></td><td>pdf_parser</td><td class="tnum">2.4s</td><td class="tnum">847</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr class="trace-row" style="display:none;"><td colspan="6" style="padding:0;"><div class="step-trace"><div class="step-trace-header"><span>Output preview</span><span class="tnum" style="color:var(--text-tertiary);">128 records</span></div><div class="code" style="border:none;"><pre>{ <span class="k">"invoices"</span>: <span class="n">128</span>, <span class="k">"vendors"</span>: <span class="n">42</span>, <span class="k">"currency"</span>: <span class="s">"USD"</span> }</pre></div></div></td></tr>
+
+              <tr class="clickable" onclick="toggleRow(this)"><td class="tnum">2</td><td><div class="step-name">validate_schema</div></td><td>etl_processor</td><td class="tnum">0.8s</td><td class="tnum">124</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr class="trace-row" style="display:none;"><td colspan="6" style="padding:0;"><div class="step-trace"><div class="step-trace-header"><span>Validation report</span><span class="tnum" style="color:var(--success);">12 / 12 passed</span></div><div class="code" style="border:none;"><pre><span class="c">// all required fields present</span>
+vendor_id, amount, currency, due_date, po_number …</pre></div></div></td></tr>
+
+              <tr class="clickable" onclick="toggleRow(this)"><td class="tnum">3</td><td><div class="step-name">generate_report</div></td><td>pdf_exporter</td><td class="tnum">6.7s</td><td class="tnum">4,320</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+              <tr class="trace-row" style="display:none;"><td colspan="6" style="padding:0;"><div class="step-trace"><div class="step-trace-header"><span>Live output</span><span class="tnum" style="color:var(--accent-text);">streaming</span></div><div class="code" style="border:none;"><pre>rendering page 14 / 22 …</pre></div></div></td></tr>
+
+              <tr><td class="tnum">4</td><td><div class="step-name">notify_channel</div></td><td>slack_notify</td><td class="tnum">—</td><td class="tnum">—</td><td><span class="status" style="color:var(--text-tertiary);"><span class="dot" style="background:var(--text-disabled);"></span>Pending</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- IO -->
+        <section data-panel="io" hidden>
+          <div class="grid-2">
+            <div>
+              <div class="section-title">Input payload</div>
+              <div class="code">
+                <div class="code-head"><span>input.json</span><span class="text-link" data-toast="Copied input.json to clipboard">Copy</span></div>
+<pre>{
+  <span class="k">"batch"</span>: <span class="s">"2024-08-03"</span>,
+  <span class="k">"source"</span>: <span class="s">"s3://acme-invoices/inbox/"</span>,
+  <span class="k">"template"</span>: <span class="s">"vendor-summary"</span>,
+  <span class="k">"notify"</span>: [<span class="s">"#finance-ops"</span>],
+  <span class="k">"max_tokens"</span>: <span class="n">8000</span>
+}</pre>
+              </div>
+            </div>
+            <div>
+              <div class="section-title">Output (partial)</div>
+              <div class="code">
+                <div class="code-head"><span>output.json</span><span class="badge badge-accent">streaming</span></div>
+<pre>{
+  <span class="k">"invoices_parsed"</span>: <span class="n">128</span>,
+  <span class="k">"vendors"</span>: <span class="n">42</span>,
+  <span class="k">"total_amount"</span>: <span class="s">"$418,204.12"</span>,
+  <span class="k">"report_url"</span>: <span class="c">pending…</span>
+}</pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOGS -->
+        <section data-panel="logs" hidden>
+          <div class="log-stream">
+            <div class="log-entry"><span class="log-ts">09:14:07</span><span class="log-level debug">DEBUG</span><span class="log-msg">Rendering report page 14 of 22</span><span class="log-agent">pdf_exporter</span></div>
+            <div class="log-entry"><span class="log-ts">09:07:22</span><span class="log-level warn">WARN</span><span class="log-msg">Token usage spike — 4,320 tokens in single call</span><span class="log-agent">invoice-parser-v2</span></div>
+            <div class="log-entry"><span class="log-ts">09:00:05</span><span class="log-level info">INFO</span><span class="log-msg">Schema validation passed — 12/12 fields</span><span class="log-agent">etl_processor</span></div>
+            <div class="log-entry"><span class="log-ts">09:00:02</span><span class="log-level info">INFO</span><span class="log-msg">Extracted 128 invoices from 42 vendors</span><span class="log-agent">pdf_parser</span></div>
+            <div class="log-entry"><span class="log-ts">09:00:00</span><span class="log-level info">INFO</span><span class="log-msg">Scheduled run started — cron: 0 9 * * *</span><span class="log-agent">invoice-parser-v2</span></div>
+          </div>
+        </section>
+
+        <!-- COST -->
+        <section data-panel="cost" hidden>
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Cost split</span><span class="chart-note">this execution</span></div>
+              <div style="display:flex; align-items:center; gap:var(--s-6);">
+                <svg data-donut="68,18,9,5" data-donut-label="$0.31" data-donut-sub="total" style="width:140px; height:140px; flex-shrink:0;"></svg>
+                <div class="mini-list" style="flex:1;">
+                  <div class="mini-row"><span class="mini-label">LLM tokens</span><span class="mini-value">$0.21</span></div>
+                  <div class="mini-row"><span class="mini-label">Tool calls</span><span class="mini-value">$0.06</span></div>
+                  <div class="mini-row"><span class="mini-label">Storage</span><span class="mini-value">$0.03</span></div>
+                  <div class="mini-row"><span class="mini-label">Egress</span><span class="mini-value">$0.01</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Cost of last 12 executions</span><span class="chart-note">invoice-parser-v2</span></div>
+              <div class="chart-body"><svg data-chart="bar" data-series="0.42,0.39,0.51,0.34,0.44,0.29,0.38,0.47,0.33,0.36,0.30,0.31" data-labels="7/23,,7/26,,7/29,,8/1,,8/3"></svg></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title"><span class="dot pulse"></span>Live status</div>
+        <div class="card">
+          <div class="card-meta">invoice-parser-v2 · v1.8.3</div>
+          <div class="card-title">generate_report</div>
+          <div class="card-subtitle">Rendering vendor summary PDF — page 14 of 22.</div>
+          <div class="progress" style="margin:12px 0 6px;"><div class="progress-fill" style="width:64%;"></div></div>
+          <div class="hint">64% · ETA 3m 40s</div>
+        </div>
+
+        <div class="panel-title">Metadata</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Run ID</span><span class="mini-value">#8290</span></div>
+            <div class="mini-row"><span class="mini-label">Worker</span><span class="mini-value">worker-04</span></div>
+            <div class="mini-row"><span class="mini-label">Region</span><span class="mini-value">us-east-1</span></div>
+            <div class="mini-row"><span class="mini-label">Model</span><span class="mini-value">claude-opus-4</span></div>
+            <div class="mini-row"><span class="mini-label">Retries</span><span class="mini-value">0</span></div>
+            <div class="mini-row"><span class="mini-label">Idempotency</span><span class="mini-value">inv-20240803</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Connections used</div>
+        <div class="chip-list">
+          <a href="tools.html" class="chip" style="text-decoration:none;">pdf_parser</a>
+          <a href="tools.html" class="chip" style="text-decoration:none;">etl_processor</a>
+          <a href="tools.html" class="chip" style="text-decoration:none;">pdf_exporter</a>
+          <a href="tools.html" class="chip" style="text-decoration:none;">slack_notify</a>
+        </div>
+
+        <div class="panel-title mt-6">Actions</div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" data-toast="Artifacts downloaded — 3 files">Artifacts</button>
+          <button class="btn btn-secondary" data-toast="Trace exported as OTLP span">Export trace</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-cancel" role="dialog" aria-modal="true" aria-labelledby="m-cancel-t">
+  <div class="modal">
+    <div class="modal-title" id="m-cancel-t">Cancel execution #8290?</div>
+    <div class="modal-desc">The current stage will be aborted and partial artifacts kept. This cannot be undone — you can start it again from history.</div>
+    <div class="btn-row">
+      <button class="btn btn-danger" onclick="closeModal('m-cancel'); showToast('Execution #8290 cancelled');">Cancel execution</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-cancel')">Keep running</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  // Tabs
+  document.querySelectorAll('.tab[data-tab]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab[data-tab]').forEach(function (t) { t.classList.toggle('active', t === tab); });
+      document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+    });
+  });
+
+  // ?id= reflects into the header
+  var id = new URLSearchParams(location.search).get('id');
+  if (id) {
+    document.getElementById('run-id').textContent = '#' + id;
+    document.getElementById('crumb-run').textContent = '#' + id;
+    document.title = 'Execution #' + id + ' — NALVO';
+  }
+</script>
+</body>
+</html>

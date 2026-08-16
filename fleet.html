@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Map — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="fleet">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <!-- Metrics -->
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Live executions</div>
+            <div class="metric-value">47</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="up" points=""/></svg></div>
+            <div class="metric-delta up">+12% vs last hour</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Success Rate</div>
+            <div class="metric-value">94.2%</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="flat-high" points=""/></svg></div>
+            <div class="metric-delta up">+2.1% vs last week</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Avg cost / execution</div>
+            <div class="metric-value">$0.42</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="down" points=""/></svg></div>
+            <div class="metric-delta down">-8% vs yesterday</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Queue Depth</div>
+            <div class="metric-value">12</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="spiky-down" points=""/></svg></div>
+            <div class="metric-delta down">-3 vs last hour</div>
+          </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar" data-target=".data-table tbody tr:not(.trace-row)">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="running">Running</button>
+          <button class="filter-tab" data-value="waiting">Waiting</button>
+          <button class="filter-tab" data-value="failed">Failed</button>
+          <button class="filter-tab" data-value="done">Done</button>
+          <input class="filter-search" placeholder="Filter by worker name…" aria-label="Filter workers">
+        </div>
+
+        <!-- Table -->
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Worker</th><th>Trigger</th><th>Current stage</th><th>Elapsed</th><th>Cost</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="clickable" data-status="waiting" onclick="toggleRow(this)">
+              <td><div class="agent-name">contract-renewal-bot</div><div class="agent-meta">Execution #8291 · v2.4.1</div></td>
+              <td>webhook</td>
+              <td><div class="step-name">awaiting_checkpoint</div><div class="step-meta">decision_boundary</div></td>
+              <td class="tnum">04:32:18</td>
+              <td class="tnum">$1.24</td>
+              <td><span class="status status-waiting"><span class="dot"></span>Waiting</span></td>
+            </tr>
+            <tr class="trace-row" style="display:none;">
+              <td colspan="6" style="padding:0;">
+                <div class="step-trace">
+                  <div class="step-trace-header"><span>Stage trace</span><span class="tnum" style="color:var(--text-tertiary);">4 stages · 04:32:18 total</span></div>
+                  <div class="step-list">
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">fetch_contract</div><div class="step-duration">1.9s · 620 tokens</div></div></div>
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">diff_clauses</div><div class="step-duration">3.4s · 2,180 tokens</div></div></div>
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">risk_score</div><div class="step-duration">1.2s · 940 tokens</div></div></div>
+                    <div class="step-item active"><div class="step-dot"></div><div class="step-content"><div class="step-title">awaiting_checkpoint</div><div class="step-duration">blocked · 32m elapsed</div></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="clickable" data-status="running" onclick="toggleRow(this)">
+              <td><div class="agent-name">invoice-parser-v2</div><div class="agent-meta">Execution #8290 · v1.8.3</div></td>
+              <td>schedule 09:00 UTC</td>
+              <td><div class="step-name">generate_report</div><div class="step-meta">pdf_exporter</div></td>
+              <td class="tnum">00:14:07</td>
+              <td class="tnum">$0.31</td>
+              <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+            </tr>
+            <tr class="trace-row" style="display:none;">
+              <td colspan="6" style="padding:0;">
+                <div class="step-trace">
+                  <div class="step-trace-header"><span>Stage trace</span><span class="tnum" style="color:var(--text-tertiary);">3 stages · 00:14:07 total</span></div>
+                  <div class="step-list">
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">extract_entities</div><div class="step-duration">2.4s · 847 tokens</div></div></div>
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">validate_schema</div><div class="step-duration">0.8s · 124 tokens</div></div></div>
+                    <div class="step-item active"><div class="step-dot"></div><div class="step-content"><div class="step-title">generate_report</div><div class="step-duration">6.7s · 4,320 tokens</div></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="clickable" data-status="failed" onclick="toggleRow(this)">
+              <td><div class="agent-name">onboarding-agent</div><div class="agent-meta">Execution #8289 · v3.1.0</div></td>
+              <td>api call</td>
+              <td><div class="step-name">create_user_record</div><div class="step-meta">salesforce_api</div></td>
+              <td class="tnum">00:02:14</td>
+              <td class="tnum">$0.08</td>
+              <td><span class="status status-failed"><span class="dot"></span>Failed</span></td>
+            </tr>
+            <tr class="trace-row" style="display:none;">
+              <td colspan="6" style="padding:0;">
+                <div class="step-trace">
+                  <div class="step-trace-header"><span>Stage trace</span><span class="tnum" style="color:var(--danger);">failed at stage 3 of 4</span></div>
+                  <div class="step-list">
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">parse_request</div><div class="step-duration">0.3s · 88 tokens</div></div></div>
+                    <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">validate_payload</div><div class="step-duration">0.4s · 112 tokens</div></div></div>
+                    <div class="step-item active"><div class="step-dot"></div><div class="step-content"><div class="step-title" style="color:var(--danger);">create_user_record</div><div class="step-duration">30.0s · timeout after 3 retries</div></div></div>
+                    <div class="step-item pending"><div class="step-dot"></div><div class="step-content"><div class="step-title">notify_channel</div><div class="step-duration">not started</div></div></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="clickable" data-status="done" onclick="toggleRow(this)">
+              <td><div class="agent-name">compliance-checker</div><div class="agent-meta">Execution #8288 · v2.0.4</div></td>
+              <td>file upload</td>
+              <td><div class="step-name">archive_results</div><div class="step-meta">s3_upload</div></td>
+              <td class="tnum">00:08:55</td>
+              <td class="tnum">$0.67</td>
+              <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+            </tr>
+
+            <tr class="clickable" data-status="running" onclick="toggleRow(this)">
+              <td><div class="agent-name">data-sync-pipeline</div><div class="agent-meta">Execution #8287 · v4.2.1</div></td>
+              <td>event</td>
+              <td><div class="step-name">transform_records</div><div class="step-meta">etl_processor</div></td>
+              <td class="tnum">00:31:42</td>
+              <td class="tnum">$2.18</td>
+              <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+            </tr>
+
+            <tr class="clickable" data-status="done" onclick="toggleRow(this)">
+              <td><div class="agent-name">security-audit-bot</div><div class="agent-meta">Execution #8286 · v1.5.2</div></td>
+              <td>schedule 02:00 UTC</td>
+              <td><div class="step-name">cleanup_temp</div><div class="step-meta">system_cleanup</div></td>
+              <td class="tnum">00:45:03</td>
+              <td class="tnum">$0.94</td>
+              <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+            </tr>
+
+            <tr class="clickable" data-status="running" onclick="toggleRow(this)">
+              <td><div class="agent-name">pricing-optimizer</div><div class="agent-meta">Execution #8285 · v2.7.0</div></td>
+              <td>webhook</td>
+              <td><div class="step-name">fetch_competitor_data</div><div class="step-meta">http_client</div></td>
+              <td class="tnum">00:03:41</td>
+              <td class="tnum">$0.15</td>
+              <td><span class="status status-running"><span class="dot"></span>Running</span></td>
+            </tr>
+
+            <tr class="clickable" data-status="done" onclick="toggleRow(this)">
+              <td><div class="agent-name">email-classifier</div><div class="agent-meta">Execution #8284 · v1.2.3</div></td>
+              <td>schedule 08:00 UTC</td>
+              <td><div class="step-name">summarize_thread</div><div class="step-meta">llm_summarize</div></td>
+              <td class="tnum">00:01:08</td>
+              <td class="tnum">$0.04</td>
+              <td><span class="status status-done"><span class="dot"></span>Done</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="activity" aria-hidden="true"></i></div>
+          <div class="empty-title">No workers match this filter</div>
+          <div class="empty-desc">Try a different status tab, or clear the search field.</div>
+        </div>
+
+        <!-- Events -->
+        <div style="margin-top:32px;">
+          <div class="section-title">Recent events</div>
+          <div class="event-list">
+            <div class="event-item"><span class="event-time">09:42</span><div class="event-content"><div class="event-title"><strong>compliance-checker</strong> completed execution #8288 and archived 47 files</div><span class="event-tag success">Completed</span></div></div>
+            <div class="event-item"><span class="event-time">09:38</span><div class="event-content"><div class="event-title"><strong>onboarding-agent</strong> failed on stage <strong>create_user_record</strong> — Salesforce timeout</div><span class="event-tag error">Failed</span></div></div>
+            <div class="event-item"><span class="event-time">09:31</span><div class="event-content"><div class="event-title"><strong>contract-renewal-bot</strong> opened a checkpoint for Acme Corp</div><span class="event-tag warn">Checkpoint</span></div></div>
+            <div class="event-item"><span class="event-time">09:15</span><div class="event-content"><div class="event-title">Auto-scaling triggered — 2 workers added</div><span class="event-tag info">System</span></div></div>
+            <div class="event-item"><span class="event-time">09:00</span><div class="event-content"><div class="event-title"><strong>invoice-parser-v2</strong> started scheduled execution #8290</div><span class="event-tag info">Started</span></div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <!-- Context panel -->
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title"><span class="dot pulse"></span>Pending checkpoint</div>
+        <div class="card">
+          <div class="card-meta">contract-renewal-bot · Execution #8291</div>
+          <div class="card-title">Review contract amendment</div>
+          <div class="card-subtitle">MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.</div>
+          <div class="diff-block">
+            <div class="diff-header">Diff <span class="diff-filename">MSA-2023-4402-A1.md</span></div>
+            <div class="diff-content">
+              <div class="diff-line"><span class="diff-line-num">14</span><span class="diff-text diff-ctx">## Term</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-minus">15</span><span class="diff-text diff-minus">- Effective through Sep 30, 2024</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-plus">15</span><span class="diff-text diff-plus">+ Effective through Mar 31, 2025</span></div>
+              <div class="diff-line"><span class="diff-line-num">28</span><span class="diff-text diff-ctx">## Service Level Penalties</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-minus">29</span><span class="diff-text diff-minus">- Monthly uptime below 99.9%: 2% credit</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-plus">29</span><span class="diff-text diff-plus">+ Monthly uptime below 99.9%: 1.5% credit</span></div>
+            </div>
+          </div>
+          <div class="btn-row" id="fleet-appr-buttons">
+            <button class="btn btn-primary" onclick="resolveFleetApproval('approved')">Accept</button>
+            <button class="btn btn-secondary" onclick="resolveFleetApproval('rejected')">Decline</button>
+          </div>
+          <div id="fleet-appr-result" style="display:none; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:var(--s-3);"></div>
+          <span class="text-link" data-toast="Rollback triggered — restoring previous execution state">Rollback last execution</span>
+        </div>
+
+        <div class="panel-title">Queue</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Pending</span><span class="mini-value">12</span></div>
+            <div class="mini-row"><span class="mini-label">Avg wait</span><span class="mini-value">4m 18s</span></div>
+            <div class="mini-row"><span class="mini-label">Throughput</span><span class="mini-value">8.4 / min</span></div>
+            <div class="mini-row"><span class="mini-label">Workers</span><span class="mini-value">8 / 12</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Waiting</div>
+        <div style="display:flex; flex-direction:column;">
+          <div class="queue-item"><div class="queue-num">1</div><div class="queue-info"><div class="queue-name">contract-renewal-bot</div><div class="queue-meta">Execution #8291 · 32m</div></div><span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span></div>
+          <div class="queue-item"><div class="queue-num">2</div><div class="queue-info"><div class="queue-name">pricing-optimizer</div><div class="queue-meta">Execution #8279 · 1h 14m</div></div><span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span></div>
+          <div class="queue-item"><div class="queue-num">3</div><div class="queue-info"><div class="queue-name">data-sync-pipeline</div><div class="queue-meta">Execution #8275 · 2h 48m</div></div><span style="font-size:11px; font-weight:600; color:var(--accent-text);">Waiting</span></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function resolveFleetApproval(decision) {
+    document.getElementById('fleet-appr-buttons').style.display = 'none';
+    var result = document.getElementById('fleet-appr-result');
+    var ok = decision === 'approved';
+    result.style.display = 'flex';
+    result.innerHTML = '<i data-lucide="' + (ok ? 'circle-check' : 'circle-x') + '" aria-hidden="true"></i><span>' +
+      (ok ? 'Accepted — Execution #8291 resumed' : 'Declined — Execution #8291 cancelled') + '</span>';
+    result.style.color = ok ? 'var(--success)' : 'var(--danger)';
+    refreshIcons(result);
+    showToast(ok ? 'Approved — run #8291 resumed' : 'Rejected — run #8291 cancelled');
+  }
+</script>
+</body>
+</html>

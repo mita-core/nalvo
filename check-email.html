@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check your email — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body class="auth" data-page="check-email">
+
+<div class="auth-card">
+  <a class="auth-brand" href="index.html">
+    <span class="mark">N</span>
+    <span class="name">NALVO</span>
+  </a>
+
+  <div class="auth-box">
+    <div class="auth-icon"><i data-lucide="mail" aria-hidden="true"></i></div>
+    <h1 class="auth-title" id="title">Check your email</h1>
+    <p class="auth-sub" id="sub">
+      We sent a link to <strong id="email" style="color:var(--text-primary); font-weight:600;">your inbox</strong>.
+      Open it on this device to continue. The link expires in 30 minutes.
+    </p>
+
+    <div class="auth-status ok" id="resent" role="status">Link sent again — check your inbox and spam folder.</div>
+
+    <a class="btn btn-primary btn-block" id="continue" href="reset-password.html"
+       style="display:flex; align-items:center; justify-content:center; text-decoration:none; margin-bottom:10px;">
+      Open the link (demo)
+    </a>
+    <button class="btn btn-secondary btn-block" id="resend-btn" onclick="resend()">Resend email</button>
+
+    <div class="auth-foot" style="margin-top:20px;">
+      Wrong address? <a href="forgot-password.html">Start over</a>
+    </div>
+  </div>
+
+  <div class="auth-legal">
+    Nothing after a few minutes? Check spam, or ask your admin whether <strong style="color:var(--text-tertiary);">nalvo.dev</strong> is allow-listed.<br>
+    <a href="login.html">Back to sign in</a>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  var email = sessionStorage.getItem('nalvo_email');
+  if (email) document.getElementById('email').textContent = email;
+
+  var flow = new URLSearchParams(location.search).get('flow');
+  if (flow === 'signup') {
+    document.getElementById('title').textContent = 'Verify your email';
+    document.getElementById('sub').innerHTML =
+      'Confirm <strong id="email-value" style="color:var(--text-primary); font-weight:600;">' + (email || 'your address') +
+      '</strong> to finish creating the workspace. The link expires in 30 minutes.';
+    var go = document.getElementById('continue');
+    go.href = 'two-factor.html';
+    go.textContent = 'Open the link (demo)';
+  }
+
+  var cooldown = 0, timer = null;
+
+  function resend() {
+    if (cooldown) return;
+    document.getElementById('resent').classList.add('show');
+    showToast('Email sent again');
+    cooldown = 30;
+    var btn = document.getElementById('resend-btn');
+    btn.disabled = true;
+    timer = setInterval(function () {
+      cooldown--;
+      btn.textContent = cooldown > 0 ? 'Resend in ' + cooldown + 's' : 'Resend email';
+      if (cooldown <= 0) { clearInterval(timer); btn.disabled = false; }
+    }, 1000);
+    btn.textContent = 'Resend in 30s';
+  }
+</script>
+</body>
+</html>

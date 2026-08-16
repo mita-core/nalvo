@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quickstart — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-quickstart">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Getting started</span>
+        <h1>Quickstart</h1>
+        <p class="docs-lede">Ten minutes from an empty workspace to a complete execution record you can inspect stage by stage.</p>
+
+        <h2 id="key">1 — Get an API key</h2>
+        <p>Create a workspace, then open <strong>Settings → API keys</strong> and create one with the <code class="inline">Read + write</code> scope. The secret is shown once; store it in your secret manager.</p>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">export</span> NALVO_KEY=<span class="s">"nlv_live_4f2a…c81d"</span></pre>
+        </div>
+
+        <h2 id="install">2 — Install the SDK</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>npm install @nalvo/sdk       <span class="c"># node</span>
+	pip install nalvo-sdk        <span class="c"># python</span>
+	go get github.com/nalvo/sdk  <span class="c"># go</span></pre>
+        </div>
+        <p>No SDK for your language? Everything here is a plain HTTPS call — see the <a href="docs-api.html">REST API</a>.</p>
+
+        <h2 id="register">3 — Register the worker</h2>
+        <p>A worker is a named, versioned definition of its model, allowed connections and policy boundaries. Keep it in your repository and deploy from CI, or create it in the workspace.</p>
+        <div class="code">
+          <div class="code-head"><span>invoice-parser-v2.yaml</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">name</span>: invoice-parser-v2
+<span class="k">version</span>: <span class="s">"1.0.0"</span>
+<span class="k">model</span>: claude-opus-4
+<span class="k">timeout</span>: <span class="n">1800</span>
+<span class="k">retries</span>: <span class="n">3</span>
+
+<span class="k">connections</span>:
+  - s3_upload
+  - pdf_parser
+  - slack_notify
+
+<span class="k">boundaries</span>:
+  <span class="k">max_cost_per_execution</span>: <span class="s">"$2.00"</span>
+  <span class="k">require_checkpoint_above</span>: <span class="s">"$50000"</span>
+  <span class="k">pii_redaction</span>: <span class="n">true</span></pre>
+        </div>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo deploy invoice-parser-v2.yaml
+<span class="c"># → deployed invoice-parser-v2 v1.0.0 to production</span></pre>
+        </div>
+
+        <h2 id="run">4 — Open an execution and report stages</h2>
+        <p>Wrap the work you already perform. Each <code class="inline">stages.record</code> call adds evidence to the execution history.</p>
+        <div class="code">
+          <div class="code-head"><span>worker.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">import</span> { Nalvo } <span class="k">from</span> <span class="s">"@nalvo/sdk"</span>;
+<span class="k">const</span> nalvo = <span class="k">new</span> Nalvo(process.env.NALVO_KEY);
+
+<span class="k">const</span> execution = <span class="k">await</span> nalvo.executions.open({
+  worker: <span class="s">"invoice-parser-v2"</span>,
+  trigger: <span class="s">"schedule"</span>,
+  input: { batch: <span class="s">"2024-08-03"</span> }
+});
+
+<span class="k">try</span> {
+  <span class="k">const</span> invoices = <span class="k">await</span> nalvo.stage(execution, <span class="s">"extract_entities"</span>, <span class="k">async</span> () =&gt; {
+    <span class="k">return</span> parseInvoices(input.batch);   <span class="c">// your code</span>
+  });
+
+  <span class="k">await</span> nalvo.stage(execution, <span class="s">"validate_schema"</span>, <span class="k">async</span> () =&gt; validate(invoices));
+
+  <span class="k">await</span> nalvo.executions.complete(execution.id, { output: { parsed: invoices.length } });
+} <span class="k">catch</span> (err) {
+  <span class="k">await</span> nalvo.executions.fail(execution.id, { error: err.message });
+}</pre>
+        </div>
+        <div class="callout">
+          <strong>nalvo.stage captures the evidence automatically</strong>
+          <p>It times the block, records model and connection usage, and marks the stage failed if the block throws, keeping the record aligned with reality.</p>
+        </div>
+
+        <h2 id="gate">5 — Add a decision checkpoint</h2>
+        <p>When an execution reaches a consequential action, request judgment. The call waits until a reviewer responds in the workspace or the timer escalates it.</p>
+        <div class="code">
+          <div class="code-head"><span>worker.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">if</span> (total &gt; <span class="n">50000</span>) {
+  <span class="k">const</span> decision = <span class="k">await</span> nalvo.checkpoints.open(execution.id, {
+    title: <span class="s">"Review payment batch"</span>,
+    impact: <span class="s">"medium"</span>,
+    diff: { file: <span class="s">"batch-2024-08-03.csv"</span>, lines: changedLines },
+    reviewers: <span class="s">"finance-ops"</span>,
+    ttl: <span class="n">14400</span>            <span class="c">// escalate after 4h</span>
+  });
+
+  <span class="k">if</span> (decision.status !== <span class="s">"accepted"</span>) {
+    <span class="k">await</span> nalvo.executions.cancel(execution.id, { reason: <span class="s">"declined by "</span> + decision.by });
+    <span class="k">return</span>;
+  }
+}</pre>
+        </div>
+
+        <h2 id="watch">6 — Inspect the record</h2>
+        <p>Open <a href="fleet.html">Live map</a>. The execution appears after <code class="inline">executions.open</code>, stages arrive in real time and selecting the row unfolds the evidence. Human decisions arrive under <a href="approvals.html">Checkpoints</a>.</p>
+
+        <table class="doc-table">
+          <thead><tr><th>Where</th><th>What you see</th></tr></thead>
+          <tbody>
+            <tr><td>Live map</td><td>Every active execution with its current stage</td></tr>
+            <tr><td>Executions</td><td>The complete history without pagination</td></tr>
+            <tr><td>Checkpoints</td><td>Every action waiting for human judgment</td></tr>
+            <tr><td>Insights</td><td>Success, duration and spend by worker</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="next">What next</h2>
+        <ul>
+          <li>Add a timed trigger — <a href="schedules.html">Triggers</a> in the workspace</li>
+          <li>Grant external capabilities explicitly — <a href="docs-tools.html">Connections</a></li>
+          <li>Send execution events into your systems — <a href="docs-webhooks.html">Webhooks</a></li>
+        </ul>
+
+        <div class="doc-nextprev">
+          <a href="docs.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Overview</strong></a>
+          <a class="next" href="docs-concepts.html"><span>Next</span><strong>Core concepts <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#key">1 — Get an API key</a>
+        <a href="#install">2 — Install the SDK</a>
+        <a href="#register">3 — Register the worker</a>
+        <a href="#run">4 — Open an execution</a>
+        <a href="#gate">5 — Add a checkpoint</a>
+        <a href="#watch">6 — Inspect the record</a>
+        <a href="#next">What next</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

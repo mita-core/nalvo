@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insights — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="analytics">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Insights</div>
+            <div class="page-subtitle">Runtime performance and spend · Aug 1 – Aug 3</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost btn-auto" data-toast="Report scheduled — every Monday 08:00">Schedule report</button>
+            <button class="btn btn-secondary btn-auto" data-toast="Exported analytics-aug.csv">Export</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target="[data-noop]">
+          <button class="filter-tab" data-value="24h">24h</button>
+          <button class="filter-tab active" data-value="7d">7 days</button>
+          <button class="filter-tab" data-value="30d">30 days</button>
+          <button class="filter-tab" data-value="90d">90 days</button>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Total executions</div><div class="metric-value">2,847</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="up" points=""/></svg></div>
+            <div class="metric-delta up">+18% vs prev week</div></div>
+          <div class="metric"><div class="metric-label">Success rate</div><div class="metric-value">94.2%</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="flat-high" points=""/></svg></div>
+            <div class="metric-delta up">+2.1 pts</div></div>
+          <div class="metric"><div class="metric-label">Total spend</div><div class="metric-value">$1,196</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="down" points=""/></svg></div>
+            <div class="metric-delta down">-8% vs prev week</div></div>
+          <div class="metric"><div class="metric-label">Human touches</div><div class="metric-value">62</div>
+            <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="spiky-down" points=""/></svg></div>
+            <div class="metric-delta down">-31% vs prev week</div></div>
+        </div>
+
+        <div class="chart-card" style="margin-bottom:var(--s-4);">
+          <div class="chart-head">
+            <div><span class="chart-title">Executions and failures</span></div>
+            <span class="chart-note">daily · last 14 days</span>
+          </div>
+          <div class="chart-body" style="height:220px;">
+            <svg data-chart="area" data-dual="true"
+                 data-series="184,201,178,220,196,142,118,232,268,241,198,244,219,226"
+                 data-series2="12,18,9,14,11,6,4,17,21,13,9,15,11,13"
+                 data-labels="Jul 21,,,,Jul 25,,,,Jul 29,,,,Aug 2,"></svg>
+          </div>
+          <div class="legend"><span><i style="background:var(--accent);"></i>Executions — left axis</span><span><i style="background:var(--info);"></i>Failures — own scale, peak 21</span></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="chart-card">
+            <div class="chart-head"><span class="chart-title">Spend by worker</span><span class="chart-note">this week</span></div>
+            <div style="display:flex; align-items:center; gap:var(--s-6);">
+              <svg data-donut="34,22,17,14,13" data-donut-label="$1,196" data-donut-sub="7 days" data-ring-width="10" style="width:150px; height:150px; flex-shrink:0;"></svg>
+              <div class="mini-list" style="flex:1;">
+                <div class="mini-row"><span class="mini-label">data-sync-pipeline</span><span class="mini-value">$406</span></div>
+                <div class="mini-row"><span class="mini-label">report-generator</span><span class="mini-value">$263</span></div>
+                <div class="mini-row"><span class="mini-label">contract-renewal-bot</span><span class="mini-value">$203</span></div>
+                <div class="mini-row"><span class="mini-label">invoice-parser-v2</span><span class="mini-value">$167</span></div>
+                <div class="mini-row"><span class="mini-label">everything else</span><span class="mini-value">$157</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-head"><span class="chart-title">Token usage</span><span class="chart-note">millions · daily</span></div>
+            <div class="chart-body"><svg data-chart="bar" data-bar-style="thin-solid" data-series="1.2,1.4,1.1,1.6,1.3,0.9,0.7,1.5,1.8,1.4,1.2,1.6,1.3,1.4" data-labels="Jul 21,,,,Jul 25,,,,Jul 29,,,,Aug 2,"></svg></div>
+          </div>
+        </div>
+
+        <div class="section-title mt-8">Worker leaderboard</div>
+        <table class="data-table">
+          <thead><tr><th>Worker</th><th>Executions</th><th>Success</th><th>Avg duration</th><th>Avg cost</th><th>Spend</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr class="clickable" onclick="location.href='agent.html?name=email-classifier'"><td><div class="agent-name">email-classifier</div></td><td class="tnum">2,140</td><td class="tnum" style="color:var(--success);">97.8%</td><td class="tnum">01:08</td><td class="tnum">$0.04</td><td class="tnum">$86</td><td><span class="metric-delta up">+12%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=onboarding-agent'"><td><div class="agent-name">onboarding-agent</div></td><td class="tnum">1,204</td><td class="tnum">91.4%</td><td class="tnum">02:14</td><td class="tnum">$0.08</td><td class="tnum">$96</td><td><span class="metric-delta up">+4%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=data-sync-pipeline'"><td><div class="agent-name">data-sync-pipeline</div></td><td class="tnum">806</td><td class="tnum" style="color:var(--warning);">88.7%</td><td class="tnum">28:55</td><td class="tnum">$2.18</td><td class="tnum">$406</td><td><span class="metric-delta down">-6%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=invoice-parser-v2'"><td><div class="agent-name">invoice-parser-v2</div></td><td class="tnum">412</td><td class="tnum" style="color:var(--success);">96.1%</td><td class="tnum">13:42</td><td class="tnum">$0.31</td><td class="tnum">$167</td><td><span class="metric-delta up">+6%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=compliance-checker'"><td><div class="agent-name">compliance-checker</div></td><td class="tnum">318</td><td class="tnum" style="color:var(--success);">99.0%</td><td class="tnum">08:55</td><td class="tnum">$0.67</td><td class="tnum">$213</td><td><span class="metric-delta up">+2%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=pricing-optimizer'"><td><div class="agent-name">pricing-optimizer</div></td><td class="tnum">240</td><td class="tnum">94.2%</td><td class="tnum">03:41</td><td class="tnum">$0.15</td><td class="tnum">$36</td><td><span class="metric-delta up">+9%</span></td></tr>
+            <tr class="clickable" onclick="location.href='agent.html?name=report-generator'"><td><div class="agent-name">report-generator</div></td><td class="tnum">148</td><td class="tnum" style="color:var(--success);">98.6%</td><td class="tnum">22:17</td><td class="tnum">$1.42</td><td class="tnum">$210</td><td><span class="metric-delta down">-3%</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title mt-8">Failure reasons</div>
+        <div class="grid-3">
+          <div class="card"><div class="card-title">Upstream timeout</div><div class="card-subtitle">Third-party API did not answer in time.</div><div class="progress" style="margin:10px 0 6px;"><div class="progress-fill" style="width:46%; background:var(--danger);"></div></div><div class="hint">46% of failures · 76 executions</div></div>
+          <div class="card"><div class="card-title">Validation rejected</div><div class="card-subtitle">Input did not match the expected schema.</div><div class="progress" style="margin:10px 0 6px;"><div class="progress-fill" style="width:31%; background:var(--warning);"></div></div><div class="hint">31% of failures · 51 executions</div></div>
+          <div class="card"><div class="card-title">Budget boundary</div><div class="card-subtitle">Execution stopped at its cost ceiling.</div><div class="progress" style="margin:10px 0 6px;"><div class="progress-fill" style="width:23%;"></div></div><div class="hint">23% of failures · 38 executions</div></div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">This week</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Executions</span><span class="mini-value">2,847</span></div>
+            <div class="mini-row"><span class="mini-label">Failures</span><span class="mini-value" style="color:var(--danger);">165</span></div>
+            <div class="mini-row"><span class="mini-label">Checkpoints</span><span class="mini-value">62</span></div>
+            <div class="mini-row"><span class="mini-label">Tokens</span><span class="mini-value">18.4M</span></div>
+            <div class="mini-row"><span class="mini-label">Spend</span><span class="mini-value">$1,196</span></div>
+            <div class="mini-row"><span class="mini-label">Saved hours</span><span class="mini-value" style="color:var(--accent-text);">1,140</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Budget</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:8px;"><span class="mini-label">Monthly cap</span><span class="mini-value">$6,000</span></div>
+          <div class="progress"><div class="progress-fill" style="width:41%;"></div></div>
+          <div class="hint">$2,468 used · 41% · resets in 28 days</div>
+          <div class="btn-row mt-6"><button class="btn btn-secondary" data-toast="Budget alerts set at 80% and 95%">Alert rules</button></div>
+        </div>
+
+        <div class="panel-title">Highlights</div>
+        <div class="timeline">
+          <div class="tl-item accent"><div class="tl-time">Aug 3</div><div class="tl-title">Cost per execution down 8%</div><div class="tl-desc">Cheaper model routing on summarisation stages</div></div>
+          <div class="tl-item"><div class="tl-time">Aug 2</div><div class="tl-title">Human touches down 31%</div><div class="tl-desc">Checkpoint policy raised to $50K</div></div>
+          <div class="tl-item"><div class="tl-time">Jul 31</div><div class="tl-title">data-sync-pipeline below SLO</div><div class="tl-desc">88.7% success — FK constraint failures</div></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  document.querySelectorAll('.filter-tab[data-value]').forEach(function (t) {
+    t.addEventListener('click', function () { showToast('Range set to ' + t.textContent.trim()); });
+  });
+</script>
+</body>
+</html>

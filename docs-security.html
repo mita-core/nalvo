@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security &amp; compliance — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-security">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Reference</span>
+        <h1>Security &amp; compliance</h1>
+        <p class="docs-lede">What we hold, where it lives, who can reach it, and what you can hand an auditor. Written to be usable as the first draft of a questionnaire answer.</p>
+
+        <h2 id="posture">Posture at a glance</h2>
+        <table class="doc-table">
+          <thead><tr><th>Area</th><th>Position</th></tr></thead>
+          <tbody>
+            <tr><td>Certification</td><td>SOC 2 Type II, audited annually; report under NDA</td></tr>
+            <tr><td>Data residency</td><td>EU (eu-central-1) or US (us-east-1), chosen per workspace, never crossed</td></tr>
+            <tr><td>Encryption</td><td>TLS 1.3 in transit, AES-256 at rest, per-workspace keys</td></tr>
+            <tr><td>Authentication</td><td>SAML SSO, SCIM provisioning, enforced two-factor</td></tr>
+            <tr><td>Evidence</td><td>Hash-chained decision record, 400-day retention, signed export</td></tr>
+            <tr><td>Sub-processors</td><td>Published list, 30-day notice before any change</td></tr>
+            <tr><td>Pen testing</td><td>Independent test annually plus on major architecture changes</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="data">What we store</h2>
+        <ul>
+          <li><strong>Metadata always</strong> — execution IDs, timings, token counts, stage names, connection names, costs and decisions.</li>
+          <li><strong>Payloads by policy</strong> — inputs and outputs are stored only if you enable it, and expire on the retention you set.</li>
+          <li><strong>Credentials never in plaintext</strong> — integrations keep an encrypted refresh token; API keys are stored as hashes and shown once.</li>
+        </ul>
+        <div class="callout">
+          <strong>Redaction happens before the model call</strong>
+          <p>With <code class="inline">pii_redaction: true</code>, emails, phone numbers, card and account numbers are masked in the payload before it reaches a model or is written to storage. The trace keeps the shape of the data, not its contents.</p>
+        </div>
+
+        <h2 id="access">Access control</h2>
+        <p>Three roles, least privilege by default:</p>
+        <table class="doc-table">
+          <thead><tr><th>Role</th><th>Can</th><th>Cannot</th></tr></thead>
+          <tbody>
+            <tr><td>Admin</td><td>Everything, including billing and members</td><td>—</td></tr>
+            <tr><td>Operator</td><td>Start, pause, decide, deploy</td><td>Change billing, invite members, alter policy</td></tr>
+            <tr><td>Viewer</td><td>Read executions, events and insights</td><td>Any action that changes state</td></tr>
+          </tbody>
+        </table>
+        <p>Group membership drives checkpoint routing, so contract decisions follow the same groups your identity provider already maintains.</p>
+
+        <h2 id="audit">The evidence chain</h2>
+        <p>Every human and worker action is appended with a hash of the previous entry. Entries cannot be edited or deleted, and a gap is detectable. Verification runs continuously and on demand from the <a href="audit.html">Decision Record</a> page.</p>
+        <div class="code">
+          <div class="code-head"><span>audit entry</span></div>
+<pre>{
+  <span class="k">"seq"</span>: <span class="n">184204</span>,
+  <span class="k">"ts"</span>: <span class="s">"2024-08-03T09:34:12Z"</span>,
+  <span class="k">"actor"</span>: <span class="s">"jordan@acme.io"</span>,
+  <span class="k">"action"</span>: <span class="s">"checkpoint.accepted"</span>,
+  <span class="k">"target"</span>: <span class="s">"chk_8291_001"</span>,
+  <span class="k">"source"</span>: <span class="s">"web · 92.14.8.3"</span>,
+  <span class="k">"prev_hash"</span>: <span class="s">"9c2e…41ab"</span>,
+  <span class="k">"hash"</span>: <span class="s">"a41f…9c2e"</span>
+}</pre>
+        </div>
+
+        <h2 id="isolation">Isolation</h2>
+        <ul>
+          <li>Workspaces are isolated at the data layer; a key can never read across them</li>
+          <li>Connection calls run in network-isolated workers with an egress allow-list</li>
+          <li>New connections can be forced through a sandbox worker on first use</li>
+          <li>Enterprise workspaces run execution workers inside their own VPC — payloads never leave the customer network</li>
+        </ul>
+
+        <h2 id="gdpr">GDPR and data subject requests</h2>
+        <ul>
+          <li>DPA available for all paid plans; sub-processor list published</li>
+          <li>Erasure requests remove payloads and mask actor identifiers, while the evidence chain keeps the fact that an action happened</li>
+          <li>Export of all workspace data on request, in JSON and CSV</li>
+          <li>Retention is configurable down to 30 days for payloads; evidence retention is fixed at 400 days for integrity</li>
+        </ul>
+
+        <h2 id="incident">Incident response</h2>
+        <p>Security incidents are triaged within one hour, with customer notification inside 24 hours of confirmation. Status and post-mortems are published for anything affecting the control plane. Report a vulnerability from the <a href="index.html#contact">contact page</a> — we do not pursue good-faith researchers.</p>
+
+        <h2 id="questionnaire">For the questionnaire</h2>
+        <p>Enterprise workspaces get the SOC 2 report, the latest penetration test summary, the DPA and a completed CAIQ under NDA. Ask your account contact, or write to us and we will route it.</p>
+
+        <div class="doc-nextprev">
+          <a href="docs-cli.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> CLI</strong></a>
+          <a class="next" href="docs.html"><span>Back to</span><strong>Documentation <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#posture">Posture</a>
+        <a href="#data">What we store</a>
+        <a href="#access">Access control</a>
+        <a href="#audit">Evidence chain</a>
+        <a href="#isolation">Isolation</a>
+        <a href="#gdpr">GDPR</a>
+        <a href="#incident">Incident response</a>
+        <a href="#questionnaire">Questionnaire</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

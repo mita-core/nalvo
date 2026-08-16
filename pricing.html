@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — NALVO</title>
+<meta name="description" content="Nalvo pricing combines a workspace subscription with transparent measured usage and enforced spending boundaries on every tier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+<style>
+  .cycle {
+    display: inline-flex; gap: 3px; padding: 4px;
+    background: var(--card); border-radius: 999px; margin-top: 24px;
+  }
+  .cycle button {
+    padding: 8px 18px; border-radius: 999px; border: none; background: transparent;
+    font-family: var(--font); font-size: 13px; font-weight: 500; color: var(--ink-2); cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .cycle button.active { background: var(--ink-dark); color: #fff; }
+</style>
+</head>
+<body data-page="pricing">
+
+<header class="site-header"></header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:0;">
+    <div class="container center" style="max-width:760px;">
+      <span class="eyebrow"><span class="dot"></span>Pricing</span>
+      <h1 class="display" style="margin:22px 0 16px;">Pay for the record,<br>not uncertainty.</h1>
+      <p class="lede">A predictable workspace subscription plus measured usage. Every tier includes an enforced spending boundary before autonomous work can exceed budget.</p>
+      <div class="cycle" id="billing-toggle" role="tablist" aria-label="Billing cycle">
+        <button class="active" data-cycle="monthly">Monthly</button>
+        <button data-cycle="annual">Annual · save 17%</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="price-grid">
+
+        <div class="price-card">
+          <div class="plan-head">
+            <div class="plan-title-row"><h3>Starter</h3></div>
+            <p class="plan-desc">For the first autonomous workflow in production.</p>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount" data-monthly="$0" data-annual="$0">$0<span>/month</span></div>
+            <div class="plan-note" data-cycle-note>billed monthly</div>
+          </div>
+          <ul class="plan-list">
+            <li>3 workers, 5 seats</li>
+            <li>7-day execution history</li>
+            <li>Checkpoints and evidence record</li>
+            <li>Usage at list price</li>
+            <li>Community support</li>
+          </ul>
+          <a class="btn btn-line" href="signup.html">Create workspace</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="plan-head">
+            <div class="plan-title-row">
+              <h3 style="color:#fff;">Scale</h3>
+              <span class="eyebrow on-dark">Most teams</span>
+            </div>
+            <p class="plan-desc">For autonomous work the business depends on.</p>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount" style="color:#fff;" data-monthly="$1,200" data-annual="$1,000">$1,200<span style="color:#93968F;">/month</span></div>
+            <div class="plan-note" data-cycle-note>billed monthly</div>
+          </div>
+          <ul class="plan-list">
+            <li>Unlimited workers, 20 seats</li>
+            <li>400-day execution and evidence retention</li>
+            <li>SAML SSO, SCIM, enforced 2FA</li>
+            <li>20% volume discount on usage</li>
+            <li>99.9% SLA, priority support</li>
+          </ul>
+          <a class="btn btn-lime" href="signup.html">Open a trial workspace</a>
+        </div>
+
+        <div class="price-card">
+          <div class="plan-head">
+            <div class="plan-title-row"><h3>Enterprise</h3></div>
+            <p class="plan-desc">For regulated and private-network deployments.</p>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount">Custom</div>
+            <div class="plan-note">annual contract, invoice billing</div>
+          </div>
+          <ul class="plan-list">
+            <li>Workers inside your own VPC</li>
+            <li>Custom retention and legal hold</li>
+            <li>Dedicated support and onboarding</li>
+            <li>Security review and DPA</li>
+            <li>Named uptime commitments</li>
+          </ul>
+          <a class="btn btn-dark" href="index.html#contact">Talk to sales</a>
+        </div>
+
+      </div>
+
+      <div class="bento" style="margin-top:12px; grid-template-columns:repeat(3,1fr);">
+        <div class="bento-card white" style="min-height:auto;"><h3>Every charge has a source</h3><p>Model usage, connection calls, storage and egress appear against the execution that caused them.</p></div>
+        <div class="bento-card white" style="min-height:auto;"><h3>Boundaries on every tier</h3><p>Choose a monthly limit and new executions park before crossing it, including on Starter.</p></div>
+        <div class="bento-card lime" style="min-height:auto;"><h3>Observers stay free</h3><p style="color:rgba(17,19,17,0.66);">Read-only access is unlimited. A seat is used only by someone who can start work or resolve a checkpoint.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Compare</span>
+        <h2 class="section-title">Choose the evidence horizon you need</h2>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="compare">
+          <thead>
+            <tr><th>Feature</th><th>Starter</th><th>Scale</th><th>Enterprise</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Workers</td><td>3</td><td>Unlimited</td><td>Unlimited</td></tr>
+            <tr><td>Seats included</td><td>5</td><td>20</td><td>Custom</td></tr>
+            <tr><td>Execution history</td><td>7 days</td><td>400 days</td><td>Custom</td></tr>
+            <tr><td>Decision checkpoints</td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td></tr>
+            <tr><td>Evidence chain &amp; signed export</td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td></tr>
+            <tr><td>Spend caps</td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td></tr>
+            <tr><td>SAML SSO &amp; SCIM</td><td class="no"><i data-lucide="minus" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td></tr>
+            <tr><td>Private VPC workers</td><td class="no"><i data-lucide="minus" aria-hidden="true"></i></td><td class="no"><i data-lucide="minus" aria-hidden="true"></i></td><td class="yes"><i data-lucide="check" aria-hidden="true"></i></td></tr>
+            <tr><td>Concurrent executions</td><td>5</td><td>40</td><td>Custom</td></tr>
+            <tr><td>API rate limit</td><td>60 / min</td><td>600 / min</td><td>Custom</td></tr>
+            <tr><td>Support</td><td>Community</td><td>Priority, 4h</td><td>Dedicated, 1h</td></tr>
+            <tr><td>Uptime SLA</td><td class="no"><i data-lucide="minus" aria-hidden="true"></i></td><td>99.9%</td><td>Named</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Billing details</span>
+        <h2 class="section-title">No mystery line items</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>What counts as usage?</summary>
+          <p>Model usage, outbound connection calls, artifact storage and egress. Each charge stays attached to its execution and worker, so the expensive stage is visible immediately.</p>
+        </details>
+        <details>
+          <summary>What happens at the spend cap?</summary>
+          <p>Queued executions stop opening and active work finishes its current stage before parking. Raise the boundary to resume; an 80% notification arrives before the stop.</p>
+        </details>
+        <details>
+          <summary>Do viewers take a seat?</summary>
+          <p>No. Read-only access is free and unlimited. A seat is used only by people who can start or pause work, change policy or resolve checkpoints.</p>
+        </details>
+        <details>
+          <summary>Can we switch plans mid-month?</summary>
+          <p>Yes. Upgrades apply immediately and are prorated; downgrades take effect at the next renewal so you keep what you paid for. Annual plans can add seats at any time.</p>
+        </details>
+        <details>
+          <summary>Is there a trial on Scale?</summary>
+          <p>Fourteen days with the full Scale feature set, no card. If you do nothing at the end, the workspace drops to Starter rather than being deleted.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="cta-band">
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="top:22%; left:11%;"></i>
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="bottom:20%; right:13%;"></i>
+        <h2 class="section-title">Begin with one accountable workflow</h2>
+        <p class="lede" style="max-width:520px; margin:14px auto 0; color:rgba(17,19,17,0.62);">Three workers, complete checkpoints and a verifiable evidence record. Expand when production demands it.</p>
+        <div class="actions">
+          <a class="btn btn-dark" href="signup.html">Create workspace</a>
+          <a class="btn btn-line btn-plain" href="fleet.html" style="border-color:rgba(17,19,17,0.24);">Explore the workspace</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

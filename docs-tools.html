@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connections — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-tools">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Guides</span>
+        <h1>Connections</h1>
+        <p class="docs-lede">A connection is any outside capability a worker can reach. Register it once with a schema and scope, then revoke access from one place.</p>
+
+        <h2 id="register">Registering a connection</h2>
+        <p>A connection manifest declares the name, parameters and allowed destination. Deploy it like a worker definition.</p>
+        <div class="code">
+          <div class="code-head"><span>pdf_exporter.json</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>{
+  <span class="k">"name"</span>: <span class="s">"pdf_exporter"</span>,
+  <span class="k">"version"</span>: <span class="s">"2.1.4"</span>,
+  <span class="k">"description"</span>: <span class="s">"Generate PDF reports from structured data."</span>,
+  <span class="k">"lane"</span>: <span class="s">"active"</span>,
+  <span class="k">"endpoint"</span>: <span class="s">"https://tools.acme.io/pdf"</span>,
+  <span class="k">"timeout_ms"</span>: <span class="n">30000</span>,
+  <span class="k">"parameters"</span>: {
+    <span class="k">"template"</span>:     { <span class="k">"type"</span>: <span class="s">"string"</span>, <span class="k">"required"</span>: <span class="n">true</span> },
+    <span class="k">"orientation"</span>:  { <span class="k">"type"</span>: <span class="s">"enum"</span>, <span class="k">"values"</span>: [<span class="s">"portrait"</span>, <span class="s">"landscape"</span>] },
+    <span class="k">"header_image"</span>: { <span class="k">"type"</span>: <span class="s">"url"</span> }
+  }
+}</pre>
+        </div>
+
+        <h2 id="grant">Granting access</h2>
+        <p>Registration does not grant anything. A worker may use a connection only when it appears in its definition and the registry contains a matching grant. Anything else is refused and recorded as a policy violation.</p>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo connections grant pdf_exporter --worker invoice-parser-v2 --scope write
+nalvo connections revoke legacy_ftp --all
+<span class="c"># → revoked from 3 workers, effective immediately</span></pre>
+        </div>
+        <div class="callout warn">
+          <strong>Revocation is instant and global</strong>
+          <p>Revoking does not wait for a redeploy. Live executions fail their next call with <code class="inline">connection_revoked</code>, so park affected workers first when the connection is on a hot path.</p>
+        </div>
+
+        <h2 id="lanes">Lanes</h2>
+        <table class="doc-table">
+          <thead><tr><th>Lane</th><th>Behaviour</th></tr></thead>
+          <tbody>
+            <tr><td>active</td><td>Normal. Counted in SLAs and health metrics.</td></tr>
+            <tr><td>beta</td><td>Callable, flagged in the console, excluded from SLA calculations.</td></tr>
+            <tr><td>deprecated</td><td>Still works until <code class="inline">removal_date</code>; every call emits a warning into the execution events.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="calling">Using a connection</h2>
+        <div class="code">
+          <div class="code-head"><span>worker.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">const</span> report = <span class="k">await</span> nalvo.connections.call(execution.id, <span class="s">"pdf_exporter"</span>, {
+  template: <span class="s">"vendor-summary"</span>,
+  orientation: <span class="s">"portrait"</span>
+});
+
+<span class="c">// the call is recorded on the current stage:</span>
+<span class="c">// latency, status code, bytes in/out, cost</span></pre>
+        </div>
+        <p>Calls made through <code class="inline">nalvo.connections.call</code> are attributed to the enclosing stage automatically, which fills the latency and error-rate figures on the <a href="tools.html">Connections</a> page.</p>
+
+        <h2 id="integrations">Providers</h2>
+        <p>Providers hold managed credentials for systems such as Slack, Salesforce, S3, Postgres and PagerDuty. Nalvo stores only an encrypted refresh token, never the password.</p>
+        <ul>
+          <li>OAuth connections are approved by a workspace admin, once</li>
+          <li>Scopes can be narrowed per worker — read-only for most, write for a named few</li>
+          <li>An expired token surfaces on the <a href="integrations.html">Providers</a> page before executions start failing in bulk</li>
+        </ul>
+
+        <h2 id="errors">Error contract</h2>
+        <table class="doc-table">
+          <thead><tr><th>Code</th><th>Meaning</th><th>Retried?</th></tr></thead>
+          <tbody>
+            <tr><td>connection_timeout</td><td>No response inside <code class="inline">timeout_ms</code></td><td>Yes, per worker retry policy</td></tr>
+            <tr><td>connection_revoked</td><td>Grant removed while the execution was live</td><td>No</td></tr>
+            <tr><td>connection_schema_error</td><td>Arguments did not match the manifest</td><td>No</td></tr>
+            <tr><td>connection_rate_limited</td><td>Upstream returned 429</td><td>Yes, with backoff</td></tr>
+            <tr><td>connection_upstream_error</td><td>Upstream 5xx</td><td>Yes, per retry policy</td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-nextprev">
+          <a href="docs-approvals.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Decision checkpoints</strong></a>
+          <a class="next" href="docs-webhooks.html"><span>Next</span><strong>Webhooks <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#register">Registering a connection</a>
+        <a href="#grant">Granting access</a>
+        <a href="#lanes">Lanes</a>
+        <a href="#calling">Using a connection</a>
+        <a href="#integrations">Providers</a>
+        <a href="#errors">Error contract</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

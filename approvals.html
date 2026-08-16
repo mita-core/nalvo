@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkpoints — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="approvals">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Decision checkpoints</div>
+            <div class="page-subtitle">3 pending · 47 accepted · 12 declined this week</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost btn-auto" data-toast="Policy editor opens the checkpoint rule set">Checkpoint policy</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".approval-item">
+          <button class="filter-tab active" data-value="pending">Pending</button>
+          <button class="filter-tab" data-value="approved">Approved</button>
+          <button class="filter-tab" data-value="rejected">Rejected</button>
+          <button class="filter-tab" data-value="all">All</button>
+          <input class="filter-search" placeholder="Search checkpoints…" aria-label="Search checkpoints">
+        </div>
+
+        <div class="approval-list">
+          <div class="approval-item selected" data-run="8291" data-status="pending">
+            <div class="approval-top">
+              <span class="approval-agent">contract-renewal-bot · Execution #8291</span>
+              <span class="approval-time">32 min ago</span>
+            </div>
+            <div class="approval-desc">Review contract amendment for Acme Corp — extends MSA through Q1 2025</div>
+            <div class="row" style="margin-top:10px;"><span class="badge badge-success">Low risk</span><span class="badge">Contract</span><span class="badge">Legal review done</span></div>
+          </div>
+          <div class="approval-item" data-run="8279" data-status="pending">
+            <div class="approval-top">
+              <span class="approval-agent">pricing-optimizer · Execution #8279</span>
+              <span class="approval-time">1h 14m ago</span>
+            </div>
+            <div class="approval-desc">Apply dynamic price adjustment to 1,240 SKUs — estimated +$18K/mo</div>
+            <div class="row" style="margin-top:10px;"><span class="badge badge-warning">Medium risk</span><span class="badge">Pricing</span><span class="badge">Reversible</span></div>
+          </div>
+          <div class="approval-item" data-run="8275" data-status="pending">
+            <div class="approval-top">
+              <span class="approval-agent">data-sync-pipeline · Execution #8275</span>
+              <span class="approval-time">2h 48m ago</span>
+            </div>
+            <div class="approval-desc">Execute schema migration v14 → v15 — 4 tables, 2hr window</div>
+            <div class="row" style="margin-top:10px;"><span class="badge badge-danger">High risk</span><span class="badge">Migration</span><span class="badge">Maintenance window</span></div>
+          </div>
+
+          <div class="approval-item" data-run="8261" data-status="approved" style="opacity:.62;">
+            <div class="approval-top">
+              <span class="approval-agent">report-generator · Execution #8261</span>
+              <span class="approval-time">Yesterday, 18:04</span>
+            </div>
+            <div class="approval-desc">Publish Q2 vendor spend report to finance workspace <strong style="color:var(--success);">— accepted</strong></div>
+          </div>
+          <div class="approval-item" data-run="8248" data-status="rejected" style="opacity:.62;">
+            <div class="approval-top">
+              <span class="approval-agent">onboarding-agent · Execution #8248</span>
+              <span class="approval-time">Yesterday, 11:20</span>
+            </div>
+            <div class="approval-desc">Grant admin role to 4 new hires <strong style="color:var(--danger);">— declined</strong></div>
+          </div>
+        </div>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="circle-check" aria-hidden="true"></i></div>
+          <div class="empty-title">Nothing to review</div>
+          <div class="empty-desc">No checkpoints match this filter. Pending items appear here the moment a worker asks for a decision.</div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title"><span class="dot pulse"></span>Checkpoint detail</div>
+        <div class="card">
+          <div class="card-meta" id="appr-meta">contract-renewal-bot · Execution #8291</div>
+          <div class="card-title" id="appr-title">Review contract amendment</div>
+          <div class="card-subtitle" id="appr-subtitle">MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.</div>
+          <div class="diff-block">
+            <div class="diff-header">Diff <span class="diff-filename" id="appr-diffname">MSA-2023-4402-A1.md</span></div>
+            <div class="diff-content" id="appr-diff">
+              <div class="diff-line"><span class="diff-line-num">14</span><span class="diff-text diff-ctx">## Term</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-minus">15</span><span class="diff-text diff-minus">- Effective through Sep 30, 2024</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-plus">15</span><span class="diff-text diff-plus">+ Effective through Mar 31, 2025</span></div>
+              <div class="diff-line"><span class="diff-line-num">28</span><span class="diff-text diff-ctx">## Service Level Penalties</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-minus">29</span><span class="diff-text diff-minus">- Monthly uptime below 99.9%: 2% credit</span></div>
+              <div class="diff-line"><span class="diff-line-num diff-plus">29</span><span class="diff-text diff-plus">+ Monthly uptime below 99.9%: 1.5% credit</span></div>
+            </div>
+          </div>
+          <div class="btn-row" id="appr-buttons">
+            <button class="btn btn-primary" onclick="resolveApproval('approved')">Accept</button>
+            <button class="btn btn-secondary" onclick="resolveApproval('rejected')">Decline</button>
+          </div>
+          <div id="appr-result" style="display:none; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:var(--s-3);"></div>
+          <span class="text-link" data-toast="Escalated to #ops-leads — SLA 30 min">Escalate to a human owner</span>
+        </div>
+
+        <div class="panel-title">Context</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Requested</span><span class="mini-value" id="appr-requested">32 min ago</span></div>
+            <div class="mini-row"><span class="mini-label">By</span><span class="mini-value" id="appr-by">contract-renewal-bot</span></div>
+            <div class="mini-row"><span class="mini-label">Type</span><span class="mini-value" id="appr-type">Contract Amendment</span></div>
+            <div class="mini-row"><span class="mini-label">Risk</span><span class="mini-value" id="appr-risk" style="color:var(--success);">Low</span></div>
+            <div class="mini-row"><span class="mini-label">Auto-escalate</span><span class="mini-value">in 3h 28m</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Decision log</div>
+        <div class="timeline">
+          <div class="tl-item accent"><div class="tl-time">09:31</div><div class="tl-title">Checkpoint opened</div><div class="tl-desc">decision_boundary · risk score 0.18</div></div>
+          <div class="tl-item"><div class="tl-time">09:31</div><div class="tl-title">Routed to ops-leads</div><div class="tl-desc">policy: contracts &gt; $50K need a human</div></div>
+          <div class="tl-item"><div class="tl-time">—</div><div class="tl-title">Awaiting decision</div><div class="tl-desc">auto-escalates after 4h</div></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  var APPROVALS = {
+    '8291': { agent: 'contract-renewal-bot', title: 'Review contract amendment',
+      subtitle: 'MSA-2023-4402. Extends term through Q1 2025. SLA penalty 2% → 1.5%.',
+      requested: '32 min ago', type: 'Contract Amendment', risk: 'Low', riskColor: 'var(--success)',
+      diffName: 'MSA-2023-4402-A1.md',
+      diff: [['14','ctx','## Term'],['15','minus','- Effective through Sep 30, 2024'],['15','plus','+ Effective through Mar 31, 2025'],['28','ctx','## Service Level Penalties'],['29','minus','- Monthly uptime below 99.9%: 2% credit'],['29','plus','+ Monthly uptime below 99.9%: 1.5% credit']] },
+    '8279': { agent: 'pricing-optimizer', title: 'Apply dynamic price adjustment',
+      subtitle: 'Reprice 1,240 SKUs based on competitor index. Estimated revenue impact +$18K/mo.',
+      requested: '1h 14m ago', type: 'Pricing Change', risk: 'Medium', riskColor: 'var(--warning)',
+      diffName: 'price-adjustment-8279.csv',
+      diff: [['3','ctx','sku,old_price,new_price'],['4','minus','- A-1021,14.90,14.90'],['4','plus','+ A-1021,14.90,13.40'],['5','minus','- A-1022,9.99,9.99'],['5','plus','+ A-1022,9.99,9.49']] },
+    '8275': { agent: 'data-sync-pipeline', title: 'Execute schema migration v14 → v15',
+      subtitle: 'Alters 4 tables in analytics warehouse. Requires 2hr maintenance window.',
+      requested: '2h 48m ago', type: 'Schema Migration', risk: 'High', riskColor: 'var(--danger)',
+      diffName: 'migration-v15.sql',
+      diff: [['1','ctx','-- migration v15'],['2','plus','+ ALTER TABLE orders ADD COLUMN source_channel TEXT;'],['3','plus','+ ALTER TABLE events ADD COLUMN session_id UUID;'],['4','minus','- DROP TABLE legacy_sessions;']] },
+    '8261': { agent: 'report-generator', title: 'Publish Q2 vendor spend report',
+      subtitle: 'Shares the finished report with the finance workspace. Already approved.',
+      requested: 'Yesterday, 18:04', type: 'Publication', risk: 'Low', riskColor: 'var(--success)',
+      diffName: 'q2-vendor-spend.pdf',
+      diff: [['1','ctx','22 pages · 42 vendors'],['2','plus','+ shared with finance-workspace']] },
+    '8248': { agent: 'onboarding-agent', title: 'Grant admin role to 4 new hires',
+      subtitle: 'Role elevation request. Rejected — least-privilege policy applies.',
+      requested: 'Yesterday, 11:20', type: 'Access Change', risk: 'High', riskColor: 'var(--danger)',
+      diffName: 'iam-change-8248.json',
+      diff: [['7','minus','- "role": "member"'],['7','plus','+ "role": "admin"']] }
+  };
+
+  var currentApproval = '8291';
+
+  function setApprovalResult(element, status, run) {
+    var ok = status === 'approved';
+    element.style.display = 'flex';
+    element.innerHTML = '<i data-lucide="' + (ok ? 'circle-check' : 'circle-x') + '" aria-hidden="true"></i><span>' +
+      (ok ? 'Accepted — Execution #' + run + ' resumed' : 'Declined — Execution #' + run + ' cancelled') + '</span>';
+    element.style.color = ok ? 'var(--success)' : 'var(--danger)';
+    refreshIcons(element);
+  }
+
+  function selectApproval(item) {
+    var run = item.dataset.run, a = APPROVALS[run];
+    if (!a) return;
+    currentApproval = run;
+
+    document.querySelectorAll('.approval-item').forEach(function (c) { c.classList.toggle('selected', c === item); });
+
+    opSet('appr-meta', a.agent + ' · Execution #' + run);
+    opSet('appr-title', a.title);
+    opSet('appr-subtitle', a.subtitle);
+    opSet('appr-diffname', a.diffName);
+    document.getElementById('appr-diff').innerHTML = a.diff.map(function (l) {
+      return '<div class="diff-line"><span class="diff-line-num ' + (l[1] !== 'ctx' ? 'diff-' + l[1] : '') + '">' + l[0] +
+        '</span><span class="diff-text diff-' + l[1] + '">' + l[2] + '</span></div>';
+    }).join('');
+
+    opSet('appr-requested', a.requested);
+    opSet('appr-by', a.agent);
+    opSet('appr-type', a.type);
+    var risk = document.getElementById('appr-risk');
+    risk.textContent = a.risk;
+    risk.style.color = a.riskColor;
+
+    var resolved = item.dataset.status !== 'pending';
+    document.getElementById('appr-buttons').style.display = resolved ? 'none' : '';
+    var res = document.getElementById('appr-result');
+    if (resolved) {
+      setApprovalResult(res, item.dataset.status, run);
+    } else {
+      res.style.display = 'none';
+    }
+  }
+
+  function resolveApproval(decision) {
+    document.getElementById('appr-buttons').style.display = 'none';
+    var result = document.getElementById('appr-result');
+    var ok = decision === 'approved';
+    setApprovalResult(result, decision, currentApproval);
+
+    var item = document.querySelector('.approval-item[data-run="' + currentApproval + '"]');
+    if (item) {
+      item.style.opacity = '0.62';
+      item.dataset.status = decision;
+      var desc = item.querySelector('.approval-desc');
+      if (desc && !desc.dataset.marked) {
+        desc.dataset.marked = '1';
+        desc.innerHTML += ' <strong style="color:' + (ok ? 'var(--success)' : 'var(--danger)') + ';">— ' + decision + '</strong>';
+      }
+    }
+    showToast(ok ? 'Accepted — execution #' + currentApproval + ' resumed' : 'Declined — execution #' + currentApproval + ' cancelled');
+  }
+
+  document.querySelectorAll('.approval-item').forEach(function (c) {
+    c.addEventListener('click', function () { selectApproval(c); });
+  });
+</script>
+</body>
+</html>

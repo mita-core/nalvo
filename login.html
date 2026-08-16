@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body class="auth" data-page="login">
+
+<div class="auth-card">
+  <a class="auth-brand" href="index.html">
+    <span class="mark">N</span>
+    <span class="name">NALVO</span>
+  </a>
+
+  <div class="auth-box">
+    <h1 class="auth-title">Sign in</h1>
+    <p class="auth-sub">Use your work account to open the evidence workspace.</p>
+
+    <div class="auth-status err" id="err" role="alert"></div>
+
+    <button class="sso-btn" onclick="ssoLogin('Okta')">
+      <i data-lucide="shield-check" aria-hidden="true"></i>
+      Continue with Okta SSO
+    </button>
+    <button class="sso-btn" onclick="ssoLogin('Google')">
+      <i data-lucide="circle-user-round" aria-hidden="true"></i>
+      Continue with Google
+    </button>
+
+    <div class="divider">or with email</div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label class="field-label" for="email">Work email</label>
+        <input class="input" type="email" id="email" name="email" autocomplete="username" placeholder="jordan@acme.io" required>
+        <div class="field-error" id="e-email">Enter a valid work email address.</div>
+      </div>
+
+      <div class="field">
+        <div class="row-between" style="margin-bottom:6px;">
+          <label class="field-label" for="password" style="margin:0;">Password</label>
+          <a class="auth-link" href="forgot-password.html" style="font-size:11px;">Forgot password?</a>
+        </div>
+        <div class="input-group">
+          <input class="input" type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+          <button type="button" class="btn btn-secondary btn-auto" onclick="togglePw(this)" aria-label="Show password">Show</button>
+        </div>
+        <div class="field-error" id="e-password">Password must be at least 8 characters.</div>
+      </div>
+
+      <label class="check-row" style="margin-bottom:20px;">
+        <input type="checkbox" id="remember" checked> Keep me signed in on this device
+      </label>
+
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    <div class="auth-foot">New to Nalvo? <a href="signup.html">Create a workspace</a></div>
+  </div>
+
+  <div class="auth-legal">
+    Protected by SSO and two-factor authentication.<br>
+    <a href="index.html">Back to website</a> · <a href="docs.html">Documentation</a>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function togglePw(btn) {
+    var input = document.getElementById('password');
+    var show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.textContent = show ? 'Hide' : 'Show';
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  }
+
+  function ssoLogin(provider) {
+    showToast('Redirecting to ' + provider + '…');
+    setTimeout(function () { location.href = 'two-factor.html'; }, 700);
+  }
+
+  function fail(id, on) {
+    document.getElementById('e-' + id).classList.toggle('show', on);
+    document.getElementById(id).setAttribute('aria-invalid', String(on));
+    return !on;
+  }
+
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('email').value.trim();
+    var pw = document.getElementById('password').value;
+    var okEmail = fail('email', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email));
+    var okPw = fail('password', pw.length < 8);
+    var err = document.getElementById('err');
+
+    if (!okEmail || !okPw) { err.classList.remove('show'); return; }
+
+    if (pw === 'wrongpassword') {
+      err.textContent = 'That email and password do not match. Try again or reset your password.';
+      err.classList.add('show');
+      return;
+    }
+
+    err.classList.remove('show');
+    showToast('Signed in — checking two-factor');
+    sessionStorage.setItem('nalvo_email', email);
+    setTimeout(function () { location.href = 'two-factor.html'; }, 600);
+  });
+</script>
+</body>
+</html>

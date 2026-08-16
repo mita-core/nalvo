@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webhooks — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-webhooks">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Guides</span>
+        <h1>Webhooks</h1>
+        <p class="docs-lede">Push execution and checkpoint events into your own systems instead of polling. Signed, retried and ordered per execution.</p>
+
+        <h2 id="setup">Setting up an endpoint</h2>
+        <p>Add the endpoint under <a href="integrations.html">Providers → Outbound webhooks</a>, pick the events and copy the signing secret. Endpoints must be HTTPS and answer within 5 seconds.</p>
+
+        <h2 id="events">Events</h2>
+        <table class="doc-table">
+          <thead><tr><th>Event</th><th>Fires when</th></tr></thead>
+          <tbody>
+            <tr><td>execution.started</td><td>A worker picks the execution up</td></tr>
+            <tr><td>execution.completed</td><td>Execution reached <code class="inline">done</code></td></tr>
+            <tr><td>execution.failed</td><td>Execution reached <code class="inline">failed</code>, after retries</td></tr>
+            <tr><td>execution.cancelled</td><td>Cancelled by a person or by policy</td></tr>
+            <tr><td>stage.failed</td><td>A stage failed, even if the execution recovers</td></tr>
+            <tr><td>checkpoint.requested</td><td>A boundary parked an execution</td></tr>
+            <tr><td>checkpoint.decided</td><td>Someone accepted or declined</td></tr>
+            <tr><td>checkpoint.expired</td><td>TTL elapsed with no decision</td></tr>
+            <tr><td>budget.threshold</td><td>Workspace spend crossed 80%</td></tr>
+            <tr><td>budget.cap_reached</td><td>New executions parked at the cap</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="payload">Payload</h2>
+        <div class="code">
+          <div class="code-head"><span>POST your-endpoint</span></div>
+<pre>{
+  <span class="k">"id"</span>: <span class="s">"evt_2f81c0"</span>,
+  <span class="k">"type"</span>: <span class="s">"execution.failed"</span>,
+  <span class="k">"created_at"</span>: <span class="s">"2024-08-03T08:47:14Z"</span>,
+  <span class="k">"workspace"</span>: <span class="s">"acme-ops"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"execution"</span>: <span class="n">8289</span>,
+    <span class="k">"worker"</span>: <span class="s">"onboarding-agent"</span>,
+    <span class="k">"version"</span>: <span class="s">"3.1.0"</span>,
+    <span class="k">"failed_stage"</span>: <span class="s">"create_user_record"</span>,
+    <span class="k">"connection"</span>: <span class="s">"salesforce_api"</span>,
+    <span class="k">"error"</span>: <span class="s">"connection_timeout after 3 retries"</span>,
+    <span class="k">"cost_usd"</span>: <span class="n">0.08</span>
+  }
+}</pre>
+        </div>
+
+        <h2 id="signing">Verifying the signature</h2>
+        <p>Each delivery carries <code class="inline">X-Nalvo-Signature</code> — an HMAC-SHA256 of the raw body with your endpoint secret — and <code class="inline">X-Nalvo-Timestamp</code>. Verify both, and reject anything older than five minutes.</p>
+        <div class="code">
+          <div class="code-head"><span>verify.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">import</span> crypto <span class="k">from</span> <span class="s">"node:crypto"</span>;
+
+<span class="k">function</span> verify(rawBody, headers, secret) {
+  <span class="k">const</span> ts = headers[<span class="s">"x-nalvo-timestamp"</span>];
+  <span class="k">if</span> (Math.abs(Date.now() / <span class="n">1000</span> - Number(ts)) &gt; <span class="n">300</span>) <span class="k">return</span> <span class="n">false</span>;
+
+  <span class="k">const</span> expected = crypto
+    .createHmac(<span class="s">"sha256"</span>, secret)
+    .update(ts + <span class="s">"."</span> + rawBody)
+    .digest(<span class="s">"hex"</span>);
+
+  <span class="k">return</span> crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(headers[<span class="s">"x-nalvo-signature"</span>])
+  );
+}</pre>
+        </div>
+        <div class="callout warn">
+          <strong>Use the raw body</strong>
+          <p>Verify before any JSON middleware parses and re-serialises the request. Re-serialised JSON produces a different byte string and the signature will never match.</p>
+        </div>
+
+        <h2 id="retries">Retries and ordering</h2>
+        <ul>
+          <li>Any non-2xx or a timeout is retried with exponential backoff: 10s, 1m, 5m, 30m, 2h, 6h</li>
+          <li>After six failures the endpoint is marked unhealthy and shown in the console</li>
+          <li>Events for the same execution are delivered in order; across executions they are not</li>
+          <li>Deliveries are at-least-once — dedupe on <code class="inline">event.id</code></li>
+        </ul>
+
+        <h2 id="testing">Testing locally</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo webhooks listen --forward http://localhost:3000/hooks
+<span class="c"># → tunnelling acme-ops events to localhost:3000</span>
+
+nalvo webhooks send execution.failed --execution 8289
+<span class="c"># → sent test event evt_test_44a1</span></pre>
+        </div>
+
+        <h2 id="practices">Practices</h2>
+        <ul>
+          <li><strong>Answer fast, work later.</strong> Return 200 immediately and process on a queue — the 5-second budget is enforced.</li>
+          <li><strong>Treat events as hints, not truth.</strong> Fetch the execution from the API when you need authoritative state.</li>
+          <li><strong>Do not resolve checkpoints in a webhook.</strong> Decisions belong in the workspace or through the API; a webhook is a notification.</li>
+        </ul>
+
+        <div class="doc-nextprev">
+          <a href="docs-tools.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Connections</strong></a>
+          <a class="next" href="docs-api.html"><span>Next</span><strong>REST API <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#setup">Setting up</a>
+        <a href="#events">Events</a>
+        <a href="#payload">Payload</a>
+        <a href="#signing">Signature</a>
+        <a href="#retries">Retries</a>
+        <a href="#testing">Testing locally</a>
+        <a href="#practices">Practices</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

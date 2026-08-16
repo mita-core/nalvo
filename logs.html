@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="logs">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Events</div>
+            <div class="page-subtitle" data-filter-count="{n} entries shown · live stream">Live stream · 1,247 entries in last hour</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost btn-auto" id="pause-btn" onclick="toggleStream(this)">Pause stream</button>
+            <button class="btn btn-secondary btn-auto" data-toast="Exported events-2024-08-03.ndjson">Export</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".log-entry">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="info">Info</button>
+          <button class="filter-tab" data-value="warn">Warn</button>
+          <button class="filter-tab" data-value="error">Error</button>
+          <button class="filter-tab" data-value="debug">Debug</button>
+          <input class="filter-search" placeholder="Filter events…" aria-label="Filter events">
+        </div>
+
+        <div class="log-stream" id="log-stream">
+          <div class="log-entry" data-status="info"><span class="log-ts">09:42:18</span><span class="log-level info">INFO</span><span class="log-msg">Execution #8288 completed — archived 47 files</span><span class="log-agent">compliance-checker</span></div>
+          <div class="log-entry" data-status="debug"><span class="log-ts">09:41:55</span><span class="log-level debug">DEBUG</span><span class="log-msg">S3 upload batch complete — 12.4 MB</span><span class="log-agent">s3_upload</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:41:03</span><span class="log-level info">INFO</span><span class="log-msg">Schema validation passed — 12/12 fields</span><span class="log-agent">invoice-parser-v2</span></div>
+          <div class="log-entry" data-status="warn"><span class="log-ts">09:40:44</span><span class="log-level warn">WARN</span><span class="log-msg">Rate limit approaching — 892/1000 req/min</span><span class="log-agent">http_client</span></div>
+          <div class="log-entry" data-status="error"><span class="log-ts">09:38:12</span><span class="log-level error">ERROR</span><span class="log-msg">Salesforce API timeout after 30s</span><span class="log-agent">onboarding-agent</span></div>
+          <div class="log-entry" data-status="debug"><span class="log-ts">09:38:09</span><span class="log-level debug">DEBUG</span><span class="log-msg">Creating user record — payload: 2.4 KB</span><span class="log-agent">onboarding-agent</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:35:22</span><span class="log-level info">INFO</span><span class="log-msg">Auto-scaling triggered — 6 → 8 workers</span><span class="log-agent">system</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:34:01</span><span class="log-level info">INFO</span><span class="log-msg">Checkpoint opened — ID: chk_8291_001</span><span class="log-agent">decision_boundary</span></div>
+          <div class="log-entry" data-status="warn"><span class="log-ts">09:31:47</span><span class="log-level warn">WARN</span><span class="log-msg">Queue depth exceeded threshold — 14 items</span><span class="log-agent">system</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:31:15</span><span class="log-level info">INFO</span><span class="log-msg">Contract diff generated — 3 additions, 1 deletion</span><span class="log-agent">contract-renewal-bot</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:30:00</span><span class="log-level info">INFO</span><span class="log-msg">Scheduled execution started — cron: 0 9 * * *</span><span class="log-agent">invoice-parser-v2</span></div>
+          <div class="log-entry" data-status="debug"><span class="log-ts">09:29:48</span><span class="log-level debug">DEBUG</span><span class="log-msg">Connected to Redis pool — 8 connections</span><span class="log-agent">system</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:28:33</span><span class="log-level info">INFO</span><span class="log-msg">Database backup completed — 4.2 GB</span><span class="log-agent">system</span></div>
+          <div class="log-entry" data-status="warn"><span class="log-ts">09:27:11</span><span class="log-level warn">WARN</span><span class="log-msg">Token usage spike — 4,320 tokens in single call</span><span class="log-agent">invoice-parser-v2</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:25:00</span><span class="log-level info">INFO</span><span class="log-msg">Security audit completed — 0 critical findings</span><span class="log-agent">security-audit-bot</span></div>
+          <div class="log-entry" data-status="error"><span class="log-ts">09:24:38</span><span class="log-level error">ERROR</span><span class="log-msg">ETL failed — FK constraint on line 14,203</span><span class="log-agent">data-sync-pipeline</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:22:15</span><span class="log-level info">INFO</span><span class="log-msg">Competitor data fetched — 6 sources, 1,240 SKUs</span><span class="log-agent">pricing-optimizer</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:20:00</span><span class="log-level info">INFO</span><span class="log-msg">Email batch complete — 847 threads</span><span class="log-agent">email-classifier</span></div>
+          <div class="log-entry" data-status="debug"><span class="log-ts">09:18:42</span><span class="log-level debug">DEBUG</span><span class="log-msg">Cache hit ratio: 94.2%</span><span class="log-agent">system</span></div>
+          <div class="log-entry" data-status="info"><span class="log-ts">09:15:33</span><span class="log-level info">INFO</span><span class="log-msg">New worker registered — worker-09</span><span class="log-agent">system</span></div>
+        </div>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="scroll-text" aria-hidden="true"></i></div>
+          <div class="empty-title">No matching events</div>
+          <div class="empty-desc">Nothing at this level in the current window. Widen the level filter or clear the search.</div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Event detail</div>
+        <div class="card">
+          <div class="card-meta" id="logd-meta">Aug 3, 09:38:12 · onboarding-agent</div>
+          <div class="card-title" id="logd-title" style="color:var(--danger);">Salesforce API timeout</div>
+          <div class="card-subtitle" id="logd-subtitle">Request to create user record timed out after 30 seconds. Retry 1 of 3 scheduled.</div>
+          <div class="mini-list" style="margin-top:8px;">
+            <div class="mini-row"><span class="mini-label">Level</span><span class="mini-value" id="logd-level" style="color:var(--danger);">Error</span></div>
+            <div class="mini-row"><span class="mini-label">Execution</span><span class="mini-value" id="logd-run">#8289</span></div>
+            <div class="mini-row"><span class="mini-label">Stage</span><span class="mini-value" id="logd-step">create_user_record</span></div>
+            <div class="mini-row"><span class="mini-label">Connection</span><span class="mini-value" id="logd-tool">salesforce_api</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Raw entry</div>
+        <div class="code">
+          <div class="code-head"><span>ndjson</span><span class="text-link" data-toast="Raw entry copied">Copy</span></div>
+<pre id="logd-raw">{
+  <span class="k">"ts"</span>: <span class="s">"2024-08-03T09:38:12Z"</span>,
+  <span class="k">"level"</span>: <span class="s">"error"</span>,
+  <span class="k">"worker"</span>: <span class="s">"onboarding-agent"</span>,
+  <span class="k">"execution"</span>: <span class="n">8289</span>,
+  <span class="k">"connection"</span>: <span class="s">"salesforce_api"</span>,
+  <span class="k">"msg"</span>: <span class="s">"timeout after 30s"</span>
+}</pre>
+        </div>
+
+        <div class="panel-title mt-6">Volume by level · 1h</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="chart-body" style="height:120px;">
+            <svg data-chart="bar" data-series="864,212,48,123" data-labels="info,debug,error,warn"></svg>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function selectLog(entry) {
+    var ts = entry.querySelector('.log-ts').textContent.trim();
+    var levelEl = entry.querySelector('.log-level');
+    var level = levelEl.textContent.trim();
+    var msg = entry.querySelector('.log-msg').textContent.trim();
+    var agent = entry.querySelector('.log-agent').textContent.trim();
+    var cls = entry.dataset.status || 'debug';
+    var colors = { info: 'var(--info)', warn: 'var(--warning)', error: 'var(--danger)', debug: 'var(--text-tertiary)' };
+    var color = colors[cls];
+
+    document.querySelectorAll('.log-entry').forEach(function (e) {
+      e.style.background = e === entry ? 'var(--surface)' : '';
+    });
+
+    opSet('logd-meta', 'Aug 3, ' + ts + ' · ' + agent);
+    var title = document.getElementById('logd-title');
+    title.textContent = msg.split('—')[0].trim();
+    title.style.color = color;
+    opSet('logd-subtitle', msg);
+    var lvl = document.getElementById('logd-level');
+    lvl.textContent = level.charAt(0) + level.slice(1).toLowerCase();
+    lvl.style.color = color;
+    opSet('logd-run', cls === 'error' ? '#8289' : '—');
+    opSet('logd-step', cls === 'error' ? 'create_user_record' : '—');
+    opSet('logd-tool', agent);
+
+    document.getElementById('logd-raw').textContent =
+      '{\n  "ts": "2024-08-03T' + ts + 'Z",\n  "level": "' + cls + '",\n  "agent": "' + agent +
+      '",\n  "msg": "' + msg + '"\n}';
+  }
+
+  document.querySelectorAll('.log-entry').forEach(function (e) {
+    e.addEventListener('click', function () { selectLog(e); });
+  });
+
+  // Live stream simulation
+  var MSGS = [
+    ['info', 'Heartbeat OK — 8 workers healthy', 'system'],
+    ['debug', 'Cache warm — 2,140 keys', 'system'],
+    ['info', 'Execution queued — position 2', 'email-classifier'],
+    ['warn', 'Retry scheduled — backoff 4s', 'http_client'],
+    ['info', 'Batch complete — 64 records', 'etl_processor'],
+    ['error', 'Upstream 502 — retrying', 'http_client']
+  ];
+  var tick = 0, timer = null, clock = 43;
+
+  function pushLog() {
+    var m = MSGS[tick++ % MSGS.length];
+    clock++;
+    var stream = document.getElementById('log-stream');
+    var el = document.createElement('div');
+    el.className = 'log-entry';
+    el.dataset.status = m[0];
+    el.innerHTML = '<span class="log-ts">09:' + String(42 + Math.floor(clock / 60)).padStart(2, '0') + ':' +
+      String(clock % 60).padStart(2, '0') + '</span>' +
+      '<span class="log-level ' + m[0] + '">' + m[0].toUpperCase() + '</span>' +
+      '<span class="log-msg">' + m[1] + '</span><span class="log-agent">' + m[2] + '</span>';
+    el.addEventListener('click', function () { selectLog(el); });
+    stream.insertBefore(el, stream.firstChild);
+    while (stream.children.length > 60) stream.removeChild(stream.lastChild);
+    applyFilter(document.querySelector('.filter-bar'));
+  }
+
+  function startStream() { timer = setInterval(pushLog, 3200); }
+
+  function toggleStream(btn) {
+    if (timer) { clearInterval(timer); timer = null; btn.textContent = 'Resume stream'; showToast('Stream paused'); }
+    else { startStream(); btn.textContent = 'Pause stream'; showToast('Stream resumed'); }
+  }
+
+  startStream();
+</script>
+</body>
+</html>

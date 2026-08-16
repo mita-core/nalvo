@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core concepts — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-concepts">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Getting started</span>
+        <h1>Core concepts</h1>
+        <p class="docs-lede">Five objects describe the Nalvo evidence model. The API and workspace are simply two views of the same record.</p>
+
+        <h2 id="agent">Worker</h2>
+        <p>A named, versioned definition of autonomous work: the model it uses, the connections it may call, its timeout, retry policy and boundaries. Workers live in the registry and ship like code, with an explicit active version and one-action rollback.</p>
+        <table class="doc-table">
+          <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>name</td><td>Registry key. Lowercase with dashes, unique per workspace.</td></tr>
+            <tr><td>version</td><td>Semver. A deploy always creates a new one.</td></tr>
+            <tr><td>connections</td><td>Allow-list. Every other external call is rejected at runtime.</td></tr>
+            <tr><td>boundaries</td><td>Spend limits, checkpoint thresholds and PII redaction.</td></tr>
+            <tr><td>owner</td><td>Accountable group. Determines checkpoint routing.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="run">Execution</h2>
+        <p>One attempt by a worker. An execution has a trigger, an input payload, an ordered sequence of stages and exactly one terminal state.</p>
+        <div class="code">
+          <div class="code-head"><span>execution states</span></div>
+<pre>queued  →  running  →  <span class="s">done</span>
+                    ↘  waiting  →  running  →  <span class="s">done</span>
+                    ↘  <span class="c">failed</span>
+                    ↘  <span class="c">cancelled</span></pre>
+        </div>
+        <ul>
+          <li><strong>queued</strong> — accepted, waiting for a worker</li>
+          <li><strong>running</strong> — a worker is executing steps</li>
+          <li><strong>waiting</strong> — parked at a human checkpoint; not consuming a worker</li>
+          <li><strong>done / failed / cancelled</strong> — terminal, never reopened. A retry creates a linked execution.</li>
+        </ul>
+        <div class="callout">
+          <strong>Waiting is free</strong>
+          <p>An execution parked at a checkpoint releases its worker and costs nothing while it waits. A four-hour review window never becomes four hours of compute.</p>
+        </div>
+
+        <h2 id="step">Stage</h2>
+        <p>The unit inside an execution: a name, duration, model usage and optionally one connection call. Stages turn a vague failure into a precise fact, such as <code class="inline">create_user_record</code> timing out against <code class="inline">salesforce_api</code> after three retries.</p>
+        <div class="code">
+          <div class="code-head"><span>stage object</span></div>
+<pre>{
+  <span class="k">"id"</span>: <span class="s">"stg_8290_03"</span>,
+  <span class="k">"execution"</span>: <span class="n">8290</span>,
+  <span class="k">"name"</span>: <span class="s">"generate_report"</span>,
+  <span class="k">"connection"</span>: <span class="s">"pdf_exporter"</span>,
+  <span class="k">"status"</span>: <span class="s">"running"</span>,
+  <span class="k">"started_at"</span>: <span class="s">"2024-08-03T09:00:05Z"</span>,
+  <span class="k">"duration_ms"</span>: <span class="n">6700</span>,
+  <span class="k">"tokens"</span>: <span class="n">4320</span>,
+  <span class="k">"cost_usd"</span>: <span class="n">0.19</span>
+}</pre>
+        </div>
+
+        <h2 id="tool">Connection</h2>
+        <p>An external capability registered once with a JSON schema, then granted to specific workers. The registry makes immediate revocation possible without redeploying workflow code.</p>
+        <p>Connections carry a lifecycle state — <strong>active</strong>, <strong>beta</strong> or <strong>deprecated</strong>. Deprecated connections continue until their removal date and warn on every call.</p>
+
+        <h2 id="approval">Checkpoint</h2>
+        <p>A decision request raised by an execution. It carries the proposed change, impact tier, reviewer group and TTL. Resolving it resumes or cancels work; expiry escalates to the next group.</p>
+        <table class="doc-table">
+          <thead><tr><th>Risk tier</th><th>Typical routing</th><th>Default TTL</th></tr></thead>
+          <tbody>
+            <tr><td>low</td><td>Owning group, any member</td><td>8 hours</td></tr>
+            <tr><td>medium</td><td>Owning group, two reviewers</td><td>4 hours</td></tr>
+            <tr><td>high</td><td>Named reviewers, escalates to admins</td><td>1 hour</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="workspace">Workspace</h2>
+        <p>The boundary for everything above: workers, executions, connections, members, spending limits and evidence chain. A workspace pins one region. Most companies use production and staging with the same versioned definitions.</p>
+
+        <h2 id="ids">Identifiers</h2>
+        <table class="doc-table">
+          <thead><tr><th>Object</th><th>Format</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Execution</td><td>integer, workspace-scoped</td><td><code class="inline">8290</code></td></tr>
+            <tr><td>Stage</td><td><code class="inline">stg_&lt;execution&gt;_&lt;n&gt;</code></td><td><code class="inline">stg_8290_03</code></td></tr>
+            <tr><td>Checkpoint</td><td><code class="inline">chk_&lt;execution&gt;_&lt;n&gt;</code></td><td><code class="inline">chk_8291_001</code></td></tr>
+            <tr><td>API key</td><td><code class="inline">nlv_live_</code> / <code class="inline">nlv_test_</code></td><td><code class="inline">nlv_live_4f2a…</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-nextprev">
+          <a href="docs-quickstart.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Quickstart</strong></a>
+          <a class="next" href="docs-approvals.html"><span>Next</span><strong>Decision checkpoints <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#agent">Worker</a>
+        <a href="#run">Execution</a>
+        <a href="#step">Stage</a>
+        <a href="#tool">Connection</a>
+        <a href="#approval">Checkpoint</a>
+        <a href="#workspace">Workspace</a>
+        <a href="#ids">Identifiers</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

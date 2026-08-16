@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="settings-billing">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-header">
+          <div class="page-title">Billing</div>
+          <div class="page-subtitle">Scale plan · billed monthly · next invoice Sep 1</div>
+        </div>
+
+        <div class="tabs">
+          <a class="tab" href="settings.html">General</a>
+          <a class="tab" href="settings-team.html">Team</a>
+          <a class="tab active" href="settings-billing.html">Billing</a>
+          <a class="tab" href="settings-api.html">API keys</a>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">This month</div><div class="metric-value">$2,468</div><div class="metric-delta up">41% of $6,000 cap</div></div>
+          <div class="metric"><div class="metric-label">Plan fee</div><div class="metric-value">$1,200</div><div class="metric-delta up">20 seats included</div></div>
+          <div class="metric"><div class="metric-label">Usage</div><div class="metric-value">$1,268</div><div class="metric-delta down">-8% vs last month</div></div>
+          <div class="metric"><div class="metric-label">Forecast</div><div class="metric-value">$3,140</div><div class="metric-delta up">at current run rate</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="chart-card">
+            <div class="chart-head"><span class="chart-title">Spend by month</span><span class="chart-note">last 12 months</span></div>
+            <div class="chart-body"><svg data-chart="bar" data-series="1420,1510,1680,1740,1920,2100,2260,2380,2540,2810,2690,2468" data-labels="Sep,,Nov,,Jan,,Mar,,May,,Jul,"></svg></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-head"><span class="chart-title">Where the money goes</span><span class="chart-note">August</span></div>
+            <div style="display:flex; align-items:center; gap:var(--s-6);">
+              <svg data-donut="49,31,12,8" data-donut-label="$2,468" data-donut-sub="month to date" style="width:150px; height:150px; flex-shrink:0;"></svg>
+              <div class="mini-list" style="flex:1;">
+                <div class="mini-row"><span class="mini-label">Plan &amp; seats</span><span class="mini-value">$1,200</span></div>
+                <div class="mini-row"><span class="mini-label">Model tokens</span><span class="mini-value">$765</span></div>
+                <div class="mini-row"><span class="mini-label">Tool calls</span><span class="mini-value">$296</span></div>
+                <div class="mini-row"><span class="mini-label">Storage &amp; egress</span><span class="mini-value">$207</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section mt-8">
+          <div class="section-title">Plan</div>
+          <div class="grid-3">
+            <div class="card"><div class="card-title">Starter</div><div class="card-subtitle">3 workers · 5 seats · community support</div><div class="metric-value" style="font-size:22px; margin:12px 0 4px;">$0</div><div class="hint">Usage billed at list price</div><button class="btn btn-secondary btn-block mt-6" data-toast="Downgrade scheduled for Sep 1">Downgrade</button></div>
+            <div class="card" style="border-color:var(--accent);"><div class="row-between"><div class="card-title">Scale</div><span class="badge badge-accent">Current</span></div><div class="card-subtitle">Unlimited workers · 20 seats · SSO · 99.9% SLA</div><div class="metric-value" style="font-size:22px; margin:12px 0 4px;">$1,200<span style="font-size:12px; color:var(--text-tertiary); font-weight:500;">/mo</span></div><div class="hint">Usage at 20% volume discount</div><button class="btn btn-secondary btn-block mt-6" disabled>Your plan</button></div>
+            <div class="card"><div class="card-title">Enterprise</div><div class="card-subtitle">Private VPC · custom retention · dedicated support</div><div class="metric-value" style="font-size:22px; margin:12px 0 4px;">Custom</div><div class="hint">Annual contract, invoice billing</div><button class="btn btn-primary btn-block mt-6" data-toast="Sales will reach out within one business day">Talk to sales</button></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Payment method</div>
+          <div class="card" style="max-width:560px;">
+            <div class="row-between">
+              <div class="row">
+                <div class="thumb" style="width:40px; height:28px; border-radius:5px;"><i data-lucide="credit-card" aria-hidden="true"></i></div>
+                <div><div class="list-title">Visa ending 4242</div><div class="list-meta">Expires 09 / 2027 · billing@acme.io</div></div>
+              </div>
+              <button class="btn btn-ghost btn-auto" data-toast="Card update opens the secure payment form">Update</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Invoices</div>
+          <table class="data-table">
+            <thead><tr><th>Invoice</th><th>Period</th><th>Amount</th><th>Status</th><th class="th-right">Download</th></tr></thead>
+            <tbody>
+              <tr><td class="tnum">INV-2024-0812</td><td>Aug 1 – Aug 31</td><td class="tnum">$2,468</td><td><span class="badge badge-warning">Open</span></td><td class="td-right"><span class="text-link" data-toast="Preview of the current period — final on Sep 1">Preview</span></td></tr>
+              <tr><td class="tnum">INV-2024-0711</td><td>Jul 1 – Jul 31</td><td class="tnum">$2,690</td><td><span class="badge badge-success">Paid</span></td><td class="td-right"><span class="text-link" data-toast="Downloaded INV-2024-0711.pdf">PDF</span></td></tr>
+              <tr><td class="tnum">INV-2024-0610</td><td>Jun 1 – Jun 30</td><td class="tnum">$2,810</td><td><span class="badge badge-success">Paid</span></td><td class="td-right"><span class="text-link" data-toast="Downloaded INV-2024-0610.pdf">PDF</span></td></tr>
+              <tr><td class="tnum">INV-2024-0509</td><td>May 1 – May 31</td><td class="tnum">$2,540</td><td><span class="badge badge-success">Paid</span></td><td class="td-right"><span class="text-link" data-toast="Downloaded INV-2024-0509.pdf">PDF</span></td></tr>
+              <tr><td class="tnum">INV-2024-0408</td><td>Apr 1 – Apr 30</td><td class="tnum">$2,380</td><td><span class="badge badge-success">Paid</span></td><td class="td-right"><span class="text-link" data-toast="Downloaded INV-2024-0408.pdf">PDF</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Spending cap</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:8px;"><span class="mini-label">Monthly cap</span><span class="mini-value">$6,000</span></div>
+          <div class="progress"><div class="progress-fill" style="width:41%;"></div></div>
+          <div class="hint">$2,468 used · workers pause automatically at the cap</div>
+          <div class="field mt-6" style="margin-bottom:0;">
+            <label class="field-label" for="cap">Adjust cap</label>
+            <input class="input" id="cap" value="$6,000" onchange="showToast('Spending cap set to ' + this.value)">
+          </div>
+        </div>
+
+        <div class="panel-title">Alerts</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="setting-row" style="border:none; background:none; padding:0; margin-bottom:12px;">
+            <div><div class="setting-name">Alert at 80%</div><div class="setting-desc">Email the billing contact</div></div>
+            <button class="toggle on" onclick="toggleSetting(this, 'Alert at 80%')" aria-pressed="true"></button>
+          </div>
+          <div class="setting-row" style="border:none; background:none; padding:0;">
+            <div><div class="setting-name">Hard stop at cap</div><div class="setting-desc">Pause the fleet instead of overspending</div></div>
+            <button class="toggle on" onclick="toggleSetting(this, 'Hard stop')" aria-pressed="true"></button>
+          </div>
+        </div>
+
+        <div class="panel-title">Billing contact</div>
+        <div class="card" style="padding:var(--s-3) var(--s-4);">
+          <div class="mini-list">
+            <div class="mini-row"><span class="mini-label">Email</span><span class="mini-value">billing@acme.io</span></div>
+            <div class="mini-row"><span class="mini-label">Company</span><span class="mini-value">Acme Corp</span></div>
+            <div class="mini-row"><span class="mini-label">VAT</span><span class="mini-value">DE812…4471</span></div>
+            <div class="mini-row"><span class="mini-label">Terms</span><span class="mini-value">Net 30</span></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+</body>
+</html>

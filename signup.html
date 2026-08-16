@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create workspace — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body class="auth" data-page="signup">
+
+<div class="auth-card">
+  <a class="auth-brand" href="index.html">
+    <span class="mark">N</span>
+    <span class="name">NALVO</span>
+  </a>
+
+  <div class="auth-box">
+    <h1 class="auth-title">Create your workspace</h1>
+    <p class="auth-sub">Free for 14 days. No card, no sales call — your first worker can report evidence in about ten minutes.</p>
+
+    <button class="sso-btn" onclick="showToast('Redirecting to Google…'); setTimeout(function(){location.href='check-email.html';}, 700);">
+      <i data-lucide="circle-user-round" aria-hidden="true"></i>
+      Sign up with Google
+    </button>
+
+    <div class="divider">or with email</div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label class="field-label" for="name">Full name</label>
+        <input class="input" id="name" autocomplete="name" placeholder="Jordan Diaz" required>
+        <div class="field-error" id="e-name">Tell us what to call you.</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="email">Work email</label>
+        <input class="input" type="email" id="email" autocomplete="username" placeholder="jordan@acme.io" required>
+        <div class="field-error" id="e-email">Use a company address — free mail domains are not supported.</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="workspace">Workspace name</label>
+        <input class="input" id="workspace" placeholder="Acme Operations" required>
+        <div class="field-error" id="e-workspace">Give the workspace a name.</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="password">Password</label>
+        <div class="input-group">
+          <input class="input" type="password" id="password" autocomplete="new-password" placeholder="At least 10 characters" required>
+          <button type="button" class="btn btn-secondary btn-auto" onclick="togglePw(this)" aria-label="Show password">Show</button>
+        </div>
+        <div class="pw-meter" aria-hidden="true">
+          <span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span>
+        </div>
+        <div class="pw-note" id="pw-note">Use 10+ characters with a number and a symbol.</div>
+        <div class="field-error" id="e-password">Password is too weak — add length, a number and a symbol.</div>
+      </div>
+
+      <label class="check-row" style="margin-bottom:8px;">
+        <input type="checkbox" id="terms"> I agree to the <a class="auth-link" href="#">Terms</a> and <a class="auth-link" href="#">Privacy Policy</a>
+      </label>
+      <div class="field-error" id="e-terms" style="margin:0 0 16px;">You need to accept the terms to continue.</div>
+
+      <button class="btn btn-primary btn-block" type="submit">Create workspace</button>
+    </form>
+
+    <div class="auth-foot">Already have an account? <a href="login.html">Sign in</a></div>
+  </div>
+
+  <div class="auth-legal">
+    SOC 2 Type II · GDPR ready · data stays in your region.<br>
+    <a href="index.html">Back to website</a> · <a href="pricing.html">Pricing</a>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  var FREE_MAIL = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'proton.me'];
+
+  function togglePw(btn) {
+    var input = document.getElementById('password');
+    var show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.textContent = show ? 'Hide' : 'Show';
+  }
+
+  function score(pw) {
+    var s = 0;
+    if (pw.length >= 10) s++;
+    if (pw.length >= 14) s++;
+    if (/\d/.test(pw)) s++;
+    if (/[^A-Za-z0-9]/.test(pw)) s++;
+    return Math.min(s, 4);
+  }
+
+  var LABELS = ['Too weak', 'Weak', 'Fair', 'Good', 'Strong'];
+  var COLORS = ['var(--danger)', 'var(--danger)', 'var(--warning)', 'var(--accent)', 'var(--success)'];
+
+  document.getElementById('password').addEventListener('input', function () {
+    var s = score(this.value);
+    document.querySelectorAll('.pw-seg').forEach(function (seg, i) {
+      seg.style.background = i < s ? COLORS[s] : 'var(--surface-raised)';
+    });
+    var note = document.getElementById('pw-note');
+    note.textContent = this.value ? LABELS[s] + ' — ' + (s >= 3 ? 'good to go.' : 'add length, a number and a symbol.')
+                                  : 'Use 10+ characters with a number and a symbol.';
+    note.style.color = this.value ? COLORS[s] : 'var(--text-tertiary)';
+  });
+
+  function fail(id, on) {
+    document.getElementById('e-' + id).classList.toggle('show', on);
+    var f = document.getElementById(id);
+    if (f) f.setAttribute('aria-invalid', String(on));
+    return !on;
+  }
+
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim().toLowerCase();
+    var ws = document.getElementById('workspace').value.trim();
+    var pw = document.getElementById('password').value;
+    var terms = document.getElementById('terms').checked;
+
+    var domain = email.split('@')[1] || '';
+    var ok = [
+      fail('name', name.length < 2),
+      fail('email', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || FREE_MAIL.indexOf(domain) > -1),
+      fail('workspace', ws.length < 2),
+      fail('password', score(pw) < 3),
+      fail('terms', !terms)
+    ].every(Boolean);
+
+    if (!ok) return;
+
+    sessionStorage.setItem('nalvo_email', email);
+    showToast('Workspace created — verify your email');
+    setTimeout(function () { location.href = 'check-email.html?flow=signup'; }, 700);
+  });
+</script>
+</body>
+</html>

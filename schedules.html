@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triggers — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=18">
+</head>
+<body data-page="schedules">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Triggers</div>
+            <div class="page-subtitle" data-filter-count="{n} triggers shown · all times UTC">9 triggers · 7 enabled · all times UTC</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-primary btn-auto" onclick="openModal('m-sched')">New schedule</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".data-table tbody tr">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="enabled">Enabled</button>
+          <button class="filter-tab" data-value="paused">Paused</button>
+          <input class="filter-search" placeholder="Search triggers…" aria-label="Search triggers">
+        </div>
+
+        <table class="data-table">
+          <thead><tr><th>Worker</th><th>Cron</th><th>Human readable</th><th>Last execution</th><th>Next execution</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr data-status="enabled"><td><div class="agent-name">invoice-parser-v2</div><div class="agent-meta">finance-ops</div></td><td><code class="inline">0 9 * * *</code></td><td>Every day at 09:00</td><td class="tnum">Today, 09:00</td><td class="tnum">Tomorrow, 09:00</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">security-audit-bot</div><div class="agent-meta">platform</div></td><td><code class="inline">0 2 * * *</code></td><td>Every day at 02:00</td><td class="tnum">Today, 02:00</td><td class="tnum">Tomorrow, 02:00</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">email-classifier</div><div class="agent-meta">support</div></td><td><code class="inline">*/15 * * * *</code></td><td>Every 15 minutes</td><td class="tnum">Today, 09:30</td><td class="tnum">Today, 09:45</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">report-generator</div><div class="agent-meta">finance-ops</div></td><td><code class="inline">0 7 * * 1</code></td><td>Mondays at 07:00</td><td class="tnum">Jul 29, 07:00</td><td class="tnum">Aug 5, 07:00</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">compliance-checker</div><div class="agent-meta">legal</div></td><td><code class="inline">0 */6 * * *</code></td><td>Every 6 hours</td><td class="tnum">Today, 06:00</td><td class="tnum">Today, 12:00</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">data-sync-pipeline</div><div class="agent-meta">platform</div></td><td><code class="inline">30 * * * *</code></td><td>Hourly at :30</td><td class="tnum">Today, 08:30</td><td class="tnum">Today, 09:30</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="enabled"><td><div class="agent-name">pricing-optimizer</div><div class="agent-meta">revenue</div></td><td><code class="inline">0 5 * * 1-5</code></td><td>Weekdays at 05:00</td><td class="tnum">Today, 05:00</td><td class="tnum">Tomorrow, 05:00</td><td><span class="status status-done"><span class="dot"></span>Enabled</span></td></tr>
+            <tr data-status="paused"><td><div class="agent-name">contract-renewal-bot</div><div class="agent-meta">legal</div></td><td><code class="inline">0 8 1 * *</code></td><td>1st of each month, 08:00</td><td class="tnum">Aug 1, 08:00</td><td class="tnum">paused</td><td><span class="status status-failed"><span class="dot"></span>Paused</span></td></tr>
+            <tr data-status="paused"><td><div class="agent-name">system_cleanup</div><div class="agent-meta">platform</div></td><td><code class="inline">0 3 * * 0</code></td><td>Sundays at 03:00</td><td class="tnum">Jul 28, 03:00</td><td class="tnum">paused</td><td><span class="status status-failed"><span class="dot"></span>Paused</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="clock-3" aria-hidden="true"></i></div>
+          <div class="empty-title">No triggers here</div>
+          <div class="empty-desc">Nothing matches this filter. Create a trigger to execute a worker on a cron cadence.</div>
+        </div>
+
+        <div class="section-title mt-8">Next 24 hours</div>
+        <div class="card">
+          <div class="timeline">
+            <div class="tl-item accent"><div class="tl-time">09:45</div><div class="tl-title">email-classifier</div><div class="tl-desc">every 15 minutes · ~1m runtime</div></div>
+            <div class="tl-item accent"><div class="tl-time">09:30</div><div class="tl-title">data-sync-pipeline</div><div class="tl-desc">hourly at :30 · ~29m runtime · heaviest job of the day</div></div>
+            <div class="tl-item"><div class="tl-time">12:00</div><div class="tl-title">compliance-checker</div><div class="tl-desc">every 6 hours · ~9m runtime</div></div>
+            <div class="tl-item"><div class="tl-time">02:00</div><div class="tl-title">security-audit-bot</div><div class="tl-desc">nightly sweep · ~45m runtime</div></div>
+            <div class="tl-item"><div class="tl-time">05:00</div><div class="tl-title">pricing-optimizer</div><div class="tl-desc">weekdays · ~4m runtime</div></div>
+            <div class="tl-item"><div class="tl-time">09:00</div><div class="tl-title">invoice-parser-v2</div><div class="tl-desc">daily batch · ~14m runtime</div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Load by hour</div>
+        <div class="card" style="padding:var(--s-3);">
+          <div class="chart-body" style="height:140px;">
+            <svg data-chart="bar" data-chart-compact="true" data-series="4,8,2,1,1,3,6,4,9,5,3,2,4,2,3,2,4,3,2,2,3,2,1,2" data-labels="00,,,,04,,,,08,,,,12,,,,16,,,,20,,,23"></svg>
+          </div>
+          <div class="hint">Peak at 08:00 — 9 concurrent jobs</div>
+        </div>
+
+        <div class="panel-title">Timezone</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="field" style="margin-bottom:0;">
+            <label class="field-label" for="tz">Schedule timezone</label>
+            <select class="select" id="tz" onchange="showToast('Timezone set to ' + this.value)">
+              <option>UTC</option><option>America/New_York</option><option>Europe/Berlin</option><option>Asia/Singapore</option>
+            </select>
+            <div class="hint">Cron expressions are evaluated in this zone. DST shifts are handled automatically.</div>
+          </div>
+        </div>
+
+        <div class="panel-title">Collision guard</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="setting-row" style="border:none; background:none; padding:0; margin-bottom:12px;">
+            <div><div class="setting-name">Skip if still running</div><div class="setting-desc">Do not stack a second instance</div></div>
+            <button class="toggle on" onclick="toggleSetting(this, 'Skip if running')" aria-pressed="true"></button>
+          </div>
+          <div class="setting-row" style="border:none; background:none; padding:0;">
+            <div><div class="setting-name">Catch-up after outage</div><div class="setting-desc">Replay missed windows once</div></div>
+            <button class="toggle" onclick="toggleSetting(this, 'Catch-up')" aria-pressed="false"></button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-sched" role="dialog" aria-modal="true" aria-labelledby="m-sched-t">
+  <div class="modal">
+    <div class="modal-title" id="m-sched-t">New trigger</div>
+    <div class="modal-desc">Pick a worker and cron expression. Times are evaluated in the workspace timezone.</div>
+    <div class="field">
+      <label class="field-label" for="ns-agent">Agent</label>
+      <select class="select" id="ns-agent"><option>invoice-parser-v2</option><option>report-generator</option><option>churn-predictor</option><option>ticket-triage</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="ns-cron">Cron expression</label>
+      <input class="input" id="ns-cron" value="0 9 * * *" oninput="describeCron(this.value)">
+      <div class="hint" id="cron-desc">Every day at 09:00</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="createSchedule()">Create schedule</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-sched')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  var CRON_HINTS = {
+    '0 9 * * *': 'Every day at 09:00',
+    '*/15 * * * *': 'Every 15 minutes',
+    '0 * * * *': 'Every hour, on the hour',
+    '0 7 * * 1': 'Mondays at 07:00',
+    '0 3 * * 0': 'Sundays at 03:00'
+  };
+
+  function describeCron(v) {
+    document.getElementById('cron-desc').textContent = CRON_HINTS[v.trim()] || 'Custom expression — 5 fields: minute hour day month weekday';
+  }
+
+  function createSchedule() {
+    var agent = document.getElementById('ns-agent').value;
+    var cron = document.getElementById('ns-cron').value.trim();
+    var tr = document.createElement('tr');
+    tr.dataset.status = 'enabled';
+    tr.innerHTML = '<td><div class="agent-name">' + agent + '</div><div class="agent-meta">new</div></td>' +
+      '<td><code class="inline">' + cron + '</code></td><td>' + (CRON_HINTS[cron] || 'Custom expression') + '</td>' +
+      '<td class="tnum">—</td><td class="tnum">pending</td>' +
+      '<td><span class="status status-done"><span class="dot"></span>Enabled</span></td>';
+    document.querySelector('.data-table tbody').prepend(tr);
+    closeModal('m-sched');
+    showToast('Schedule created for ' + agent);
+  }
+</script>
+</body>
+</html>

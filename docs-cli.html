@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLI — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-cli">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Reference</span>
+        <h1>CLI</h1>
+        <p class="docs-lede">Deploy workers from CI, follow executions from a terminal and keep definitions in git where they belong.</p>
+
+        <h2 id="install">Install</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>brew install nalvo/tap/nalvo <span class="c"># macOS</span>
+npm install -g @nalvo/cli         <span class="c"># anywhere node runs</span>
+
+nalvo auth login                  <span class="c"># opens a browser</span>
+nalvo auth status
+<span class="c"># → acme-ops · jordan@acme.io · scope: deploy</span></pre>
+        </div>
+        <p>In CI, skip the browser and set <code class="inline">NALVO_KEY</code> with a <code class="inline">deploy</code>-scoped key.</p>
+
+        <h2 id="workers">Workers</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo workers list
+nalvo workers show invoice-parser-v2
+nalvo deploy invoice-parser-v2.yaml
+nalvo deploy ./workers --all --dry-run
+nalvo workers pause contract-renewal-bot
+nalvo workers rollback invoice-parser-v2 --to 1.8.2</pre>
+        </div>
+        <table class="doc-table">
+          <thead><tr><th>Flag</th><th>Effect</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">--dry-run</code></td><td>Validate and print the diff without deploying</td></tr>
+            <tr><td><code class="inline">--wait</code></td><td>Block until smoke tests finish, non-zero exit on failure</td></tr>
+            <tr><td><code class="inline">--env staging</code></td><td>Target another workspace</td></tr>
+            <tr><td><code class="inline">--json</code></td><td>Machine-readable output for scripts</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="executions">Executions</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo executions list --status failed --since 24h
+nalvo executions start invoice-parser-v2 --input '{"batch":"2024-08-03"}'
+nalvo executions show 8290
+nalvo executions tail 8290       <span class="c"># live stage output</span>
+nalvo executions cancel 8290
+nalvo executions export --since 30d --format csv &gt; executions.csv</pre>
+        </div>
+
+        <h2 id="checkpoints">Decision checkpoints</h2>
+        <div class="code">
+          <div class="code-head"><span>shell</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre>nalvo checkpoints list --pending
+nalvo checkpoints show chk_8291_001
+nalvo checkpoints decide chk_8291_001 --accept --note "Legal reviewed"</pre>
+        </div>
+        <div class="callout warn">
+          <strong>Do not turn a checkpoint into a cron job</strong>
+          <p>The command exists for break-glass situations and is recorded in the decision record with the key that used it. If a decision can be automated, put it in the worker policy instead.</p>
+        </div>
+
+        <h2 id="ci">In CI</h2>
+        <div class="code">
+          <div class="code-head"><span>.github/workflows/deploy.yml</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">name</span>: deploy-workers
+<span class="k">on</span>:
+  <span class="k">push</span>:
+    <span class="k">branches</span>: [main]
+
+<span class="k">jobs</span>:
+  <span class="k">deploy</span>:
+    <span class="k">runs-on</span>: ubuntu-latest
+    <span class="k">steps</span>:
+      - <span class="k">uses</span>: actions/checkout@v4
+      - <span class="k">run</span>: npm install -g @nalvo/cli
+      - <span class="k">run</span>: nalvo deploy ./workers --all --wait
+        <span class="k">env</span>:
+          <span class="k">NALVO_KEY</span>: ${{ secrets.NALVO_DEPLOY_KEY }}</pre>
+        </div>
+
+        <h2 id="config">Configuration</h2>
+        <p>The CLI reads <code class="inline">~/.nalvo/config.toml</code>, overridden by environment variables and then by flags.</p>
+        <div class="code">
+          <div class="code-head"><span>~/.nalvo/config.toml</span></div>
+<pre>[default]
+workspace = <span class="s">"acme-ops"</span>
+region    = <span class="s">"us-east-1"</span>
+output    = <span class="s">"table"</span>
+
+[staging]
+workspace = <span class="s">"acme-ops-staging"</span></pre>
+        </div>
+
+        <h2 id="exit">Exit codes</h2>
+        <table class="doc-table">
+          <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>Success</td></tr>
+            <tr><td>1</td><td>Generic failure</td></tr>
+            <tr><td>2</td><td>Validation error in a definition file</td></tr>
+            <tr><td>3</td><td>Authentication or scope problem</td></tr>
+            <tr><td>4</td><td>Deploy succeeded but smoke tests failed (<code class="inline">--wait</code>)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-nextprev">
+          <a href="docs-api.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> REST API</strong></a>
+          <a class="next" href="docs-security.html"><span>Next</span><strong>Security &amp; compliance <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#install">Install</a>
+        <a href="#workers">Workers</a>
+        <a href="#executions">Executions</a>
+        <a href="#checkpoints">Checkpoints</a>
+        <a href="#ci">In CI</a>
+        <a href="#config">Configuration</a>
+        <a href="#exit">Exit codes</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

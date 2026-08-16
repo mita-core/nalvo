@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Record — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="audit">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Decision record</div>
+            <div class="page-subtitle" data-filter-count="{n} events shown · retained 400 days">Immutable evidence for every human and worker decision · retained 400 days</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-secondary btn-auto" data-toast="Exported audit-aug.csv — signed with workspace key">Export signed CSV</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".data-table tbody tr">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="human">Human</button>
+          <button class="filter-tab" data-value="agent">Worker</button>
+          <button class="filter-tab" data-value="system">System</button>
+          <input class="filter-search" placeholder="Search actor, action, target…" aria-label="Search decision record">
+        </div>
+
+        <table class="data-table">
+          <thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Source</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr data-status="human"><td class="tnum">Aug 3, 09:34</td><td>jordan@acme.io</td><td>checkpoint.accepted</td><td>Execution #8261 · Q2 vendor spend</td><td>web · 92.14.8.3</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="agent"><td class="tnum">Aug 3, 09:31</td><td>contract-renewal-bot</td><td>checkpoint.requested</td><td>MSA-2023-4402</td><td>worker runtime</td><td><span class="badge badge-warning">Pending</span></td></tr>
+            <tr data-status="system"><td class="tnum">Aug 3, 09:15</td><td>system</td><td>workers.scaled</td><td>6 → 8 workers</td><td>autoscaler</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 3, 08:52</td><td>sam@acme.io</td><td>worker.paused</td><td>contract-renewal-bot</td><td>web · 92.14.8.19</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 3, 08:40</td><td>jordan@acme.io</td><td>apikey.created</td><td>ops-dashboard · read</td><td>web · 92.14.8.3</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="agent"><td class="tnum">Aug 3, 08:15</td><td>data-sync-pipeline</td><td>connection.called</td><td>etl_processor · analytics-prod</td><td>worker runtime</td><td><span class="badge badge-danger">Failed</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 2, 18:04</td><td>sam@acme.io</td><td>checkpoint.declined</td><td>Execution #8248 · admin role grant</td><td>web · 92.14.8.19</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 2, 17:22</td><td>jordan@acme.io</td><td>settings.changed</td><td>Checkpoint threshold $25K → $50K</td><td>web · 92.14.8.3</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="system"><td class="tnum">Aug 2, 14:00</td><td>system</td><td>integration.token_expired</td><td>Google Workspace</td><td>connector</td><td><span class="badge badge-danger">Failed</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 1, 14:02</td><td>jordan@acme.io</td><td>worker.deployed</td><td>invoice-parser-v2 v1.8.3</td><td>cli · nalvo deploy</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="human"><td class="tnum">Aug 1, 11:35</td><td>maya@acme.io</td><td>member.invited</td><td>rob@acme.io · Operator</td><td>web · 88.203.4.7</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="agent"><td class="tnum">Aug 1, 09:14</td><td>pricing-optimizer</td><td>data.exported</td><td>1,240 SKUs · competitor index</td><td>worker runtime</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="system"><td class="tnum">Jul 31, 23:00</td><td>system</td><td>backup.completed</td><td>4.2 GB · encrypted</td><td>platform</td><td><span class="badge badge-success">OK</span></td></tr>
+            <tr data-status="human"><td class="tnum">Jul 31, 16:48</td><td>jordan@acme.io</td><td>role.changed</td><td>sam@acme.io · Operator → Admin</td><td>web · 92.14.8.3</td><td><span class="badge badge-success">OK</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="file-check-2" aria-hidden="true"></i></div>
+          <div class="empty-title">Nothing in this slice</div>
+          <div class="empty-desc">The decision record is append-only — if an event happened it is here. Widen the filter.</div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Integrity</div>
+        <div class="card">
+          <div class="card-title">Hash chain verified</div>
+          <div class="card-subtitle">Every entry is chained to the previous one. Last verification ran 4 minutes ago and matched.</div>
+          <div class="mini-list" style="margin-top:8px;">
+            <div class="mini-row"><span class="mini-label">Entries</span><span class="mini-value">184,204</span></div>
+            <div class="mini-row"><span class="mini-label">Retention</span><span class="mini-value">400 days</span></div>
+            <div class="mini-row"><span class="mini-label">Head hash</span><span class="mini-value" style="font-size:11px;">a41f…9c2e</span></div>
+          </div>
+          <div class="btn-row mt-6"><button class="btn btn-secondary" data-toast="Verification passed — 184,204 entries, 0 gaps">Verify now</button></div>
+        </div>
+
+        <div class="panel-title">Events by actor · 7d</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div style="display:flex; align-items:center; gap:var(--s-5);">
+            <svg data-donut="52,34,14" data-donut-label="1,842" data-donut-sub="events" style="width:130px; height:130px; flex-shrink:0;"></svg>
+            <div class="mini-list" style="flex:1;">
+              <div class="mini-row"><span class="mini-label">Workers</span><span class="mini-value">958</span></div>
+              <div class="mini-row"><span class="mini-label">Humans</span><span class="mini-value">626</span></div>
+              <div class="mini-row"><span class="mini-label">System</span><span class="mini-value">258</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-title">Compliance</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">SOC 2 export</span><span class="badge badge-success">Ready</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">GDPR erasure log</span><span class="badge badge-success">Ready</span></div>
+          <div class="row-between"><span class="mini-label">Legal hold</span><span class="badge">Off</span></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+</body>
+</html>

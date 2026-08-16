@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Providers — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="integrations">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Providers</div>
+            <div class="page-subtitle" data-filter-count="{n} providers shown">12 available · 6 connected · 1 needs attention</div>
+          </div>
+          <div class="head-actions">
+            <a class="btn btn-ghost btn-auto" href="docs-webhooks.html" style="display:flex; align-items:center; text-decoration:none;">Webhook docs</a>
+            <button class="btn btn-primary btn-auto" data-toast="Directory opens the full connector catalog">Browse directory</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".list-row">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="connected">Connected</button>
+          <button class="filter-tab" data-value="available">Available</button>
+          <button class="filter-tab" data-value="issue">Needs attention</button>
+          <input class="filter-search" placeholder="Search providers…" aria-label="Search providers">
+        </div>
+
+        <div class="list-row" data-status="connected">
+          <div class="thumb"><i data-lucide="message-square" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">Slack</div><div class="list-meta">acme.slack.com · 4 channels · used by 6 workers</div></div>
+          <span class="badge badge-success">Connected</span>
+          <button class="btn btn-ghost btn-auto" style="height:28px;" data-toast="Slack settings opened">Configure</button>
+        </div>
+        <div class="list-row" data-status="connected">
+          <div class="thumb"><i data-lucide="cloud" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">Salesforce</div><div class="list-meta">acme.my.salesforce.com · OAuth · 847 calls today</div></div>
+          <span class="badge badge-success">Connected</span>
+          <button class="btn btn-ghost btn-auto" style="height:28px;" data-toast="Salesforce settings opened">Configure</button>
+        </div>
+        <div class="list-row" data-status="connected">
+          <div class="thumb"><i data-lucide="archive" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">Amazon S3</div><div class="list-meta">acme-invoices, acme-artifacts · IAM role · us-east-1</div></div>
+          <span class="badge badge-success">Connected</span>
+          <button class="btn btn-ghost btn-auto" style="height:28px;" data-toast="S3 settings opened">Configure</button>
+        </div>
+        <div class="list-row" data-status="issue">
+          <div class="thumb" style="color:var(--danger);"><i data-lucide="mail" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">Google Workspace</div><div class="list-meta">Token expired 2 days ago — email steps are failing</div></div>
+          <span class="badge badge-danger">Reconnect</span>
+          <button class="btn btn-primary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Reconnect</button>
+        </div>
+        <div class="list-row" data-status="connected">
+          <div class="thumb"><i data-lucide="database" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">Postgres · analytics-prod</div><div class="list-meta">read-write · pooled · 12 connections</div></div>
+          <span class="badge badge-success">Connected</span>
+          <button class="btn btn-ghost btn-auto" style="height:28px;" data-toast="Database settings opened">Configure</button>
+        </div>
+        <div class="list-row" data-status="connected">
+          <div class="thumb"><i data-lucide="siren" aria-hidden="true"></i></div>
+          <div style="flex:1;"><div class="list-title">PagerDuty</div><div class="list-meta">ops-escalation service · critical alerts only</div></div>
+          <span class="badge badge-success">Connected</span>
+          <button class="btn btn-ghost btn-auto" style="height:28px;" data-toast="PagerDuty settings opened">Configure</button>
+        </div>
+
+        <div class="section-title mt-8">Available</div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="notebook-text" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">Notion</div><div class="list-meta">Write execution summaries into a database</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="list-checks" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">Jira</div><div class="list-meta">Open and transition issues from an execution</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="contact-round" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">HubSpot</div><div class="list-meta">Sync contacts and deal stages</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="credit-card" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">Stripe</div><div class="list-meta">Read invoices, issue credit notes</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="snowflake" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">Snowflake</div><div class="list-meta">Query the warehouse from an ETL step</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+        <div class="list-row" data-status="available"><div class="thumb"><i data-lucide="git-branch" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">GitHub</div><div class="list-meta">Sync worker definitions with a repo</div></div><button class="btn btn-secondary btn-auto" style="height:28px;" onclick="openModal('m-connect')">Connect</button></div>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="plug-zap" aria-hidden="true"></i></div>
+          <div class="empty-title">No providers match</div>
+          <div class="empty-desc">Try another tab, or browse the full connector directory.</div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title"><span class="dot pulse"></span>Needs attention</div>
+        <div class="card">
+          <div class="card-meta">Google Workspace</div>
+          <div class="card-title">OAuth token expired</div>
+          <div class="card-subtitle">Refresh token was revoked on Aug 1. Email steps in onboarding-agent have been failing since.</div>
+          <div class="btn-row"><button class="btn btn-primary" onclick="openModal('m-connect')">Reconnect</button><button class="btn btn-secondary" data-toast="Muted for 24h">Mute</button></div>
+        </div>
+
+        <div class="panel-title">Outbound webhooks</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:10px;"><div><div class="list-title">execution.completed</div><div class="list-meta">https://acme.io/hooks/executions</div></div><span class="badge badge-success">200</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><div><div class="list-title">execution.failed</div><div class="list-meta">https://acme.io/hooks/alerts</div></div><span class="badge badge-success">200</span></div>
+          <div class="row-between"><div><div class="list-title">checkpoint.requested</div><div class="list-meta">https://acme.io/hooks/checkpoints</div></div><span class="badge badge-warning">429</span></div>
+          <button class="btn btn-secondary btn-block mt-6" data-toast="Webhook endpoint added">Add endpoint</button>
+        </div>
+
+        <div class="panel-title">Delivery · 24h</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="chart-body" style="height:120px;">
+            <svg data-chart="area" data-series="42,38,51,44,60,58,72,64,55,61,49,53" data-labels="00,,06,,12,,18,,23"></svg>
+          </div>
+          <div class="hint">647 deliveries · 3 retries · 0 dropped</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-connect" role="dialog" aria-modal="true" aria-labelledby="m-connect-t">
+  <div class="modal">
+    <div class="modal-title" id="m-connect-t">Connect provider</div>
+    <div class="modal-desc">You will be redirected to the provider to grant access. Nalvo stores only the refresh token, encrypted at rest.</div>
+    <div class="field">
+      <label class="field-label" for="cn-scope">Access level</label>
+      <select class="select" id="cn-scope"><option>Read only</option><option>Read and write</option><option>Full admin</option></select>
+    </div>
+    <label class="check-row" style="margin-bottom:20px;"><input type="checkbox" checked> Restrict to the workers that request it</label>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('m-connect'); showToast('Redirecting to provider — approve access to finish');">Continue</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-connect')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+</body>
+</html>

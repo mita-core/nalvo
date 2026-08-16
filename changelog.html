@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Changelog — NALVO</title>
+<meta name="description" content="What shipped in the Nalvo workspace, newest first.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+<style>
+  .release { display: grid; grid-template-columns: 180px 1fr; gap: 32px; padding: 36px 0; border-top: 1px solid var(--line); }
+  .release-meta { position: sticky; top: 82px; align-self: start; }
+  .release-date { font-size: 13px; color: var(--ink-3); }
+  .release-ver { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; margin-top: 2px; }
+  .release h3 { margin-bottom: 10px; }
+  .release p { font-size: 14px; color: var(--ink-2); margin-bottom: 14px; }
+  .tagrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .tag {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px; background: var(--card); color: var(--ink-2);
+  }
+  .tag.new { background: var(--lime); color: var(--ink-dark); }
+  .tag.fix { background: #E3EDFB; color: #3E68B8; }
+  .change-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .change-list li { display: flex; gap: 10px; font-size: 13.5px; color: var(--ink-2); align-items: flex-start; }
+  .change-list li::before { content: '—'; color: var(--ink-3); flex-shrink: 0; }
+  @media (max-width: 860px) {
+    .release { grid-template-columns: 1fr; gap: 12px; }
+    .release-meta { position: static; }
+  }
+</style>
+</head>
+<body data-page="changelog">
+
+<header class="site-header"></header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:24px;">
+    <div class="container" style="max-width:920px;">
+      <span class="eyebrow"><span class="dot"></span>Changelog</span>
+      <h1 class="display" style="margin:22px 0 16px;">What shipped</h1>
+      <p class="lede" style="max-width:600px;">Weekly releases, no maintenance windows. Breaking API changes get a version bump and six months of overlap.</p>
+    </div>
+  </section>
+
+  <section style="padding-bottom:80px;">
+    <div class="container" style="max-width:920px;">
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">Aug 1, 2024</div>
+          <div class="release-ver">v2.8</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag new">New</span><span class="tag">Checkpoints</span></div>
+          <h3>Risk tiers and timed escalation</h3>
+          <p>Checkpoint requests now carry a risk score and route to different groups by tier. If nobody answers inside the SLA, the request escalates instead of waiting unseen.</p>
+          <ul class="change-list">
+            <li>Three configurable risk tiers per workspace</li>
+            <li>Auto-escalation with a per-tier timeout</li>
+            <li>Evidence attached to every checkpoint, visible in the context panel</li>
+            <li>Checkpoint policy is versioned alongside the worker definition</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">Jul 24, 2024</div>
+          <div class="release-ver">v2.7</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag new">New</span><span class="tag">Cost</span><span class="tag fix">Fixes</span></div>
+          <h3>Cost attribution per stage</h3>
+          <p>Spend is now broken down by stage, not just per execution, so an expensive summarisation call is obvious at a glance. Routing suggestions appear when a cheaper model would have done.</p>
+          <ul class="change-list">
+            <li>Per-stage token and connection cost in execution detail</li>
+            <li>Monthly cap with a hard stop and an 80% alert</li>
+            <li>Fixed: cost forecast ignored partially completed executions</li>
+            <li>Fixed: egress was double-counted for S3 artifacts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">Jul 11, 2024</div>
+          <div class="release-ver">v2.6</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag new">New</span><span class="tag">Console</span></div>
+          <h3>Resizable, collapsible panels</h3>
+          <p>The navigation and context panels can be dragged, collapsed and restored. Collapsed panels leave a floating bar so nothing becomes unreachable, and double-clicking a gutter snaps it back to the default width.</p>
+          <ul class="change-list">
+            <li>Drag-to-resize with min and max bounds</li>
+            <li>Floating quick-nav while the sidebar is collapsed</li>
+            <li>Execution history loads all 2,847 rows — pagination removed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">Jun 28, 2024</div>
+          <div class="release-ver">v2.5</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag new">New</span><span class="tag">Security</span></div>
+          <h3>SCIM provisioning and enforced two-factor</h3>
+          <p>Members can be provisioned and deprovisioned from your identity provider. Workspaces can require a second factor for everyone, with admin-side reset from the team page.</p>
+          <ul class="change-list">
+            <li>SCIM 2.0 with group-to-role mapping</li>
+            <li>Workspace-wide two-factor enforcement</li>
+            <li>Session timeout and IP allow-list settings</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">Jun 6, 2024</div>
+          <div class="release-ver">v2.4</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag">Connections</span><span class="tag fix">Fixes</span></div>
+          <h3>Connection registry with scopes</h3>
+          <p>Connections are registered once with a JSON schema and granted per worker. Deprecated connections keep working until their removal date and warn on every call.</p>
+          <ul class="change-list">
+            <li>Per-worker connection grants with a pending-request state</li>
+            <li>Latency and error rate tracked per connection</li>
+            <li>Fixed: beta connections were missing from the search index</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="release">
+        <div class="release-meta">
+          <div class="release-date">May 19, 2024</div>
+          <div class="release-ver">v2.3</div>
+        </div>
+        <div>
+          <div class="tagrow"><span class="tag new">New</span><span class="tag">Evidence</span></div>
+          <h3>Hash-chained decision record</h3>
+          <p>Every human and worker action is appended to a verifiable chain. Exports are signed with the workspace key and ready to use as control evidence.</p>
+          <ul class="change-list">
+            <li>400-day retention with on-demand verification</li>
+            <li>Signed CSV export</li>
+            <li>Separate GDPR erasure log</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="cta-band">
+        <h2 class="section-title">Want the next one in your inbox?</h2>
+        <p class="lede" style="max-width:480px; margin:14px auto 0; color:rgba(17,19,17,0.62);">One short email per release. No newsletter, no drip campaign.</p>
+        <div class="actions">
+          <a class="btn btn-dark" href="signup.html">Create an account</a>
+          <a class="btn btn-line btn-plain" href="docs.html" style="border-color:rgba(17,19,17,0.24);">Read the docs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connections — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="tools">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Connection registry</div>
+            <div class="page-subtitle" data-filter-count="{n} connections shown · 18 active · 6 in beta">24 connections registered · 18 active · 6 in beta</div>
+          </div>
+          <div class="head-actions">
+            <a class="btn btn-ghost btn-auto" href="docs-tools.html" style="display:flex; align-items:center; text-decoration:none;">Connection docs</a>
+            <button class="btn btn-primary btn-auto" data-toast="Connection manifest upload — drop a JSON schema to register">Register connection</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target=".tool-card">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="active">Active</button>
+          <button class="filter-tab" data-value="beta">Beta</button>
+          <button class="filter-tab" data-value="deprecated">Deprecated</button>
+          <input class="filter-search" placeholder="Search connections…" aria-label="Search connections">
+        </div>
+
+        <div class="tool-grid">
+          <div class="tool-card selected" data-status="active"><div class="tool-header"><span class="tool-name">pdf_exporter</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Generate PDF reports from structured data with configurable templates.</div><div class="tool-meta">Last used: 14m ago · 1,204 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">salesforce_api</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Read/write Salesforce CRM — leads, contacts, opportunities.</div><div class="tool-meta">Last used: 2m ago · 847 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">etl_processor</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Transform and load records between warehouses with validation.</div><div class="tool-meta">Last used: 31m ago · 412 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">decision_boundary</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Open human checkpoints with diff preview and evidence capture.</div><div class="tool-meta">Last used: 32m ago · 56 calls today</div></div>
+          <div class="tool-card" data-status="beta"><div class="tool-header"><span class="tool-name">llm_summarize</span><span class="tool-badge beta">Beta</span></div><div class="tool-desc">Summarize text using LLM with token budget controls.</div><div class="tool-meta">Last used: 1h ago · 203 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">http_client</span><span class="tool-badge active">Active</span></div><div class="tool-desc">HTTP client with retry, rate limiting, and response caching.</div><div class="tool-meta">Last used: 3m ago · 2,104 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">s3_upload</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Upload to S3 with auto content-type and presigned URLs.</div><div class="tool-meta">Last used: 8m ago · 312 calls today</div></div>
+          <div class="tool-card" data-status="active"><div class="tool-header"><span class="tool-name">system_cleanup</span><span class="tool-badge active">Active</span></div><div class="tool-desc">Remove temp files and prune old artifacts by retention policy.</div><div class="tool-meta">Last used: 7h ago · 1 call today</div></div>
+          <div class="tool-card" data-status="beta"><div class="tool-header"><span class="tool-name">slack_notify</span><span class="tool-badge beta">Beta</span></div><div class="tool-desc">Send formatted notifications to Slack with thread support.</div><div class="tool-meta">Last used: 45m ago · 89 calls today</div></div>
+          <div class="tool-card" data-status="beta"><div class="tool-header"><span class="tool-name">vector_search</span><span class="tool-badge beta">Beta</span></div><div class="tool-desc">Semantic search across the document index with metadata filters.</div><div class="tool-meta">Last used: 12m ago · 640 calls today</div></div>
+          <div class="tool-card" data-status="deprecated"><div class="tool-header"><span class="tool-name">legacy_ftp</span><span class="tool-badge" style="background:rgba(242,109,109,0.12); color:var(--danger);">Deprecated</span></div><div class="tool-desc">Fetch files over FTP. Superseded by s3_upload — removal Sep 30.</div><div class="tool-meta">Last used: 9d ago · 0 calls today</div></div>
+          <div class="tool-card" data-status="deprecated"><div class="tool-header"><span class="tool-name">email_smtp_v1</span><span class="tool-badge" style="background:rgba(242,109,109,0.12); color:var(--danger);">Deprecated</span></div><div class="tool-desc">Direct SMTP sending. Use notify_channel with the email provider instead.</div><div class="tool-meta">Last used: 22d ago · 0 calls today</div></div>
+        </div>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="blocks" aria-hidden="true"></i></div>
+          <div class="empty-title">No connections match</div>
+          <div class="empty-desc">Nothing in this status. Register a connection by uploading its JSON schema.</div>
+        </div>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Connection config</div>
+        <div class="card">
+          <div class="card-title" id="toolcfg-name">pdf_exporter</div>
+          <div class="card-subtitle" id="toolcfg-desc">Generate PDF reports from structured data with configurable templates.</div>
+          <div class="mini-list" style="margin-top:8px;">
+            <div class="mini-row"><span class="mini-label">Status</span><span class="mini-value" id="toolcfg-status" style="color:var(--success);">Active</span></div>
+            <div class="mini-row"><span class="mini-label">Version</span><span class="mini-value" id="toolcfg-version">v2.1.4</span></div>
+            <div class="mini-row"><span class="mini-label">Calls today</span><span class="mini-value" id="toolcfg-calls">1,204</span></div>
+            <div class="mini-row"><span class="mini-label">Avg latency</span><span class="mini-value" id="toolcfg-latency">1.2s</span></div>
+            <div class="mini-row"><span class="mini-label">Error rate</span><span class="mini-value" id="toolcfg-errors">0.04%</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Parameters</div>
+        <div class="card" id="toolcfg-params" style="padding:var(--s-4); font-size:12px; line-height:1.7; color:var(--text-secondary);">
+          <div style="margin-bottom:12px;"><strong style="color:var(--text-primary);">template</strong> <span style="color:var(--text-tertiary); font-size:11px;">string</span><div style="margin-top:2px;">Report template name — must exist in /templates</div></div>
+          <div style="margin-bottom:12px;"><strong style="color:var(--text-primary);">orientation</strong> <span style="color:var(--text-tertiary); font-size:11px;">enum</span><div style="margin-top:2px;">portrait, landscape — default: portrait</div></div>
+          <div><strong style="color:var(--text-primary);">header_image</strong> <span style="color:var(--text-tertiary); font-size:11px;">url</span><div style="margin-top:2px;">URL to header logo image (PNG/SVG)</div></div>
+        </div>
+
+        <div class="panel-title">Call volume · 24h</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="chart-body" style="height:120px;">
+            <svg data-chart="area" data-series="18,12,9,7,14,42,88,120,104,96,110,84" data-labels="00,,06,,12,,18,,23"></svg>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" data-toast="Test call sent — 200 OK in 1.1s">Test call</button>
+          <button class="btn btn-secondary" data-toast="Connection disabled for all workers">Disable</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  var TOOLS = {
+    'pdf_exporter':     { desc: 'Generate PDF reports from structured data with configurable templates.', status: 'Active', version: 'v2.1.4', calls: '1,204', latency: '1.2s', errors: '0.04%',
+      params: [['template','string','Report template name — must exist in /templates'],['orientation','enum','portrait, landscape — default: portrait'],['header_image','url','URL to header logo image (PNG/SVG)']] },
+    'salesforce_api':   { desc: 'Read/write Salesforce CRM — leads, contacts, opportunities.', status: 'Active', version: 'v3.0.1', calls: '847', latency: '640ms', errors: '0.31%',
+      params: [['object','enum','lead, contact, opportunity, account'],['operation','enum','read, create, update, upsert'],['batch_size','int','Records per call — max 200']] },
+    'etl_processor':    { desc: 'Transform and load records between warehouses with validation.', status: 'Active', version: 'v1.9.2', calls: '412', latency: '3.8s', errors: '0.12%',
+      params: [['source','string','Source warehouse connection string'],['mapping','json','Field mapping config'],['validate','bool','Run schema validation before load']] },
+    'decision_boundary': { desc: 'Open human checkpoints with diff preview and evidence capture.', status: 'Active', version: 'v1.4.0', calls: '56', latency: '120ms', errors: '0.00%',
+      params: [['diff','object','Change payload to review'],['assignee','string','Approver user or group'],['ttl','int','Seconds before auto-escalation']] },
+    'llm_summarize':    { desc: 'Summarize text using LLM with token budget controls.', status: 'Beta', version: 'v0.8.3', calls: '203', latency: '4.1s', errors: '1.02%',
+      params: [['max_tokens','int','Output token budget — default 512'],['style','enum','brief, bullets, executive'],['model','string','Model identifier']] },
+    'http_client':      { desc: 'HTTP client with retry, rate limiting, and response caching.', status: 'Active', version: 'v4.2.0', calls: '2,104', latency: '310ms', errors: '0.08%',
+      params: [['url','url','Request endpoint'],['retries','int','Max retry attempts — default 3'],['cache_ttl','int','Response cache seconds — 0 disables']] },
+    's3_upload':        { desc: 'Upload to S3 with auto content-type and presigned URLs.', status: 'Active', version: 'v2.6.1', calls: '312', latency: '890ms', errors: '0.02%',
+      params: [['bucket','string','Target S3 bucket'],['path','string','Object key prefix'],['presign','bool','Return presigned URL']] },
+    'system_cleanup':   { desc: 'Remove temp files and prune old artifacts by retention policy.', status: 'Active', version: 'v1.1.0', calls: '1', latency: '12.4s', errors: '0.00%',
+      params: [['retention_days','int','Keep artifacts newer than N days'],['dry_run','bool','Report without deleting']] },
+    'slack_notify':     { desc: 'Send formatted notifications to Slack with thread support.', status: 'Beta', version: 'v0.9.5', calls: '89', latency: '420ms', errors: '0.44%',
+      params: [['channel','string','Target channel — #ops, #alerts'],['thread_ts','string','Parent message for threading'],['blocks','json','Block Kit payload override']] },
+    'vector_search':    { desc: 'Semantic search across the document index with metadata filters.', status: 'Beta', version: 'v0.6.0', calls: '640', latency: '210ms', errors: '0.19%',
+      params: [['query','string','Natural language query'],['top_k','int','Results to return — default 8'],['filter','json','Metadata filter expression']] },
+    'legacy_ftp':       { desc: 'Fetch files over FTP. Superseded by s3_upload — removal Sep 30.', status: 'Deprecated', version: 'v0.4.2', calls: '0', latency: '—', errors: '—',
+      params: [['host','string','FTP host'],['path','string','Remote path']] },
+    'email_smtp_v1':    { desc: 'Direct SMTP sending. Use notify_channel with the email provider instead.', status: 'Deprecated', version: 'v1.0.0', calls: '0', latency: '—', errors: '—',
+      params: [['to','string','Recipient address'],['subject','string','Subject line']] }
+  };
+
+  function selectTool(card) {
+    var name = card.querySelector('.tool-name').textContent.trim();
+    var t = TOOLS[name];
+    if (!t) return;
+
+    document.querySelectorAll('.tool-card').forEach(function (c) { c.classList.toggle('selected', c === card); });
+
+    opSet('toolcfg-name', name);
+    opSet('toolcfg-desc', t.desc);
+    var st = document.getElementById('toolcfg-status');
+    st.textContent = t.status;
+    st.style.color = t.status === 'Beta' ? 'var(--accent-text)' : t.status === 'Deprecated' ? 'var(--danger)' : 'var(--success)';
+    opSet('toolcfg-version', t.version);
+    opSet('toolcfg-calls', t.calls);
+    opSet('toolcfg-latency', t.latency);
+    opSet('toolcfg-errors', t.errors);
+
+    document.getElementById('toolcfg-params').innerHTML = t.params.map(function (p, i) {
+      return '<div style="' + (i < t.params.length - 1 ? 'margin-bottom:12px;' : '') + '">' +
+        '<strong style="color:var(--text-primary);">' + p[0] + '</strong> ' +
+        '<span style="color:var(--text-tertiary); font-size:11px;">' + p[1] + '</span>' +
+        '<div style="margin-top:2px;">' + p[2] + '</div></div>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.tool-card').forEach(function (c) {
+    c.addEventListener('click', function () { selectTool(c); });
+  });
+</script>
+</body>
+</html>

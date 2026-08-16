@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NALVO — accountability for autonomous systems</title>
+<meta name="description" content="Nalvo records every autonomous execution, routes consequential actions through human checkpoints and preserves evidence teams can verify.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=27">
+</head>
+<body data-page="home">
+
+<header class="site-header"></header>
+
+<main>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero-v2">
+    <div class="container">
+      <span class="eyebrow"><span class="dot"></span>Evidence layer for autonomous systems</span>
+      <h1 class="display">Autonomous work,<br>held to account.</h1>
+      <p class="lede">Capture every machine-made decision, route high-impact actions to the right person and leave a verifiable record behind.</p>
+      <div class="hero-actions">
+        <a class="btn btn-dark" href="signup.html">Create workspace</a>
+        <a class="btn btn-line btn-plain" href="fleet.html">Explore the live workspace</a>
+      </div>
+      <p class="hero-proof">14 days included · no card · first workflow connected in one afternoon</p>
+
+      <!-- The real console, embedded live -->
+      <div class="stage">
+        <div class="shot" role="region" aria-label="Interactive Nalvo workspace">
+          <iframe src="fleet.html" width="1440" height="980" title="Interactive Nalvo workspace" scrolling="no"></iframe>
+        </div>
+      </div>
+
+      <div class="stage-caption">
+        <span><i></i><b>Working product</b> — click inside</span>
+        <span><b>47</b> executions active</span>
+        <span><b>3</b> at checkpoints</span>
+        <span><b>$0.42</b> average execution cost</span>
+      </div>
+
+      <!-- Stat strip -->
+      <div class="stat-strip">
+        <div class="stat dark">
+          <div class="stat-lead">A shared source of evidence for teams shipping autonomous software into production.</div>
+          <div class="stat-label">Built for consequential work</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">18K</div>
+          <div class="stat-label">Executions recorded every day</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">1,140h</div>
+          <div class="stat-label">Review time avoided each month</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">99.9%</div>
+          <div class="stat-label">Evidence pipeline availability</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LOGOS ═══════════ -->
+  <div class="container">
+    <div class="logos">
+      <span class="logo-word">NORTHWIND</span>
+      <span class="logo-word">Ledgerly</span>
+      <span class="logo-word">ACME CORP</span>
+      <span class="logo-word">meridian</span>
+      <span class="logo-word">FORGE&amp;CO</span>
+      <span class="logo-word">Tessel</span>
+    </div>
+  </div>
+
+  <!-- ═══════════ MANIFESTO ═══════════ -->
+  <section class="section manifesto-section">
+    <div class="container">
+      <p class="manifesto">
+        Autonomous systems rarely fail in one dramatic moment. They drift through small choices — a field parsed incorrectly, a policy skipped, a payment sent too soon.
+        <span class="soft">Nalvo makes each choice visible while there is still time to understand it, challenge it or stop it.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ BENTO ═══════════ -->
+  <section class="section" style="padding-top:0;" id="platform">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">The accountability layer</span>
+        <h2 class="section-title">The facts behind every action</h2>
+        <p class="lede">Follow live work, inspect its reasoning, enforce boundaries and keep an evidence record without piecing the story together after an incident.</p>
+      </div>
+
+      <div class="bento">
+        <div class="bento-card row-2 white" data-href="fleet.html">
+          <div class="icon-tile lime"><i data-lucide="activity" aria-hidden="true"></i></div>
+          <h3>Live state map</h3>
+          <p>Know which worker is active, what it is attempting and which connection it is using as the execution unfolds.</p>
+          <div style="background:var(--ink-dark); border-radius:var(--r-md); padding:14px; margin-top:auto; font-size:10px; color:#A3A3A3;">
+            <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #262726;"><span style="color:#fff;">extract_entities</span><span style="color:#7ED491;">2.4s</span></div>
+            <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #262726;"><span style="color:#fff;">validate_schema</span><span style="color:#7ED491;">0.8s</span></div>
+            <div style="display:flex; justify-content:space-between; padding:6px 0;"><span style="color:#fff;">generate_report</span><span style="color:#DFFF67;">running</span></div>
+          </div>
+        </div>
+
+        <div class="bento-card span-2 lime" data-href="approvals.html">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:20px;">
+            <div>
+              <div class="bento-big">Put judgment<br>at the boundary.</div>
+              <p style="color:rgba(17,19,17,0.66); margin-top:12px; max-width:340px;">Consequential actions stop at a named checkpoint with the exact change and context attached.</p>
+            </div>
+            <div class="icon-tile dark"><i data-lucide="circle-check" aria-hidden="true"></i></div>
+          </div>
+          <div class="bento-note" style="color:rgba(17,19,17,0.5);">Median checkpoint response: 42 seconds</div>
+        </div>
+
+        <div class="bento-card" data-href="analytics.html">
+          <div class="icon-tile"><i data-lucide="circle-dollar-sign" aria-hidden="true"></i></div>
+          <h3>Spend boundaries</h3>
+          <p>Limit each execution and the month as a whole. Work parks before the budget is crossed.</p>
+        </div>
+
+        <div class="bento-card dark" data-href="audit.html">
+          <div class="icon-tile dark"><i data-lucide="file-check-2" aria-hidden="true"></i></div>
+          <h3>Evidence that holds</h3>
+          <p>Every human instruction and autonomous action joins a tamper-evident record retained for 400 days.</p>
+        </div>
+
+        <div class="bento-card span-2 white trace-bento" data-href="run.html">
+          <div class="trace-card-layout">
+            <div class="trace-copy">
+              <h3>A history built for investigation</h3>
+              <p>Open any execution to see its inputs, model work, connection calls and outputs in order. Faults stay attached to their cause.</p>
+            </div>
+            <div class="trace-preview" aria-hidden="true">
+              <div class="trace-preview-head">
+                <span class="trace-run"><span class="trace-live"></span>EXECUTION #8291</span>
+                <span>3.2s</span>
+              </div>
+              <div class="trace-steps">
+                <div class="trace-step is-done">
+                  <span class="trace-node"></span>
+                  <span>parse_request</span>
+                  <span>42 ms</span>
+                </div>
+                <div class="trace-step is-done">
+                  <span class="trace-node"></span>
+                  <span>check_policy</span>
+                  <span>118 ms</span>
+                </div>
+                <div class="trace-step is-live">
+                  <span class="trace-node"></span>
+                  <span>generate_report</span>
+                  <span>running</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bento-card" data-href="schedules.html">
+          <div class="icon-tile"><i data-lucide="clock-3" aria-hidden="true"></i></div>
+          <h3>Reliable triggers</h3>
+          <p>Timed work with overlap protection, missed-window recovery and timezone-safe delivery.</p>
+        </div>
+
+        <div class="bento-card" data-href="tools.html">
+          <div class="icon-tile"><i data-lucide="plug-zap" aria-hidden="true"></i></div>
+          <h3>Scoped connections</h3>
+          <p>Register a capability once, grant it to specific workers and withdraw access immediately.</p>
+        </div>
+
+        <div class="bento-card" data-href="settings-team.html">
+          <div class="icon-tile"><i data-lucide="shield-check" aria-hidden="true"></i></div>
+          <h3>Identity by default</h3>
+          <p>SAML, SCIM, narrow roles and enforced two-factor keep authority explicit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURE ROWS ═══════════ -->
+  <section class="section" style="padding-top:0;" id="how">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">From code to evidence</span>
+        <h2 class="section-title">Instrument once.<br>Keep authority.</h2>
+      </div>
+
+      <div class="feature-row">
+        <div>
+          <h3>Add the evidence hook</h3>
+          <p class="muted">Use the SDK or a plain HTTP call. Nalvo sits beside the framework you already use, so your execution logic stays intact.</p>
+          <ul class="feature-list">
+            <li>Node, Python and Go SDKs, plus a plain HTTP API</li>
+            <li>Compatible with LangChain, custom loops and scheduled jobs</li>
+            <li>Policies stay versioned in git and sync in both directions</li>
+          </ul>
+        </div>
+        <div class="code" style="border-radius:var(--r-lg);">
+          <div class="code-head"><span>agent.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">import</span> { Nalvo } <span class="k">from</span> <span class="s">"@nalvo/sdk"</span>;
+
+<span class="k">const</span> nalvo = <span class="k">new</span> Nalvo(process.env.NALVO_KEY);
+
+<span class="k">const</span> execution = <span class="k">await</span> nalvo.executions.open({
+  worker: <span class="s">"invoice-parser-v2"</span>,
+  input: { batch: <span class="s">"2024-08-03"</span> },
+  <span class="c">// require a human checkpoint above this amount</span>
+  checkpointAbove: <span class="n">50000</span>
+});</pre>
+        </div>
+      </div>
+
+      <!-- Checkpoints — live screen -->
+      <div class="split-head">
+        <div>
+          <h3>Review the action, not a summary</h3>
+          <p class="muted">When a worker reaches a checkpoint, the proposed change arrives with its diff, policy match and source context. Select an item and resolve it directly in the workspace.</p>
+        </div>
+        <ul class="feature-list">
+          <li>Side-by-side diffs for contracts, prices and migrations</li>
+          <li>Escalation paths when the first reviewer does not respond</li>
+          <li>Every answer committed to the evidence chain</li>
+        </ul>
+      </div>
+
+      <div class="stage">
+        <div class="shot" role="region" aria-label="Interactive checkpoint queue">
+          <iframe src="approvals.html" width="1440" height="980" title="Interactive checkpoint queue" scrolling="no"></iframe>
+        </div>
+      </div>
+      <div class="stage-caption">
+        <span><i></i><b>Interactive</b> — select an item and resolve it</span>
+        <span><b>3</b> checkpoints open</span>
+        <span><b>42s</b> median response</span>
+      </div>
+
+      <!-- Cost — live screen -->
+      <div class="split-head" style="margin-top:clamp(56px,7vw,88px);">
+        <div>
+          <h3>Give every action a budget</h3>
+          <p class="muted">Spend is attributed to the execution, stage and connection that caused it. Set a boundary and new work parks before cost escapes the range you chose.</p>
+        </div>
+        <ul class="feature-list">
+          <li>Per-execution and monthly limits with hard stops</li>
+          <li>Token, tool and storage costs split out</li>
+          <li>Forecast against the current execution rate</li>
+        </ul>
+      </div>
+
+      <div class="stage">
+        <div class="shot" role="region" aria-label="Interactive analytics dashboard">
+          <iframe src="analytics.html" width="1440" height="980" title="Interactive analytics dashboard" scrolling="no"></iframe>
+        </div>
+      </div>
+      <div class="stage-caption">
+        <span><i></i><b>$2,468</b> spent this month</span>
+        <span><b>41%</b> of the $6,000 cap</span>
+        <span><b>0</b> boundary breaches this quarter</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ TESTIMONIALS ═══════════ -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">From production teams</span>
+        <h2 class="section-title">What changed after the record became visible</h2>
+        <p class="lede">Different teams, one shared result: less reconstruction and faster judgment when autonomous work matters.</p>
+      </div>
+
+      <div class="testimonials">
+        <div class="tcard">
+          <p>“A pricing change used to disappear into three services. Now we see the proposed action and its evidence before a single SKU moves.”</p>
+          <footer><span class="avatar-sm">EM</span><span><span class="tname">Elena Marchetti</span><br><span class="trole">Head of Ops, Ledgerly</span></span></footer>
+        </div>
+        <div class="tcard">
+          <p>“Legal no longer approves a vague request. They review the exact clause change, its source and the policy that triggered the checkpoint.”</p>
+          <footer><span class="avatar-sm">DR</span><span><span class="tname">Daniel Roux</span><br><span class="trole">General Counsel, Northwind</span></span></footer>
+        </div>
+        <div class="tcard">
+          <p>“We cut model spend after the evidence view showed one extraction stage consuming twice what the rest of the workflow used.”</p>
+          <footer><span class="avatar-sm">PA</span><span><span class="tname">Priya Anand</span><br><span class="trole">Platform Lead, Meridian</span></span></footer>
+        </div>
+        <div class="tcard">
+          <p>“The board asked what our automation had changed over six months. We answered with a signed export the same afternoon.”</p>
+          <footer><span class="avatar-sm">TK</span><span><span class="tname">Tomás Kern</span><br><span class="trole">CFO, Forge &amp; Co</span></span></footer>
+        </div>
+      </div>
+
+      <div class="quote-card" style="margin-top:12px;">
+        <div style="display:flex; justify-content:center;"><div class="avatar-lg">SM</div></div>
+        <div>
+          <div class="quote-text">“Nalvo gives us the missing contract between autonomous software and the people accountable for its consequences.”</div>
+          <div class="quote-who"><strong>Sam Mercer</strong>VP Engineering, Acme Corp — 11 workers in production</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FAQ ═══════════ -->
+  <section class="section" style="padding-top:0;" id="faq">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Practical details</span>
+        <h2 class="section-title">What teams need to know</h2>
+      </div>
+
+      <div class="faq">
+        <details open>
+          <summary>Does adoption change our execution code?</summary>
+          <p>No. Nalvo observes the framework, custom loop or scheduled script you already run. Register a worker and emit its stages through the SDK or API; most teams capture their first complete record in one afternoon.</p>
+        </details>
+        <details>
+          <summary>How are consequential actions held for review?</summary>
+          <p>Define checkpoints around spend, data classes or specific connections. The execution parks when a rule matches, the reviewer receives the change and its context, and work continues or ends from that recorded decision.</p>
+        </details>
+        <details>
+          <summary>Where does our data live?</summary>
+          <p>Choose an EU or US region. Payloads can be redacted before inference, artifacts expire on your retention schedule, and the evidence record can preserve the decision without retaining the sensitive body.</p>
+        </details>
+        <details>
+          <summary>How does pricing work?</summary>
+          <p>Each workspace pays a fixed subscription plus measured compute, connection calls and storage. The full breakdown is on the <a href="pricing.html" style="color:var(--ink); text-decoration:underline;">pricing page</a>, and every tier includes a hard spending boundary.</p>
+        </details>
+        <details>
+          <summary>Can we self-host?</summary>
+          <p>The evidence service is hosted. Enterprise customers can place execution relays inside their own VPC so payloads stay on-network, while policy definitions and signed exports remain portable.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CTA ═══════════ -->
+  <section class="section" style="padding-top:0;" id="contact">
+    <div class="container">
+      <div class="cta-band">
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="top:18%; left:12%;"></i>
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="top:64%; left:8%;"></i>
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="top:26%; right:14%;"></i>
+        <i data-lucide="sparkles" class="cta-spark" aria-hidden="true" style="bottom:16%; right:10%;"></i>
+        <span class="eyebrow" style="background:rgba(17,19,17,0.08);">Start with one workflow</span>
+        <h2 class="section-title" style="margin-top:18px;">Make the next action<br>accountable.</h2>
+        <p class="lede" style="max-width:520px; margin:14px auto 0; color:rgba(17,19,17,0.62);">
+          Connect one production worker and capture its next execution from input to evidence.
+        </p>
+        <div class="actions">
+          <a class="btn btn-dark" href="signup.html">Create workspace</a>
+          <a class="btn btn-line btn-plain" href="fleet.html" style="border-color:rgba(17,19,17,0.24);">Explore the live workspace</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

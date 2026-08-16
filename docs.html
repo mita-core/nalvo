@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation — NALVO</title>
+<meta name="description" content="Nalvo documentation for execution evidence, decision checkpoints, scoped connections, webhooks, REST API and CLI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Documentation</span>
+        <h1>Nalvo docs</h1>
+        <p class="docs-lede">Connect autonomous work, capture each stage as evidence and place human judgment exactly where policy requires it.</p>
+
+        <div class="bento" style="grid-template-columns:repeat(2,1fr); margin:32px 0 44px;">
+          <a class="bento-card white" href="docs-quickstart.html" style="text-decoration:none; min-height:150px;">
+            <div class="icon-tile lime"><i data-lucide="play" aria-hidden="true"></i></div><h3>Quickstart</h3><p>From an API key to a complete execution record in about ten minutes.</p>
+          </a>
+          <a class="bento-card white" href="docs-concepts.html" style="text-decoration:none; min-height:150px;">
+            <div class="icon-tile"><i data-lucide="book-open" aria-hidden="true"></i></div><h3>Core concepts</h3><p>Workers, executions, stages, connections and checkpoints.</p>
+          </a>
+          <a class="bento-card white" href="docs-api.html" style="text-decoration:none; min-height:150px;">
+            <div class="icon-tile"><i data-lucide="braces" aria-hidden="true"></i></div><h3>REST API</h3><p>Every endpoint, with request and response shapes.</p>
+          </a>
+          <a class="bento-card white" href="docs-approvals.html" style="text-decoration:none; min-height:150px;">
+            <div class="icon-tile"><i data-lucide="circle-check" aria-hidden="true"></i></div><h3>Decision checkpoints</h3><p>Declare when an execution must park for human judgment.</p>
+          </a>
+        </div>
+
+        <h2 id="what">What Nalvo adds</h2>
+        <p>Nalvo is the evidence and intervention layer beside your autonomous framework. Keep the LangChain graph, custom loop or scheduled script you already run; add live execution state, policy checkpoints, scoped connections, spending boundaries and a verifiable decision history around it.</p>
+        <p>Three records form the core of the system:</p>
+        <ul>
+          <li><strong>Executions</strong> — one attempt by a worker, from trigger to terminal state.</li>
+          <li><strong>Stages</strong> — ordered units inside an execution with timing, model usage and optional connection calls.</li>
+          <li><strong>Checkpoints</strong> — human decisions preserved with their policy and evidence.</li>
+        </ul>
+
+        <h2 id="model">The mental model</h2>
+        <p>Your code opens an execution, reports each stage and requests a checkpoint when a policy boundary is reached. Nalvo preserves the record, enforces the boundary and exposes the current state to the accountable team.</p>
+
+        <div class="code">
+          <div class="code-head"><span>the shape of it</span><button class="btn-copy" data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="c">// 1 — open an execution</span>
+<span class="k">const</span> execution = <span class="k">await</span> nalvo.executions.open({ worker: <span class="s">"invoice-parser-v2"</span>, input });
+
+<span class="c">// 2 — report stages as they happen</span>
+<span class="k">await</span> nalvo.stages.record(execution.id, { name: <span class="s">"extract_entities"</span>, tokens: <span class="n">847</span> });
+
+<span class="c">// 3 — request judgment at a policy boundary</span>
+<span class="k">const</span> decision = <span class="k">await</span> nalvo.checkpoints.open(execution.id, { diff, impact: <span class="s">"low"</span> });
+
+<span class="c">// 4 — seal the record</span>
+<span class="k">await</span> nalvo.executions.complete(execution.id, { output });</pre>
+        </div>
+
+        <div class="callout">
+          <strong>You do not have to adopt all of it at once</strong>
+          <p>Sending executions and stages already creates a useful evidence history. Checkpoints, connection scopes and triggers can be added independently later.</p>
+        </div>
+
+        <h2 id="paths">Pick a path</h2>
+        <table class="doc-table">
+          <thead><tr><th>If you want to…</th><th>Start here</th></tr></thead>
+          <tbody>
+            <tr><td>Capture your first execution today</td><td><a href="docs-quickstart.html">Quickstart</a></td></tr>
+            <tr><td>Understand the object model</td><td><a href="docs-concepts.html">Core concepts</a></td></tr>
+            <tr><td>Add a human decision boundary</td><td><a href="docs-approvals.html">Decision checkpoints</a></td></tr>
+            <tr><td>Register and scope connections</td><td><a href="docs-tools.html">Connections</a></td></tr>
+            <tr><td>React to execution events elsewhere</td><td><a href="docs-webhooks.html">Webhooks</a></td></tr>
+            <tr><td>Automate deploys from CI</td><td><a href="docs-cli.html">CLI</a></td></tr>
+            <tr><td>Answer a security questionnaire</td><td><a href="docs-security.html">Security &amp; compliance</a></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="support">Getting help</h2>
+        <p>Scale and Enterprise workspaces get a shared channel with a four-hour and one-hour response target respectively. Everyone else can reach us from the <a href="index.html#contact">contact page</a> — we read all of it.</p>
+
+        <div class="doc-nextprev">
+          <span></span>
+          <a class="next" href="docs-quickstart.html"><span>Next</span><strong>Quickstart <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#what">What Nalvo adds</a>
+        <a href="#model">The mental model</a>
+        <a href="#paths">Pick a path</a>
+        <a href="#support">Getting help</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Execution History — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="runs">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title">Execution history</div>
+            <div class="page-subtitle" data-filter-count="{n} executions shown · Last 30 days · fully loaded, no pagination">2,847 total executions · Last 30 days</div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-secondary btn-auto" data-toast="Exported executions.csv — 2,847 rows">Export CSV</button>
+            <button class="btn btn-primary btn-auto" onclick="openModal('m-run')">New execution</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" data-target="#runs-tbody tr">
+          <button class="filter-tab active" data-value="all">All</button>
+          <button class="filter-tab" data-value="today">Today</button>
+          <button class="filter-tab" data-value="yesterday">Yesterday</button>
+          <button class="filter-tab" data-value="last7d">Last 7d</button>
+          <input class="filter-search" placeholder="Search executions…" aria-label="Search executions">
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Execution ID</th><th>Worker</th><th>Trigger</th><th>Started</th>
+              <th>Duration</th><th>Tokens</th><th>Cost</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="runs-tbody">
+            <tr data-day="0" data-status="waiting" data-tags="today last7d"><td class="tnum">#8291</td><td><div class="agent-name">contract-renewal-bot</div></td><td>webhook</td><td class="tnum">Aug 3, 09:31</td><td class="tnum">04:32:18</td><td class="tnum">12,847</td><td class="tnum">$1.24</td><td><span class="status status-waiting"><span class="dot"></span>Waiting</span></td></tr>
+            <tr data-day="0" data-status="running" data-tags="today last7d"><td class="tnum">#8290</td><td><div class="agent-name">invoice-parser-v2</div></td><td>schedule</td><td class="tnum">Aug 3, 09:00</td><td class="tnum">00:14:07</td><td class="tnum">5,291</td><td class="tnum">$0.31</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+            <tr data-day="0" data-status="failed" data-tags="today last7d"><td class="tnum">#8289</td><td><div class="agent-name">onboarding-agent</div></td><td>api call</td><td class="tnum">Aug 3, 08:45</td><td class="tnum">00:02:14</td><td class="tnum">312</td><td class="tnum">$0.08</td><td><span class="status status-failed"><span class="dot"></span>Failed</span></td></tr>
+            <tr data-day="0" data-status="done" data-tags="today last7d"><td class="tnum">#8288</td><td><div class="agent-name">compliance-checker</div></td><td>file upload</td><td class="tnum">Aug 3, 08:30</td><td class="tnum">00:08:55</td><td class="tnum">8,104</td><td class="tnum">$0.67</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+            <tr data-day="0" data-status="running" data-tags="today last7d"><td class="tnum">#8287</td><td><div class="agent-name">data-sync-pipeline</div></td><td>event</td><td class="tnum">Aug 3, 08:15</td><td class="tnum">00:31:42</td><td class="tnum">24,180</td><td class="tnum">$2.18</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+            <tr data-day="0" data-status="done" data-tags="today last7d"><td class="tnum">#8286</td><td><div class="agent-name">security-audit-bot</div></td><td>schedule</td><td class="tnum">Aug 3, 02:00</td><td class="tnum">00:45:03</td><td class="tnum">10,442</td><td class="tnum">$0.94</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+            <tr data-day="0" data-status="running" data-tags="today last7d"><td class="tnum">#8285</td><td><div class="agent-name">pricing-optimizer</div></td><td>webhook</td><td class="tnum">Aug 3, 01:45</td><td class="tnum">00:03:41</td><td class="tnum">1,204</td><td class="tnum">$0.15</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+            <tr data-day="0" data-status="done" data-tags="today last7d"><td class="tnum">#8284</td><td><div class="agent-name">email-classifier</div></td><td>schedule</td><td class="tnum">Aug 3, 01:00</td><td class="tnum">00:01:08</td><td class="tnum">384</td><td class="tnum">$0.04</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+            <tr data-day="1" data-status="done" data-tags="yesterday last7d"><td class="tnum">#8283</td><td><div class="agent-name">report-generator</div></td><td>manual</td><td class="tnum">Aug 2, 23:15</td><td class="tnum">00:22:17</td><td class="tnum">15,600</td><td class="tnum">$1.42</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+            <tr data-day="1" data-status="done" data-tags="yesterday last7d"><td class="tnum">#8282</td><td><div class="agent-name">data-sync-pipeline</div></td><td>event</td><td class="tnum">Aug 2, 22:30</td><td class="tnum">00:28:55</td><td class="tnum">21,040</td><td class="tnum">$1.89</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="empty" data-filter-empty style="display:none; margin-top:16px;">
+          <div class="empty-icon"><i data-lucide="route" aria-hidden="true"></i></div>
+          <div class="empty-title">No executions match this filter</div>
+          <div class="empty-desc">Adjust the date range or clear the search field.</div>
+        </div>
+
+        <div class="runs-loaded" id="runs-loaded">Loading full history…</div>
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Execution detail</div>
+        <div class="card">
+          <div class="card-meta" id="rund-meta">invoice-parser-v2 · Execution #8290</div>
+          <div class="card-title" id="rund-title">Scheduled invoice processing</div>
+          <div class="card-subtitle" id="rund-sub">Daily batch job processing vendor invoices and generating payment reports.</div>
+          <div class="mini-list" style="margin-top:8px;">
+            <div class="mini-row"><span class="mini-label">Status</span><span class="mini-value" id="rund-status" style="color:var(--accent-text);">Running</span></div>
+            <div class="mini-row"><span class="mini-label">Trigger</span><span class="mini-value" id="rund-trigger">schedule</span></div>
+            <div class="mini-row"><span class="mini-label">Started</span><span class="mini-value" id="rund-started">Aug 3, 09:00 UTC</span></div>
+            <div class="mini-row"><span class="mini-label">Duration</span><span class="mini-value" id="rund-duration">00:14:07</span></div>
+            <div class="mini-row"><span class="mini-label">Tokens</span><span class="mini-value" id="rund-tokens">5,291</span></div>
+            <div class="mini-row"><span class="mini-label">Cost</span><span class="mini-value" id="rund-cost">$0.31</span></div>
+            <div class="mini-row"><span class="mini-label">Version</span><span class="mini-value" id="rund-version">v1.8.3</span></div>
+          </div>
+          <div class="btn-row" style="margin-top:var(--s-4);">
+            <a class="btn btn-primary" id="rund-open" href="run.html?id=8290" style="display:flex; align-items:center; justify-content:center; text-decoration:none;">Open execution</a>
+            <button class="btn btn-secondary" data-toast="Execution re-queued — position 3 in queue">Run again</button>
+          </div>
+        </div>
+
+        <div class="panel-title">Stage trace</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="step-list" style="position:relative;" id="rund-steps">
+            <div style="position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--border-light);"></div>
+            <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">extract_entities</div><div class="step-duration">2.4s · 847 tokens</div></div></div>
+            <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">validate_schema</div><div class="step-duration">0.8s · 124 tokens</div></div></div>
+            <div class="step-item active"><div class="step-dot"></div><div class="step-content"><div class="step-title">generate_report</div><div class="step-duration">6.7s · 4,320 tokens</div></div></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<!-- New run modal -->
+<div class="modal-backdrop" id="m-run" role="dialog" aria-modal="true" aria-labelledby="m-run-t">
+  <div class="modal">
+    <div class="modal-title" id="m-run-t">Start a new execution</div>
+    <div class="modal-desc">Pick a worker and trigger. The execution is queued immediately and appears at the top of the history.</div>
+    <div class="field">
+      <label class="field-label" for="nr-agent">Worker</label>
+      <select class="select" id="nr-agent">
+        <option>invoice-parser-v2</option>
+        <option>onboarding-agent</option>
+        <option>compliance-checker</option>
+        <option>data-sync-pipeline</option>
+        <option>pricing-optimizer</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="nr-trigger">Trigger</label>
+      <select class="select" id="nr-trigger">
+        <option>manual</option><option>schedule</option><option>webhook</option><option>api call</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="nr-input">Input payload (optional)</label>
+      <textarea class="textarea" id="nr-input" placeholder='{ "batch": "2024-08-03" }'></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startRun()">Queue execution</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-run')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  function startRun() {
+    var agent = document.getElementById('nr-agent').value;
+    var trigger = document.getElementById('nr-trigger').value;
+    var tbody = document.getElementById('runs-tbody');
+    var tr = document.createElement('tr');
+    tr.dataset.day = '0';
+    tr.dataset.status = 'running';
+    tr.dataset.tags = 'today last7d';
+    tr.className = 'clickable';
+    tr.innerHTML = '<td class="tnum">#8292</td><td><div class="agent-name">' + agent + '</div></td><td>' + trigger +
+      '</td><td class="tnum">Aug 3, 09:44</td><td class="tnum">00:00:03</td><td class="tnum">12</td><td class="tnum">$0.00</td>' +
+      '<td><span class="status status-running"><span class="dot"></span>Running</span></td>';
+    tr.addEventListener('click', function () { opSelectRun(tr); });
+    tbody.insertBefore(tr, tbody.firstChild);
+    closeModal('m-run');
+    showToast('Execution #8292 queued — ' + agent);
+  }
+</script>
+</body>
+</html>

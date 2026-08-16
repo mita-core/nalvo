@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision checkpoints — NALVO docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css?v=24">
+</head>
+<body data-page="docs-approvals">
+
+<header class="site-header"></header>
+
+<main>
+  <div class="container">
+    <div class="docs-layout">
+
+      <aside class="docs-nav" data-docs-nav aria-label="Documentation"></aside>
+
+      <article class="docs-body">
+        <span class="eyebrow" style="margin-bottom:16px;">Guides</span>
+        <h1>Decision checkpoints</h1>
+        <p class="docs-lede">Pause an execution at the exact moment human judgement matters, with enough evidence to answer without opening another system.</p>
+
+        <h2 id="declare">Declaring a checkpoint</h2>
+        <p>Checkpoints come from two places. Declarative checkpoints live in the worker definition and are enforced by the runtime, outside your application code:</p>
+        <div class="code">
+          <div class="code-head"><span>worker.yaml</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">boundaries</span>:
+  <span class="k">checkpoint_above</span>: <span class="s">"$50000"</span>
+  <span class="k">checkpoint_connections</span>:
+    - salesforce_api
+    - etl_processor
+  <span class="k">checkpoint_data</span>:
+    - pii
+    - financial</pre>
+        </div>
+        <p>Imperative ones are raised from code when the condition is something only your logic knows:</p>
+        <div class="code">
+          <div class="code-head"><span>worker.js</span><button data-copy style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;">Copy</button></div>
+<pre><span class="k">const</span> decision = <span class="k">await</span> nalvo.checkpoints.request(execution.id, {
+  title: <span class="s">"Review contract amendment"</span>,
+  summary: <span class="s">"MSA-2023-4402 extends term through Q1 2025."</span>,
+  risk: <span class="s">"low"</span>,
+  assignee: <span class="s">"legal"</span>,
+  ttl: <span class="n">14400</span>,
+  diff: {
+    file: <span class="s">"MSA-2023-4402-A1.md"</span>,
+    hunks: [
+      { line: <span class="n">15</span>, remove: <span class="s">"Effective through Sep 30, 2024"</span>,
+                   add:    <span class="s">"Effective through Mar 31, 2025"</span> }
+    ]
+  }
+});</pre>
+        </div>
+
+        <h2 id="diff">Give it a real diff</h2>
+        <p>The single biggest factor in decision speed is whether the approver can see what changes without opening anything else. A diff of the actual artifact — contract text, price rows, SQL statements — turns a five-minute investigation into a five-second read.</p>
+        <div class="callout">
+          <strong>Rule of thumb</strong>
+          <p>If the approver has to ask “what does this actually do”, the request was missing a diff. Median decision time across workspaces that send diffs is 42 seconds; without one it is over eleven minutes.</p>
+        </div>
+
+        <h2 id="risk">Risk tiers and routing</h2>
+        <p>Every request carries a tier. The tier decides who is asked, how many people must agree, and how long before it escalates.</p>
+        <table class="doc-table">
+          <thead><tr><th>Tier</th><th>Approvers</th><th>TTL</th><th>On expiry</th></tr></thead>
+          <tbody>
+            <tr><td>low</td><td>Any member of the owning group</td><td>8h</td><td>Escalate to group lead</td></tr>
+            <tr><td>medium</td><td>Two members of the owning group</td><td>4h</td><td>Escalate to admins</td></tr>
+            <tr><td>high</td><td>Named approvers only</td><td>1h</td><td>Page on-call, then cancel</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="response">Reading the response</h2>
+        <div class="code">
+          <div class="code-head"><span>decision object</span></div>
+<pre>{
+  <span class="k">"id"</span>: <span class="s">"chk_8291_001"</span>,
+  <span class="k">"status"</span>: <span class="s">"accepted"</span>,        <span class="c">// accepted | declined | expired</span>
+  <span class="k">"by"</span>: <span class="s">"jordan@acme.io"</span>,
+  <span class="k">"at"</span>: <span class="s">"2024-08-03T09:34:12Z"</span>,
+  <span class="k">"note"</span>: <span class="s">"Legal reviewed the SLA change."</span>,
+  <span class="k">"waited_ms"</span>: <span class="n">1932000</span>
+}</pre>
+        </div>
+        <p>Handle all three states. An expired checkpoint grants nothing — treat it like a decline unless your policy explicitly says otherwise.</p>
+
+        <h2 id="patterns">Patterns that work</h2>
+        <ul>
+          <li><strong>Checkpoint the write, not the read.</strong> Let the worker gather and prepare freely; ask only before the irreversible stage.</li>
+          <li><strong>One request per decision.</strong> Bundling twelve price changes into one checkpoint encourages a blanket answer.</li>
+          <li><strong>Send the blast radius.</strong> “1,240 SKUs, est. +$18K/mo” is a decision. “Apply pricing update” is not.</li>
+          <li><strong>Fail closed.</strong> If the checkpoint service is unreachable, park the execution — never proceed on a timeout.</li>
+        </ul>
+
+        <h2 id="audit">What lands in the decision record</h2>
+        <p>Every request and response is appended to the workspace evidence chain: who asked, what was shown, who answered, when and from where. See <a href="docs-security.html">Security &amp; compliance</a>.</p>
+
+        <div class="doc-nextprev">
+          <a href="docs-concepts.html"><span>Previous</span><strong><i data-lucide="arrow-left" aria-hidden="true"></i> Core concepts</strong></a>
+          <a class="next" href="docs-tools.html"><span>Next</span><strong>Connections <i data-lucide="arrow-right" aria-hidden="true"></i></strong></a>
+        </div>
+      </article>
+
+      <aside class="docs-toc">
+        <h4>On this page</h4>
+        <a href="#declare">Declaring a checkpoint</a>
+        <a href="#diff">Give it a real diff</a>
+        <a href="#risk">Risk tiers</a>
+        <a href="#response">Reading the response</a>
+        <a href="#patterns">Patterns that work</a>
+        <a href="#audit">Decision record</a>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/site.js?v=18"></script>
+</body>
+</html>

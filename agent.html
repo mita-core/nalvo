@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>invoice-parser-v2 — NALVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css?v=17">
+</head>
+<body data-page="agent">
+
+<div class="app">
+  <header class="topbar" data-topbar></header>
+
+  <div class="body">
+    <nav class="sidebar" data-sidebar aria-label="Main navigation"></nav>
+    <div class="resizer" data-target="sidebar" role="separator" aria-orientation="vertical" aria-label="Resize navigation panel"></div>
+
+    <main class="main">
+      <div class="float-bar left" data-floatbar-left role="toolbar" aria-label="Navigation"></div>
+      <div class="float-bar right" data-floatbar-right role="toolbar" aria-label="Context panel"></div>
+
+      <div class="main-content">
+
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="fleet.html">Live map</a><span class="sep">/</span>
+          <a href="agents.html">Workers</a><span class="sep">/</span>
+          <span id="crumb-agent">invoice-parser-v2</span>
+        </nav>
+
+        <div class="page-head-row">
+          <div class="page-header">
+            <div class="page-title" id="agent-title">invoice-parser-v2</div>
+            <div class="page-subtitle">
+              <span class="status status-running"><span class="dot"></span>Active</span>
+              &nbsp;·&nbsp; v1.8.3 &nbsp;·&nbsp; owner <strong style="color:var(--text-secondary); font-weight:500;">finance-ops</strong>
+            </div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost btn-auto" data-toast="Worker paused — queued executions will hold">Pause</button>
+            <button class="btn btn-secondary btn-auto" data-toast="Test execution started in the sandbox worker">Test execution</button>
+            <button class="btn btn-primary btn-auto" onclick="openModal('m-deploy')">Deploy</button>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" data-tab="overview">Overview</button>
+          <button class="tab" role="tab" data-tab="config">Configuration</button>
+          <button class="tab" role="tab" data-tab="versions">Versions</button>
+          <button class="tab" role="tab" data-tab="permissions">Permissions</button>
+          <button class="tab" role="tab" data-tab="runs">Executions</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section data-panel="overview">
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">Executions (30d)</div><div class="metric-value">412</div>
+              <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="up" points=""/></svg></div>
+              <div class="metric-delta up">+6% vs prev</div></div>
+            <div class="metric"><div class="metric-label">Success rate</div><div class="metric-value">96.1%</div>
+              <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="flat-high" points=""/></svg></div>
+              <div class="metric-delta up">+1.4 pts</div></div>
+            <div class="metric"><div class="metric-label">Avg duration</div><div class="metric-value">13:42</div>
+              <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="down" points=""/></svg></div>
+              <div class="metric-delta down">-1m 08s</div></div>
+            <div class="metric"><div class="metric-label">Avg cost</div><div class="metric-value">$0.31</div>
+              <div class="metric-sparkline"><svg viewBox="0 0 200 48" preserveAspectRatio="none"><polyline data-trend="down" points=""/></svg></div>
+              <div class="metric-delta down">-8%</div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Executions per day</span><span class="chart-note">last 14 days</span></div>
+              <div class="chart-body"><svg data-chart="bar" data-series="12,14,11,16,13,9,7,15,18,14,12,16,13,14" data-labels="Jul 21,,,,Jul 25,,,,Jul 29,,,,Aug 2,"></svg></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-head"><span class="chart-title">Duration vs cost</span><span class="chart-note">accent = minutes · blue = cents</span></div>
+              <div class="chart-body"><svg data-chart="area" data-series="14,13,15,12,14,16,13,12,14,13,15,14" data-series2="31,29,34,28,30,33,29,27,31,30,32,31" data-labels="Jul 23,,,Jul 27,,,Jul 31,,,Aug 3"></svg></div>
+              <div class="legend"><span><i style="background:var(--accent);"></i>Duration (min)</span><span><i style="background:var(--info);"></i>Cost (¢)</span></div>
+            </div>
+          </div>
+
+          <div class="section-title mt-8">Pipeline</div>
+          <div class="card">
+            <div class="step-list" style="position:relative;">
+              <div style="position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--border-light);"></div>
+              <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">fetch_batch</div><div class="step-duration">s3_upload · reads from acme-invoices/inbox</div></div></div>
+              <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">extract_entities</div><div class="step-duration">pdf_parser · vendor, amount, currency, due date</div></div></div>
+              <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">validate_schema</div><div class="step-duration">etl_processor · rejects rows missing a PO number</div></div></div>
+              <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">generate_report</div><div class="step-duration">pdf_exporter · vendor-summary template</div></div></div>
+              <div class="step-item completed"><div class="step-dot"></div><div class="step-content"><div class="step-title">notify_channel</div><div class="step-duration">slack_notify · posts to #finance-ops</div></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONFIG -->
+        <section data-panel="config" hidden>
+          <div class="grid-2">
+            <div>
+              <div class="section-title">Definition</div>
+              <div class="code">
+                <div class="code-head"><span>invoice-parser-v2.yaml</span><span class="text-link" data-toast="Definition copied">Copy</span></div>
+<pre><span class="k">name</span>: invoice-parser-v2
+<span class="k">version</span>: <span class="s">"1.8.3"</span>
+<span class="k">model</span>: claude-opus-4
+<span class="k">schedule</span>: <span class="s">"0 9 * * *"</span>
+<span class="k">timeout</span>: <span class="n">1800</span>
+<span class="k">retries</span>: <span class="n">3</span>
+
+<span class="k">tools</span>:
+  - s3_upload
+  - pdf_parser
+  - etl_processor
+  - pdf_exporter
+  - slack_notify
+
+<span class="k">guardrails</span>:
+  <span class="k">max_cost_per_run</span>: <span class="s">"$2.00"</span>
+  <span class="k">checkpoint_above</span>: <span class="s">"$50000"</span>
+  <span class="k">pii_redaction</span>: <span class="n">true</span></pre>
+              </div>
+            </div>
+            <div>
+              <div class="section-title">Runtime settings</div>
+              <div class="card">
+                <div class="field">
+                  <label class="field-label" for="cfg-model">Model</label>
+                  <select class="select" id="cfg-model"><option>claude-opus-4</option><option>claude-sonnet-4</option><option>claude-haiku-4</option></select>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="cfg-timeout">Timeout (seconds)</label>
+                  <input class="input" id="cfg-timeout" value="1800">
+                </div>
+                <div class="field">
+                  <label class="field-label" for="cfg-retries">Retries</label>
+                  <input class="input" id="cfg-retries" value="3">
+                </div>
+                <div class="setting-row" style="margin-bottom:12px;">
+                  <div><div class="setting-name">PII redaction</div><div class="setting-desc">Strip emails and account numbers before the model call</div></div>
+                  <button class="toggle on" onclick="toggleSetting(this, 'PII redaction')" aria-pressed="true"></button>
+                </div>
+                <div class="setting-row">
+                  <div><div class="setting-name">Human checkpoint</div><div class="setting-desc">Pause when a payment exceeds $50,000</div></div>
+                  <button class="toggle on" onclick="toggleSetting(this, 'Checkpoint')" aria-pressed="true"></button>
+                </div>
+                <div class="btn-row mt-6">
+                  <button class="btn btn-primary" data-toast="Configuration saved — takes effect on next execution">Save changes</button>
+                  <button class="btn btn-secondary" data-toast="Reverted to last deployed config">Revert</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VERSIONS -->
+        <section data-panel="versions" hidden>
+          <table class="data-table">
+            <thead><tr><th>Version</th><th>Deployed</th><th>By</th><th>Executions</th><th>Success</th><th>Status</th><th class="th-right">Action</th></tr></thead>
+            <tbody>
+              <tr><td class="tnum">v1.8.3</td><td class="tnum">Aug 1, 14:02</td><td>jordan@acme.io</td><td class="tnum">412</td><td class="tnum">96.1%</td><td><span class="badge badge-success">Live</span></td><td class="td-right"><span class="text-link" data-toast="v1.8.3 is already live">Promote</span></td></tr>
+              <tr><td class="tnum">v1.8.2</td><td class="tnum">Jul 24, 09:41</td><td>jordan@acme.io</td><td class="tnum">388</td><td class="tnum">94.8%</td><td><span class="badge">Archived</span></td><td class="td-right"><span class="text-link" data-toast="Rolled back to v1.8.2 — draining v1.8.3">Roll back</span></td></tr>
+              <tr><td class="tnum">v1.8.0</td><td class="tnum">Jul 11, 17:15</td><td>sam@acme.io</td><td class="tnum">602</td><td class="tnum">92.0%</td><td><span class="badge">Archived</span></td><td class="td-right"><span class="text-link" data-toast="Rolled back to v1.8.0 — draining v1.8.3">Roll back</span></td></tr>
+              <tr><td class="tnum">v1.7.4</td><td class="tnum">Jun 28, 11:03</td><td>sam@acme.io</td><td class="tnum">741</td><td class="tnum">89.3%</td><td><span class="badge">Archived</span></td><td class="td-right"><span class="text-link" data-toast="Rolled back to v1.7.4 — draining v1.8.3">Roll back</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- PERMISSIONS -->
+        <section data-panel="permissions" hidden>
+          <div class="grid-2">
+            <div>
+              <div class="section-title">Connection access</div>
+              <div class="list-row"><div class="thumb"><i data-lucide="blocks" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">s3_upload</div><div class="list-meta">read + write · bucket acme-invoices</div></div><span class="badge badge-success">Granted</span></div>
+              <div class="list-row"><div class="thumb"><i data-lucide="blocks" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">pdf_parser</div><div class="list-meta">read only</div></div><span class="badge badge-success">Granted</span></div>
+              <div class="list-row"><div class="thumb"><i data-lucide="blocks" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">etl_processor</div><div class="list-meta">warehouse: analytics-prod</div></div><span class="badge badge-success">Granted</span></div>
+              <div class="list-row"><div class="thumb"><i data-lucide="blocks" aria-hidden="true"></i></div><div style="flex:1;"><div class="list-title">salesforce_api</div><div class="list-meta">requested by owner Jul 30</div></div><span class="badge badge-warning">Pending</span></div>
+            </div>
+            <div>
+              <div class="section-title">Who can change this worker</div>
+              <div class="list-row"><div class="thumb">JD</div><div style="flex:1;"><div class="list-title">Jordan Diaz</div><div class="list-meta">jordan@acme.io</div></div><span class="badge badge-accent">Owner</span></div>
+              <div class="list-row"><div class="thumb">SM</div><div style="flex:1;"><div class="list-title">Sam Mercer</div><div class="list-meta">sam@acme.io</div></div><span class="badge">Editor</span></div>
+              <div class="list-row"><div class="thumb">FO</div><div style="flex:1;"><div class="list-title">finance-ops</div><div class="list-meta">group · 12 members</div></div><span class="badge">Approver</span></div>
+              <div class="list-row"><div class="thumb">RO</div><div style="flex:1;"><div class="list-title">everyone@acme.io</div><div class="list-meta">org-wide</div></div><span class="badge">Viewer</span></div>
+              <button class="btn btn-secondary btn-block mt-6" data-toast="Invite sent — pending acceptance">Add a person or group</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- RUNS -->
+        <section data-panel="runs" hidden>
+          <table class="data-table">
+            <thead><tr><th>Execution ID</th><th>Started</th><th>Duration</th><th>Tokens</th><th>Cost</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="location.href='run.html?id=8290'"><td class="tnum">#8290</td><td class="tnum">Aug 3, 09:00</td><td class="tnum">00:14:07</td><td class="tnum">5,291</td><td class="tnum">$0.31</td><td><span class="status status-running"><span class="dot"></span>Running</span></td></tr>
+              <tr class="clickable" onclick="location.href='run.html?id=8271'"><td class="tnum">#8271</td><td class="tnum">Aug 2, 09:00</td><td class="tnum">00:13:22</td><td class="tnum">5,104</td><td class="tnum">$0.30</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr class="clickable" onclick="location.href='run.html?id=8253'"><td class="tnum">#8253</td><td class="tnum">Aug 1, 09:00</td><td class="tnum">00:15:48</td><td class="tnum">5,880</td><td class="tnum">$0.36</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr class="clickable" onclick="location.href='run.html?id=8238'"><td class="tnum">#8238</td><td class="tnum">Jul 31, 09:00</td><td class="tnum">00:12:11</td><td class="tnum">4,720</td><td class="tnum">$0.28</td><td><span class="status status-done"><span class="dot"></span>Done</span></td></tr>
+              <tr class="clickable" onclick="location.href='run.html?id=8219'"><td class="tnum">#8219</td><td class="tnum">Jul 30, 09:00</td><td class="tnum">00:04:02</td><td class="tnum">1,140</td><td class="tnum">$0.09</td><td><span class="status status-failed"><span class="dot"></span>Failed</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+
+      <div class="resizer" data-target="panel" role="separator" aria-orientation="vertical" aria-label="Resize context panel"></div>
+
+      <aside class="main-sidebar" aria-label="Context panel">
+        <div class="panel-head"></div>
+
+        <div class="panel-title">Worker</div>
+        <div class="card">
+          <div class="card-meta">finance-ops · owner</div>
+          <div class="card-title" id="panel-agent-name">invoice-parser-v2</div>
+          <div class="card-subtitle">Parses vendor invoices from S3 every morning and posts a normalised payment report to #finance-ops.</div>
+          <div class="mini-list" style="margin-top:8px;">
+            <div class="mini-row"><span class="mini-label">Version</span><span class="mini-value">v1.8.3</span></div>
+            <div class="mini-row"><span class="mini-label">Schedule</span><span class="mini-value">0 9 * * *</span></div>
+            <div class="mini-row"><span class="mini-label">Next execution</span><span class="mini-value">in 23h 16m</span></div>
+            <div class="mini-row"><span class="mini-label">Timeout</span><span class="mini-value">30m</span></div>
+            <div class="mini-row"><span class="mini-label">Model</span><span class="mini-value">claude-opus-4</span></div>
+          </div>
+        </div>
+
+        <div class="panel-title">Boundaries</div>
+        <div class="card" style="padding:var(--s-4);">
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">Max cost / execution</span><span class="badge badge-accent">$2.00</span></div>
+          <div class="row-between" style="margin-bottom:10px;"><span class="mini-label">Checkpoint above</span><span class="badge badge-accent">$50,000</span></div>
+          <div class="row-between"><span class="mini-label">PII redaction</span><span class="badge badge-success">On</span></div>
+        </div>
+
+        <div class="panel-title">Recent incidents</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-time">Jul 30</div><div class="tl-title">Execution #8219 failed</div><div class="tl-desc">S3 object missing — vendor uploaded late</div></div>
+          <div class="tl-item"><div class="tl-time">Jul 24</div><div class="tl-title">Deployed v1.8.2</div><div class="tl-desc">Faster PDF parsing, -1m avg duration</div></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="m-deploy" role="dialog" aria-modal="true" aria-labelledby="m-deploy-t">
+  <div class="modal">
+    <div class="modal-title" id="m-deploy-t">Deploy to production</div>
+    <div class="modal-desc">Deploys the current draft as <strong>v1.8.4</strong>. Live executions finish on the old version; new ones pick up the new version.</div>
+    <label class="check-row" style="margin-bottom:14px;"><input type="checkbox" checked> Run the smoke test suite first</label>
+    <label class="check-row" style="margin-bottom:20px;"><input type="checkbox"> Notify #finance-ops on deploy</label>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal('m-deploy'); showToast('Deploying v1.8.4 — smoke tests running');">Deploy</button>
+      <button class="btn btn-secondary" onclick="closeModal('m-deploy')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.31.0/dist/umd/lucide.min.js"></script>
+<script src="assets/app.js?v=19"></script>
+<script>
+  document.querySelectorAll('.tab[data-tab]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab[data-tab]').forEach(function (t) { t.classList.toggle('active', t === tab); });
+      document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+    });
+  });
+
+  var name = new URLSearchParams(location.search).get('name');
+  if (name) {
+    document.getElementById('agent-title').textContent = name;
+    document.getElementById('crumb-agent').textContent = name;
+    document.getElementById('panel-agent-name').textContent = name;
+    document.title = name + ' — NALVO';
+  }
+</script>
+</body>
+</html>
