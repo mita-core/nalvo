@@ -39,7 +39,7 @@
           '<button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">' + iconHTML('menu') + '</button>' +
           '<div class="header-actions">' +
             '<a class="ghost" href="login.html">Sign in</a>' +
-            '<a class="btn btn-lime btn-sm" href="signup.html">Create workspace' + iconHTML('arrow-right', 'arrow') + '</a>' +
+            '<a class="btn btn-lime btn-sm" href="signup.html">Start free' + iconHTML('arrow-right', 'arrow') + '</a>' +
           '</div>' +
         '</div>' +
       '</div>';
